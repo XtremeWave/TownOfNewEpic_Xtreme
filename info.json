@@ -1,5 +1,5 @@
 {
-  "version": "3.0.1",
+  "version": "1.0.0",
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
@@ -12,8 +12,8 @@
   },
 
   "url": {
-    "github": "https://github.com/KARPED1EM/TownOfNext/releases/latest/download/TONX.dll",
-    "gitee": "https://gitee.com/leeverz/TownOfNext/releases/download/{{version}}/TONX.dll",
+    "github": "https://github.com/TEAM-TONEX/TownOfNewEpic_Xi/releases/latest/download/TONEX.dll",
+    "gitee": "https://gitee.com/TEAM-TONEX/TownOfNewEpic_Xi/releases/download/{{version}}/TONEX.dll",
     "cos": "null"
   }
 }
