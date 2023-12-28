@@ -57,6 +57,10 @@ public enum CustomRPC
 
     //TONEX
 
+
+    //GameMode
+    SyncHpNameNotify,
+
     //Roles
     SetDrawPlayer,
     SetCurrentDrawTarget,
@@ -101,6 +105,11 @@ public enum CustomRPC
     MiniAge,
     DoubleKillerBeKillTime,
     SetRewardOfficerTarget,
+    ViciousKill,
+    VultureLimit,
+    SetVultureArrow,
+    SetHotPotatoBoomTime,
+    MayorCanUseButton,
 }
 public enum Sounds
 {
@@ -108,6 +117,7 @@ public enum Sounds
     TaskComplete,
     TaskUpdateSound,
     ImpTransform,
+    Yeehawfrom,
 
     Test,
 }
@@ -346,6 +356,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetRewardOfficerTarget:
                 RewardOfficer.ReceiveRPC_SyncList(reader);
                 break;
+            case CustomRPC.VultureLimit:
+                Vulture.ReceiveRPC_Limit(reader);
+                break;
             default:
                 CustomRoleManager.DispatchRpc(reader, rpcType);
                 break;
@@ -422,6 +435,26 @@ internal static class RPC
             writer.Write(name.Value);
         }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SendGameData(int clientId = -1)
+    {
+        MessageWriter writer = MessageWriter.Get(SendOption.Reliable);
+        writer.StartMessage((byte)(clientId == -1 ? 5 : 6)); //0x05 GameData
+        {
+            writer.Write(AmongUsClient.Instance.GameId);
+            if (clientId != -1)
+                writer.WritePacked(clientId);
+            writer.StartMessage(1); //0x01 Data
+            {
+                writer.WritePacked(GameData.Instance.NetId);
+                GameData.Instance.Serialize(writer, true);
+            }
+            writer.EndMessage();
+        }
+        writer.EndMessage();
+
+        AmongUsClient.Instance.SendOrDisconnect(writer);
+        writer.Recycle();
     }
     public static void ShowPopUp(this PlayerControl pc, string msg)
     {
@@ -507,6 +540,9 @@ internal static class RPC
                     break;
                 case Sounds.ImpTransform:
                     SoundManager.Instance.PlaySound(DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx, false, 0.8f);
+                    break;
+                case Sounds.Yeehawfrom:
+                    SoundManager.Instance.PlaySound(DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSLocalYeehawSfx, false, 0.8f);
                     break;
             }
         }

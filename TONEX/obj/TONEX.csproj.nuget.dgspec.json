@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj": {}
+    "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi(2)\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj": {}
   },
   "projects": {
-    "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj": {
+    "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi(2)\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj",
+        "projectUniqueName": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi(2)\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj",
         "projectName": "TONEX",
-        "projectPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj",
+        "projectPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi(2)\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj",
         "packagesPath": "C:\\Users\\YJNSH\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi\\TownOfNewEpic_Xi\\TONEX\\obj\\",
+        "outputPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi(2)\\TownOfNewEpic_Xi\\TONEX\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

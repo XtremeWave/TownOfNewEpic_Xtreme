@@ -1,11 +1,13 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TONEX.Modules;
+using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
@@ -98,9 +100,9 @@ class CheckMurderPatch
             Logger.Info("会議が始まっていたため、キルをキャンセルしました。", "CheckMurder");
             return false;
         }
-
+        var divice = Options.CurrentGameMode == CustomGameMode.HotPotato ? 3000f : 2000f;
         // 連打キルでないか
-        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / 1000f * 6f); //※AmongUsClient.Instance.Pingの値はミリ秒(ms)なので÷1000
+        float minTime = Mathf.Max(0.02f, AmongUsClient.Instance.Ping / divice * 6f); //※AmongUsClient.Instance.Pingの値はミリ秒(ms)なので÷1000
                                                                                     //TimeSinceLastKillに値が保存されていない || 保存されている時間がminTime以上 => キルを許可
                                                                                     //↓許可されない場合
         if (TimeSinceLastKill.TryGetValue(killer.PlayerId, out var time) && time < minTime)
@@ -113,7 +115,6 @@ class CheckMurderPatch
         // キルが可能なプレイヤーか(遠隔は除く)
         if (!info.IsFakeSuicide && !killer.CanUseKillButton())
         {
-            Logger.Info(killer.GetNameWithRole() + "はKillできないので、キルはキャンセルされました。", "CheckMurder");
             return false;
         }
 
@@ -243,6 +244,7 @@ class ReportDeadBodyPatch
     {
         if (GameStates.IsMeeting) return false;
         if (Options.DisableMeeting.GetBool()) return false;
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato) return false;
         if (!CanReport[__instance.PlayerId])
         {
             WaitReport[__instance.PlayerId].Add(target);
@@ -347,6 +349,7 @@ class FixedUpdatePatch
         LocateArrow.OnFixedUpdate(player);
 
         CustomRoleManager.OnFixedUpdate(player);
+        
 
         if (AmongUsClient.Instance.AmHost)
         {//実行クライアントがホストの場合のみ実行
@@ -738,6 +741,12 @@ public static class PlayerControlDiePatch
         if (AmongUsClient.Instance.AmHost)
         {
             CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnPlayerDeath(__instance, PlayerState.GetByPlayerId(__instance.PlayerId).DeathReason, GameStates.IsMeeting));
+           // Libertarian
+            foreach (var player in Libertarian.playerIdList)
+            {
+                var li = Utils.GetPlayerById(player);
+                if (Vector2.Distance(li.transform.position, __instance.transform.position) <= Libertarian.OptionRadius.GetFloat())li?.NoCheckStartMeeting(__instance?.Data);
+            }
             // 死者の最終位置にペットが残るバグ対応
             __instance.RpcSetPet("");
         }

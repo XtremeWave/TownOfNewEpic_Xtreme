@@ -157,7 +157,7 @@ public static class CustomRoleManager
         Bait.OnMurderPlayerOthers(info);
         Beartrap.OnMurderPlayerOthers(info);
         Avenger.OnMurderPlayerOthers(info);
-
+        Mini.OnMurderPlayerOthers(info);
         //その他視点の処理があれば実行
         foreach (var onMurderPlayer in OnMurderPlayerOthers.ToArray())
         {
@@ -217,10 +217,13 @@ public static class CustomRoleManager
                 player.GetRoleClass()?.OnSecondsUpdate(player, now);
                 LastSecondsUpdate[player.PlayerId] = now;
                 Mini.OnSecondsUpdate(player,now);
+                HotPotatoManager.OnSecondsUpdate();
             }
 
             player.GetRoleClass()?.OnFixedUpdate(player);
             Chameleon.OnFixedUpdate(player);
+            Bait.OnFixedUpdate(player);
+            HotPotatoManager.OnFixedUpdate();
             //その他視点処理があれば実行
             foreach (var onFixedUpdate in OnFixedUpdateOthers)
             {
@@ -357,6 +360,9 @@ public static class CustomRoleManager
                     break;
                 case CustomRoles.Mini:
                     Mini.Add(pc.PlayerId);
+                    break;
+                case CustomRoles.Libertarian:
+                    Libertarian.Add(pc.PlayerId);
                     break;
             }
         }
@@ -560,6 +566,8 @@ public enum CustomRoles
     Gamblers,
     DoubleKiller,
     Medusa,
+    Shifters,
+    Vicious,
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -598,6 +606,7 @@ public enum CustomRoles
     TimeStops,
     TimeMaster,
     Prophet,
+    RubePeople,
     //Neutral
     Arsonist,
     Jester,
@@ -628,7 +637,9 @@ public enum CustomRoles
     Sidekick,
     Despair,
     RewardOfficer,
-
+    //GameMode
+    HotPotato,
+    ColdPotato,
     //GM
     GM,
 
@@ -661,6 +672,7 @@ public enum CustomRoles
     Rambler,
     Chameleon,
     Mini,
+    Libertarian,
 }
 public enum CustomRoleTypes
 {

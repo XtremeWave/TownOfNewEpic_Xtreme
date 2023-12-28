@@ -359,7 +359,17 @@ public static class SetRecommendationsPatch
         __instance.roleOptions.SetRoleRecommended(RoleTypes.Scientist);
         __instance.roleOptions.SetRoleRecommended(RoleTypes.GuardianAngel);
         __instance.roleOptions.SetRoleRecommended(RoleTypes.Engineer);
-
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato) //HotPotato
+        {
+            __instance.PlayerSpeedMod = 1.75f;
+            __instance.CrewLightMod = 1f;
+            __instance.ImpostorLightMod = 1f;
+            __instance.NumImpostors = 3;
+            __instance.NumCommonTasks = 0;
+            __instance.NumLongTasks = 0;
+            __instance.NumShortTasks = 0;
+            __instance.KillCooldown = 10f;
+        }
         return false;
     }
 }

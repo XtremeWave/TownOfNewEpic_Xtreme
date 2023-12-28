@@ -88,7 +88,7 @@ public sealed class DoubleKiller : RoleBase, IImpostor
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (DoubleKillerTwoTime == 0) return;
-        if (DoubleKillerTwoTime >= 1 && Player.IsAlive())
+        if (DoubleKillerTwoTime >= 1 && Player.IsAlive() && !GameStates.IsMeeting)
         {
             DoubleKillerTwoTime -= 1;
             SendRPC();
@@ -106,4 +106,5 @@ public sealed class DoubleKiller : RoleBase, IImpostor
         else
             return Utils.ColorString(Color.yellow, GetString("(DoubleKillerTimeReady)")); 
     }
+    public override void AfterMeetingTasks() => DoubleKillerTwoTime = TwoKillCooldown.GetInt();
 }

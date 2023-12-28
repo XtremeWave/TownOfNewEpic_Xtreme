@@ -30,7 +30,7 @@ public class CreditsControllerPatch
                 $"SolarFlare - {GetString("Contributor")}",
                 $"Mousse - {GetString("Contributor")}",
                  $"Moe - {GetString("Contributor")}",
-                 $"Lonnie - {GetString("Contributor")}",
+               $"CJZEYAN - {GetString("Translator")}",
             };
         var translatorList = new List<string>()
             {

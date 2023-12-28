@@ -293,9 +293,15 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         RoleCommands.Add(CustomRoles.Rambler, new() { "ra", "漫步者", "漫步" });
         RoleCommands.Add(CustomRoles.Chameleon, new() { "ch", "变色龙","变色" });
         RoleCommands.Add(CustomRoles.Mini, new() { "mini", "迷你" });
+        RoleCommands.Add(CustomRoles.Libertarian, new() { "li", "广播", "自主主义者" });
     }
     public static void SendRolesInfo(string input, byte playerId)
     {
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.HotPotato"), playerId);
+            return;
+        }
         if (string.IsNullOrWhiteSpace(input))
         {
             Utils.ShowActiveRoles(playerId);

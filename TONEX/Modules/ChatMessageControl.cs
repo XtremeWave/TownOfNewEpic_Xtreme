@@ -36,19 +36,20 @@ public class MessageControl
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
         CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
-
+        /*
+        if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
+        {
+            foreach (var pc in Main.AllPlayerControls)
+                if (pc.Is(CustomRoles.Blackmailer)) player.SetRealKiller(pc);
+            player.RpcSuicideWithAnime();
+            recallMode = MsgRecallMode.Spam;
+        }
+        */
         RecallMode = recallMode;
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
         if (!IsCommand)
         {
-            
-            if (Blackmailer.ForBlackmailer.Contains(player.PlayerId) && GameStates.IsMeeting)
-            {
-                    foreach (var pc in Main.AllPlayerControls)
-                        if (pc.Is(CustomRoles.Blackmailer)) player.SetRealKiller(pc);
-                    player.RpcSuicideWithAnime();
-                    recallMode = MsgRecallMode.Spam;
-            }
+         
             
             // Not a role command, check for command listw
             foreach (var command in ChatCommand.AllCommands)

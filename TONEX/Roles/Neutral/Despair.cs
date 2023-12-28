@@ -80,7 +80,7 @@ public sealed class Despair : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (KillCooldown == 0) return;
-        if (KillCooldown >= 1 && player.IsAlive())
+        if (KillCooldown >= 1 && player.IsAlive() && !GameStates.IsMeeting)
         {
            KillCooldown -= 1;
             SendRPC();
@@ -91,5 +91,6 @@ public sealed class Despair : RoleBase
         }
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(KillCooldown >= 1 ? Utils.GetRoleColor(CustomRoles.Despair) : Color.red, $"({KillCooldown})");
+    public override void AfterMeetingTasks() => KillCooldown = OptionKillCooldown.GetInt();
 }
 

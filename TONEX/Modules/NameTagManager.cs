@@ -221,8 +221,10 @@ public static class NameTagManager
             {
                 var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
                 upper += Options.CurrentGameMode switch
-                {
+                {  
+                    CustomGameMode.HotPotato => $"<color=#87cefa>{GetString("HotPotatoMode")}</color>",
                     _ => $"<color=#87cefa>{Main.PluginVersion}</color>",
+          
                 };
                 name = upper + "</size>\r\n" + name;
             }

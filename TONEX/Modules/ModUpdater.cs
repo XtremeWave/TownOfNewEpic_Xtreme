@@ -26,10 +26,12 @@ public class ModUpdater
 #if DEBUG
         "file:///D:/Desktop/TONEX/info.json",
         "file:///D:/Desktop/info.json",
+        "file:///C:/Desktop/TONEX/info.json",
+        "file:///C:/Desktop/info.json",
 #else
         "https://raw.githubusercontent.com/TEAM-TONEX/TownOfNewEpic_Xi/TONEX/info.json",
-        "https://cdn.jsdelivr.net/gh/KARPED1EM/TownOfNext/info.json",
-        "https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
+        //"https://cdn.jsdelivr.net/gh/KARPED1EM/TownOfNext/info.json",
+        //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
         "https://gitee.com/TEAM-TONEX/TownOfNewEpic_Xi/raw/TONEX/info.json",
 #endif
     };

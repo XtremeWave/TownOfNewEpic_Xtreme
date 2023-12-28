@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Crewmate;
 using TONEX.Roles.Neutral;
 using static TONEX.Translator;
 
@@ -23,13 +24,26 @@ class GameEndChecker
 
         //ゲーム終了しないモードで廃村以外の場合は中断
         if (Options.NoGameEnd.GetBool() && CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.Error) return false;
-
         //廃村用に初期値を設定
         var reason = GameOverReason.ImpostorByKill;
 
         //ゲーム終了判定
         predicate.CheckForEndGame(out reason);
-
+        //热土豆用
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+        {
+            foreach (var cp in Main.AllAlivePlayerControls)
+            {
+                if (cp.Is(CustomRoles.ColdPotato))
+                {
+                    CustomWinnerHolder.WinnerIds.Add(cp.PlayerId);
+                }
+            }
+            ShipStatus.Instance.enabled = false;
+            StartEndGame(reason);
+            predicate = null;
+            return false;
+        }
         //ゲーム終了時
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
         {
@@ -51,7 +65,7 @@ class GameEndChecker
                     break;
                 case CustomWinner.Impostor:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Charmed) &&  !pc.Is(CustomRoles.Attendant))
+                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Attendant))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Succubus:
@@ -75,7 +89,14 @@ class GameEndChecker
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
                 }
-
+                //RubePeople(我实在不会怎么写重写在胜利时移除玩家ID了QAQ)
+                foreach (var pc in RubePeople.ForRubePeople)
+                {
+                    if (CustomWinnerHolder.WinnerIds.Contains(pc))
+                    {
+                        CustomWinnerHolder.WinnerIds.Remove(pc);
+                    }
+                }
                 //追加胜利
                 foreach (var pc in Main.AllPlayerControls)
                 {
@@ -201,6 +222,7 @@ class GameEndChecker
     }
 
     public static void SetPredicateToNormal() => predicate = new NormalGameEndPredicate();
+    public static void SetPredicateToHotPotato() => predicate = new HotPotatoGameEndPredicate();
 
     // ===== ゲーム終了条件 =====
     // 通常ゲーム用
@@ -288,6 +310,15 @@ class GameEndChecker
             }
             else return false; //胜利条件未达成
 
+            return true;
+        }
+    }
+    class HotPotatoGameEndPredicate : GameEndPredicate
+    {
+        public override bool CheckForEndGame(out GameOverReason reason)
+        {
+            reason = GameOverReason.ImpostorByKill;
+            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.ColdPotato);
             return true;
         }
     }

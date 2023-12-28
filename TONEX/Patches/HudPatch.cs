@@ -68,6 +68,10 @@ class HudManagerPatch
                         if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);
                         else __instance.AbilityButton.SetInfiniteUses();
                     }
+                    if (roleClass.HasPet)
+                    {
+
+                    }
                 }
 
                 //バウンティハンターのターゲットテキスト

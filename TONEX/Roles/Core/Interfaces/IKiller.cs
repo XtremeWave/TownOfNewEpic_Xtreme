@@ -40,6 +40,8 @@ public interface IKiller
     /// <returns>trueを返した場合，ベントボタンを使える</returns>
     public bool CanUseImpostorVentButton() => true;
 
+    public bool CanUseShapeShiftButton() => true;
+
     /// <summary>
     /// CheckMurder 作为击杀者时的处理函数<br/>
     /// 设置 info.DoKill=false 为不击杀，但依然触发 CheckMurderAsTarget 函数<br/>
@@ -47,6 +49,7 @@ public interface IKiller
     /// </summary>
     /// <param name="info">击杀事件的信息</param>
     /// <returns>false：不再触发 OnCheckMurderAsTarget 函数</returns>
+    /// public bool CanUseImpostorVentButton() => true;
     public bool OnCheckMurderAsKiller(MurderInfo info) => true;
 
     /// <summary>

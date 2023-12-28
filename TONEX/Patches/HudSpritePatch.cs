@@ -28,6 +28,7 @@ public static class HudSpritePatch
         Sprite newAbilityButton = Defalt_Ability ?? __instance.AbilityButton.graphic.sprite;
         Sprite newVentButton = Defalt_Vent ?? __instance.ImpostorVentButton.graphic.sprite;
         Sprite newReportButton = Defalt_Report ?? __instance.ReportButton.graphic.sprite;
+        
 
         if (Main.EnableCustomButton.Value)
         {

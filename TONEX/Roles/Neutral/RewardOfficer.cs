@@ -1,10 +1,12 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
+using UnityEngine.XR;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
@@ -21,7 +23,8 @@ public sealed class RewardOfficer : RoleBase, IKiller
             1656870,
             SetupOptionItem,
             "re|悬赏",
-            "#339966"
+            "#339966",
+           true
         );
     public RewardOfficer(PlayerControl player)
     : base(
@@ -39,7 +42,6 @@ public sealed class RewardOfficer : RoleBase, IKiller
     {
         CanSeeRole,
     }
-    private static float KillCooldown;
     public static List<byte> ForRewardOfficer;
 
     private static void SetupOptionItem()
@@ -53,21 +55,10 @@ public sealed class RewardOfficer : RoleBase, IKiller
     public override void Add()
     {
         ForRewardOfficer = new();
-        //ターゲット割り当て
+        //旧base的随机一个玩家未目标
         if (!AmongUsClient.Instance.AmHost) return;
-
-        var playerId = Player.PlayerId;
-        List<PlayerControl> targetList = new();
-        var rand = IRandom.Instance;
-        foreach (var target in Main.AllPlayerControls)
-        {
-            if (playerId == target.PlayerId) continue;
-
-            if (target.Is(CustomRoles.GM)) continue;
-
-            targetList.Add(target);
-        }
-        var SelectedTarget = targetList[rand.Next(targetList.Count)];
+        var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != Player.PlayerId && x.IsAlive()).ToList();
+        var SelectedTarget = pcList[IRandom.Instance.Next(0, pcList.Count)];
         if (RewardOfficerCanSeeRoles.GetBool())
         {
         ForRewardOfficer.Add( SelectedTarget.PlayerId);
@@ -108,7 +99,6 @@ public sealed class RewardOfficer : RoleBase, IKiller
     public bool CanUseImpostorVentButton() => false;
     public bool CanUseKillButton() => true;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
-    public void ApplySchrodingerCatOptions(IGameOptions option) => ApplyGameOptions(option);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
@@ -122,49 +112,28 @@ public sealed class RewardOfficer : RoleBase, IKiller
     }
     public void Win()
     {
-        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Despair);
+        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.RewardOfficer);
         CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting)
     {
-        if (AmongUsClient.Instance.AmHost)
+        var pc = player;
+        if (ForRewardOfficer.Contains(pc.PlayerId))
         {
-            if (Player.IsAlive())
+            ForRewardOfficer.Remove(pc.PlayerId);
+            var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != Player.PlayerId && x.IsAlive()).ToList();
+            var SelectedTarget = pcList[IRandom.Instance.Next(0, pcList.Count)];
+            if (RewardOfficerCanSeeRoles.GetBool())
             {
-                foreach (var re in ForRewardOfficer)
-                {
-                    var pc = Utils.GetPlayerById(re);
-                    if (!pc.IsAlive() && ForRewardOfficer.Count == 1)
-                    {
-                        ForRewardOfficer.Remove(pc.PlayerId);
-
-                        var playerId = Player.PlayerId;
-                        List<PlayerControl> targetList = new();
-                        var rand = IRandom.Instance;
-                        foreach (var target in Main.AllPlayerControls)
-                        {
-                            if (playerId == target.PlayerId) continue;
-
-                            if (target.Is(CustomRoles.GM)) continue;
-
-                            targetList.Add(target);
-                        }
-                        var SelectedTarget = targetList[rand.Next(targetList.Count)];
-                        if (RewardOfficerCanSeeRoles.GetBool())
-                        {
-                            ForRewardOfficer.Add(SelectedTarget.PlayerId);
-                            Name = SelectedTarget.GetAllRoleName();
-                            RolesColor = Utils.GetRoleColor(SelectedTarget.GetCustomRole());
-                        }
-                        else
-                        {
-                            ForRewardOfficer.Add(SelectedTarget.PlayerId);
-                        }
-                        SendRPC_SyncList();
-                        break;
-                    }
-                }
+                ForRewardOfficer.Add(SelectedTarget.PlayerId);
+                Name = SelectedTarget.GetAllRoleName();
+                RolesColor = Utils.GetRoleColor(SelectedTarget.GetCustomRole());
             }
+            else
+            {
+                ForRewardOfficer.Add(SelectedTarget.PlayerId);
+            }
+            SendRPC_SyncList();
         }
     }
 }

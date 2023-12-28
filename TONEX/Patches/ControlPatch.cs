@@ -51,7 +51,7 @@ internal class ControllerManagerUpdatePatch
             }
         }
         //职业介绍
-        if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting) && Options.CurrentGameMode == CustomGameMode.Standard)
+        if (GameStates.IsInGame && (GameStates.IsCanMove || GameStates.IsMeeting))
         {
             if (Input.GetKey(KeyCode.F1))
             {
@@ -304,5 +304,34 @@ internal class HandleHUDPatch
         {
             DestroyableSingleton<HudManager>.Instance.ImpostorVentButton.DoClick();
         }
+        if (player.GetButtonDown(49) && // 49:变形按钮id
+        PlayerControl.LocalPlayer.Data?.Role?.IsImpostor == false &&
+        PlayerControl.LocalPlayer.CanUseShapeShiftButton())
+        {
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.DoClick();
+        }
+        /*
+        if (player.GetButtonDown(6) && // 6:宠物按钮id 
+        PlayerControl.LocalPlayer.CanUseImpostorVentButton())
+        {
+            DestroyableSingleton<HudManager>.Instance.AbilityButton.DoClick();
+        }
+        用于侦测玩家按下了哪个按钮id
+        int minButtonId = 1; // 最小按钮ID
+        int maxButtonId = 100; // 最大按钮ID
+
+        for (int buttonId = minButtonId; buttonId <= maxButtonId; buttonId++)
+        {
+            // 排除"Kill"和"Vent"按钮
+            if (buttonId == 8 || buttonId == 50 || !GameStates.IsInTask)
+                continue;
+
+            bool isButtonPressed = player.GetButtonDown(buttonId);
+            if (isButtonPressed)
+            {
+                Logger.Info($"Button with ID {buttonId} is pressed", "");
+            }
+        }
+        */
     }
 }

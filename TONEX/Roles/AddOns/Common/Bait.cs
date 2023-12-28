@@ -5,6 +5,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using UnityEngine;
 using static TONEX.Options;
+using static TONEX.Translator;
 
 namespace TONEX.Roles.AddOns.Common;
 public static class Bait
@@ -54,6 +55,21 @@ public static class Bait
             if (delay > 0.15f && OptionDelayNotifyForKiller.GetBool()) killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Bait), string.Format(Translator.GetString("KillBaitNotify"), (int)delay)), delay);
             Logger.Info($"{killer.GetNameWithRole()} Killed Bait => {target.GetNameWithRole()}", "Bait.OnMurderPlayerAsTarget");
             _ = new LateTask(() => { if (GameStates.IsInTask) killer.CmdReportDeadBody(target.Data); }, delay, "Bait Self Report");
+        }
+    }
+    public static void OnFixedUpdate(PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player.Is(CustomRoles.Bait))
+        {
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.PlayerId == player.PlayerId) continue;
+                if (Vector2.Distance(player.transform.position, pc.transform.position) <= 3f && pc.inVent)
+                {
+                    player.Notify(GetString("BaitSeeVentPlayer"));
+                }
+            }
         }
     }
 }

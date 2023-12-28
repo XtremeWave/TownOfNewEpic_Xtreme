@@ -13,7 +13,7 @@ public static class UpdateFriendCodeUIPatch
     public static void Prefix(AccountTab __instance)
     {
 
-        string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>Xi</color>");
+        string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>TEAM-TONEX</color>");
         credentialsText += "\t\t\t";
         string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
 

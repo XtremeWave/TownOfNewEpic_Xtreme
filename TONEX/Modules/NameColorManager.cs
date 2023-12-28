@@ -2,6 +2,7 @@ using Hazel;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
 using TONEX.Roles.Crewmate;
+using TONEX.Roles.GameModeRoles;
 using TONEX.Roles.Impostor;
 using TONEX.Roles.Neutral;
 
@@ -63,6 +64,7 @@ public static class NameColorManager
             || seer.Is(CustomRoles.God)
 
             || SuperStar.KnowTargetRoleColor(target, isMeeting)
+            || HotPotato.KnowTargetRoleColor(target, isMeeting)
             || Workaholic.KnowTargetRoleColor(target, isMeeting)
             || Mare.KnowTargetRoleColor(target, isMeeting);
     }

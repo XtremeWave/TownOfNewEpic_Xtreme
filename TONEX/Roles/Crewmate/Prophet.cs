@@ -89,6 +89,7 @@ public sealed class Prophet : RoleBase, IKiller
     public float CalculateKillCooldown() => CanUseKillButton() ? ProphetCooldown.GetFloat() : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && ProphetLimit >= 1;
     public bool CanUseSabotageButton() => false;
+    public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {

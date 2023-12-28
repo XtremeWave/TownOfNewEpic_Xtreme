@@ -16,6 +16,7 @@ namespace TONEX;
 public enum CustomGameMode
 {
     Standard = 0x01,
+    HotPotato = 0x02,
     All = int.MaxValue
 }
 
@@ -47,13 +48,14 @@ public static class Options
     public static OptionItem GameMode;
     public static CustomGameMode CurrentGameMode
         => GameMode.GetInt() switch
-        {
+        {    
+            1 => CustomGameMode.HotPotato,
             _ => CustomGameMode.Standard
         };
 
     public static readonly string[] gameModes =
     {
-        "Standard"
+        "Standard","HotPotato"
     };
 
     // 地图启用
@@ -127,6 +129,7 @@ public static class Options
     //// 游戏设置 ////
 
     public static OptionItem EnableGM;
+    public static OptionItem UsePets;
 
     // 驱逐相关设定
     public static OptionItem CEMode;
@@ -525,6 +528,9 @@ public static class Options
         EnableGM = BooleanOptionItem.Create(100, "GM", false, TabGroup.GameSettings, false)
             .SetColor(Utils.GetRoleColor(CustomRoles.GM))
             .SetHeader(true);
+       UsePets = BooleanOptionItem.Create(101, "CanUsePet", false, TabGroup.GameSettings, false)
+    .SetColor(Utils.GetRoleColor(CustomRoles.Veteran))
+    .SetHeader(true);
 
         bool setupExpNow = false;
 
@@ -619,6 +625,7 @@ public static class Options
         Rambler.SetupCustomOption() ;
         Chameleon.SetupCustomOption();
         Mini.SetupCustomOption();
+        Libertarian.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
@@ -759,6 +766,7 @@ public static class Options
         Logger.Msg("Loading Game Options...", "Load Options");
 
         #region 游戏设置
+        HotPotatoManager.SetupCustomOption();
 
         // 驱逐相关设定
         TextOptionItem.Create(3_100_001, "MenuTitle.Ejections", TabGroup.GameSettings)

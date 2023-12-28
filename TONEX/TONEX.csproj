@@ -4,7 +4,7 @@
 		<LangVersion>latest</LangVersion>
 
 		<Description>An AmongUs mod with learning and love</Description>
-		<Authors>tukasa0001(EmptyBottle), integral0131, KARPED1EM</Authors>
+		<Authors>tukasa0001(EmptyBottle), integral0131, KARPED1EM, Xi, Slok7565, Zeyan</Authors>
 		
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
 		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
@@ -29,6 +29,10 @@
 		<PackageReference Include="GitInfo" Version="3.3.3" />
 		<PackageReference Include="Microsoft.VisualStudio.VsixColorCompiler" Version="17.5.33428.366" />
 		<PackageReference Include="YamlDotNet" Version="13.7.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="GameMode\" />
 	</ItemGroup>
 
 	<Target Name="Copy" AfterTargets="Build" Condition="'$(AmongUs)' != ''">

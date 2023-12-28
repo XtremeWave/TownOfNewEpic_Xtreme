@@ -37,7 +37,7 @@ public sealed class Vulture : RoleBase
             VultureEatTime,
     }
 
-    private int EatLimit;
+    private static int EatLimit;
     private List<byte> ForVulture;
     private long EatTime;
     private static void SetupOptionItem()
@@ -52,15 +52,27 @@ public sealed class Vulture : RoleBase
         AURoleOptions.EngineerCooldown = 0;
         AURoleOptions.EngineerInVentMaxTime = 0;
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(EatLimit >=1 ? Utils.GetRoleColor(CustomRoles.Vulture) : Color.gray, $"({EatLimit})");
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(EatLimit >=1 ? Utils.GetRoleColor(CustomRoles.Vulture) : Color.green, $"({EatLimit})");
     public override void Add()
     {
         EatLimit = OptionEatLimitPerMeeting.GetInt();
         EatTime = 0;
     }
+    public override string GetReportButtonText() => GetString("VultureReportButtonText");
+    private static void SendRPCLimit()
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VultureLimit, SendOption.Reliable, -1);
+        writer.Write(EatLimit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void ReceiveRPC_Limit(MessageReader reader)
+    {
+        int count = reader.ReadInt32();
+        EatLimit = count;
+    }
     private void SendRPC(bool add, Vector3 loc = new())
     {
-        using var sender = CreateSender(CustomRPC.SetMorticianArrow);
+        using var sender = CreateSender(CustomRPC.SetVultureArrow);
         sender.Writer.Write(add);
         if (add)
         {
@@ -71,7 +83,7 @@ public sealed class Vulture : RoleBase
     }
     public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType != CustomRPC.SetMorticianArrow) return;
+        if (rpcType != CustomRPC.SetVultureArrow) return;
         if (reader.ReadBoolean())
             LocateArrow.Add(Player.PlayerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
         else LocateArrow.RemoveAllTarget(Player.PlayerId);
@@ -115,12 +127,14 @@ public sealed class Vulture : RoleBase
         EatLimit -= 1;
         EatTime = Utils.GetTimeStamp();
        Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
-        if (EatLimit >= OptionEatLimitPerMeeting.GetInt())
-        {
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
-            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
-        }
+        SendRPCLimit();
+        if (EatLimit >= OptionEatLimitPerMeeting.GetInt()) Win();
             return false;
+    }
+    public void Win()
+    {
+        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Vulture);
+        CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {

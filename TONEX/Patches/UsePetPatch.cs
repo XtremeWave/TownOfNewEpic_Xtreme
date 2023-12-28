@@ -22,6 +22,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Neutral;
 using TONEX;
+using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX;
 
@@ -39,7 +40,7 @@ class LocalPetPatch
 
     public static bool Prefix(PlayerControl __instance)
     {
-        if (!(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return true;
+        if (!Options.UsePets.GetBool() || !(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return true;
         if (GameStates.IsLobby) return true;
 
         if (__instance.petting) return true;
@@ -50,12 +51,11 @@ class LocalPetPatch
 
         ExternalRpcPetPatch.Prefix(__instance.MyPhysics, (byte)RpcCalls.Pet);
         LastProcess[__instance.PlayerId] = Utils.GetTimeStamp();
-        return false;
+        return !__instance.CanPet();
     }
-
     public static void Postfix(PlayerControl __instance)
     {
-        if (!(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
+        if (!Options.UsePets.GetBool() || !(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
         __instance.petting = false;
     }
 }
@@ -63,23 +63,15 @@ class LocalPetPatch
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 class ExternalRpcPetPatch
 {
-    public static Dictionary<byte, float> PetCooldown = new();
-    public static Dictionary<byte, bool> SkillReady = new();
-    public static void Init()
-    {
-        PetCooldown = new();
-        SkillReady = new();
-    }
-
     private static readonly Dictionary<byte, long> LastProcess = new();
-    public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callID)
+    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callID)
     {
-        if (!AmongUsClient.Instance.AmHost || (RpcCalls)callID != RpcCalls.Pet) return;
+        if (!Options.UsePets.GetBool() || !AmongUsClient.Instance.AmHost || (RpcCalls)callID != RpcCalls.Pet) return true;
 
         var pc = __instance.myPlayer;
         var physics = __instance;
 
-        if (pc == null || physics == null) return;
+        if (pc == null || physics == null) return true;
 
         if (pc != null
             && !pc.inVent
@@ -94,7 +86,7 @@ class ExternalRpcPetPatch
             physics.CancelPet();
 
         if (!LastProcess.ContainsKey(pc.PlayerId)) LastProcess.TryAdd(pc.PlayerId, Utils.GetTimeStamp() - 2);
-        if (LastProcess[pc.PlayerId] + 1 >= Utils.GetTimeStamp()) return;
+        if (LastProcess[pc.PlayerId] + 1 >= Utils.GetTimeStamp()) return true;
         LastProcess[pc.PlayerId] = Utils.GetTimeStamp();
         __instance.CancelPet();
         physics.RpcCancelPet();
@@ -102,24 +94,21 @@ class ExternalRpcPetPatch
         physics.RpcCancelPet();
         physics.RpcCancelPet();
         Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} petted their pet", "PetActionTrigger");
+        var user = __instance.myPlayer;
+        
+        if ((!user.GetRoleClass()?.OnUsePet(pc) ?? true))
+        {  
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CancelPet, SendOption.Reliable, user.GetClientId());
+            writer.WriteNetObject(user);
+            writer.WritePacked(0);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            __instance.CancelPet();
+            physics.RpcCancelPet();
+        Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} cancel petting", "PetActionTrigger");
+            return false;
+        }        
+        return true;
 
-        _ = new LateTask(() => { OnPetUse(pc); }, 0.2f, $"OnPetUse: {pc.GetNameWithRole().RemoveHtmlTags()}");
-    }
-    public static void OnPetUse(PlayerControl pc)
-    {
-
-        if (pc == null ||
-            pc.inVent ||
-            pc.inMovingPlat ||
-            pc.onLadder ||
-            pc.walkingToVent ||
-            pc.MyPhysics.Animations.IsPlayingEnterVentAnimation() ||
-            pc.MyPhysics.Animations.IsPlayingClimbAnimation() ||
-            pc.MyPhysics.Animations.IsPlayingAnyLadderAnimation() ||
-            Pelican.IsEaten(pc.PlayerId))
-            return;
-        var Pet = pc;
-          Pet.GetRoleClass()?.OnUsePet(Pet);
     }
 }
 

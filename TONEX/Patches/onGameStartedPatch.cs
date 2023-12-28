@@ -113,6 +113,22 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
+            if (Options.UsePets.GetBool())
+            {
+                foreach (var pc in Main.AllAlivePlayerControls)
+                {
+                    if (!pc.Is(CustomRoles.GM))
+                    {
+                        var sender = CustomRpcSender.Create(name: $"PetsPatch.RpcSetPet)");
+                        pc.SetPet("pet_Crewmate");
+                        sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
+                        .Write("pet_Crewmate")
+                        .EndRpc();
+                        pc.CanPet();
+                        sender.SendMessage();
+                    }
+                }
+            }
         }
         catch (Exception ex)
         {
@@ -212,7 +228,12 @@ internal class SelectRolesPatch
             RpcSetRoleReplacer.StoragedData = null;
 
             //Utils.ApplySuffix();
-
+            // 热土豆用
+            //if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+            //{
+            //    foreach (var pair in PlayerState.AllPlayerStates)
+            //        ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
+            //}
             var rd = IRandom.Instance;
 
             foreach (var pc in Main.AllAlivePlayerControls)
@@ -267,6 +288,9 @@ internal class SelectRolesPatch
             {
                 case CustomGameMode.Standard:
                     GameEndChecker.SetPredicateToNormal();
+                    break;
+                case CustomGameMode.HotPotato:
+                    GameEndChecker.SetPredicateToHotPotato();
                     break;
             }
 

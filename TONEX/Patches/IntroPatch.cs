@@ -3,9 +3,14 @@ using HarmonyLib;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using TONEX.Modules;
 using TONEX.Roles.Core;
 using UnityEngine;
 using static TONEX.Translator;
+using Hazel;
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace TONEX;
 
@@ -18,6 +23,18 @@ class IntroCutscenePatch
         if (!GameStates.IsModHost) return;
         _ = new LateTask(() =>
         {
+           if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+            {
+                var color = ColorUtility.TryParseHtmlString("#FF9900", out var c) ? c : new(255, 255, 255, 255);
+                CustomRoles roles = PlayerControl.LocalPlayer.GetCustomRole();
+                __instance.YouAreText.color = color;
+                __instance.RoleText.text = Utils.GetRoleName(roles);
+                __instance.RoleText.color = Utils.GetRoleColor(roles);
+                __instance.RoleBlurbText.color = color;
+                __instance.RoleBlurbText.text = PlayerControl.LocalPlayer.GetRoleInfo();
+            }
+           else
+            {
             CustomRoles role = PlayerControl.LocalPlayer.GetCustomRole();
             if (!role.IsVanilla())
             {
@@ -35,6 +52,8 @@ class IntroCutscenePatch
             if (!PlayerControl.LocalPlayer.Is(CustomRoles.Lovers) && !PlayerControl.LocalPlayer.Is(CustomRoles.Neptune) && CustomRoles.Neptune.IsExist() && !PlayerControl.LocalPlayer.Is(CustomRoles.Mini))
                 __instance.RoleBlurbText.text += "\n" + Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), GetString($"{CustomRoles.Lovers}Info"));
             __instance.RoleText.text += Utils.GetSubRolesText(PlayerControl.LocalPlayer.PlayerId, false, true);
+            }
+
         }, 0.0001f, "Override Role Text");
     }
     [HarmonyPatch(nameof(IntroCutscene.CoBegin)), HarmonyPrefix]
@@ -127,7 +146,32 @@ class IntroCutscenePatch
             case CustomRoleTypes.Impostor:
                 __instance.TeamTitle.text = GetString("TeamImpostor");
                 __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = null;
+                if (PlayerControl.LocalPlayer.Is(RoleTypes.Shapeshifter))
+                {
+                    new LateTask(() =>
+                    {
+                        PlayerControl.LocalPlayer.RPCPlayCustomSound("Shapeshifter");
+                        Utils.NotifyRoles();
+                    }, 4f, "Sound");
+                }
+                else if(PlayerControl.LocalPlayer.Is(CustomRoles.Bard))
+                {
+                    new LateTask(() =>
+                    {
+                        RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
+                        Utils.NotifyRoles();
+                    }, 4f, "Sound");
+                }
+                else
+                {
+
+                    new LateTask(() =>
+                    {
+                        RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
+                        Utils.NotifyRoles();
+                    }, 4f, "Sound");
+                }
                 break;
             case CustomRoleTypes.Crewmate:
                 __instance.TeamTitle.text = GetString("TeamCrewmate");
@@ -137,7 +181,32 @@ class IntroCutscenePatch
             case CustomRoleTypes.Neutral:
                 __instance.TeamTitle.text = GetString("TeamNeutral");
                 __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 171, 27, byte.MaxValue);
-                PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Shapeshifter);
+                PlayerControl.LocalPlayer.Data.Role.IntroSound = null;
+                if (PlayerControl.LocalPlayer.CanUseKillButton())
+                {
+                    new LateTask(() =>
+                    {
+                        RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.ImpTransform);
+                        Utils.NotifyRoles();
+                    }, 4f, "Sound");
+                }
+                else if(PlayerControl.LocalPlayer.Is(CustomRoles.Sunnyboy))
+                {
+                    new LateTask(() =>
+                    {
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                        Utils.NotifyRoles();
+                    }, 4f, "Sound");
+                }
+                else
+                {
+
+                   new LateTask(() =>
+                    {
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+                        Utils.NotifyRoles();
+                    }, 4f, "Sound");
+                } 
                 break;
         }
         switch (role)
@@ -160,6 +229,16 @@ class IntroCutscenePatch
             __instance.TeamTitle.text = GetString("TeamImpostor");
             __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
             PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
+        }
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+        {
+            var color = ColorUtility.TryParseHtmlString("#ffa300", out var c) ? c : new(255, 255, 255, 255);
+            __instance.TeamTitle.text = Utils.GetRoleName(role);
+            __instance.TeamTitle.color = Utils.GetRoleColor(role);
+            __instance.ImpostorText.gameObject.SetActive(true);
+            __instance.ImpostorText.text = GetString("ModeHotPotato");
+            __instance.BackgroundBar.material.color = color;
+            PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
         }
 
         if (Input.GetKey(KeyCode.RightShift))
@@ -247,7 +326,7 @@ class IntroCutscenePatch
             if (Main.NormalOptions.MapId != 4)
             {
                 Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
-                if (Options.FixFirstKillCooldown.GetBool())
+                if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.HotPotato)
                     _ = new LateTask(() =>
                     {
                         if (GameStates.IsInTask)
@@ -268,6 +347,21 @@ class IntroCutscenePatch
                 PlayerState.GetByPlayerId(PlayerControl.LocalPlayer.PlayerId).SetDead();
             }
             if (RandomSpawn.IsRandomSpawn())
+            {
+                RandomSpawn.SpawnMap map;
+                switch (Main.NormalOptions.MapId)
+                {
+                    case 0:
+                        map = new RandomSpawn.SkeldSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                    case 1:
+                        map = new RandomSpawn.MiraHQSpawnMap();
+                        Main.AllPlayerControls.Do(map.RandomTeleport);
+                        break;
+                }
+            }
+            if (RandomSpawn.IsRandomSpawn() || Options.CurrentGameMode == CustomGameMode.HotPotato)
             {
                 RandomSpawn.SpawnMap map;
                 switch (Main.NormalOptions.MapId)

@@ -1,6 +1,8 @@
 ﻿using Hazel;
 using System.Collections.Generic;
+using System.Linq;
 using TONEX.Attributes;
+using TONEX.Modules;
 using TONEX.Roles.Core;
 using UnityEngine;
 using static TONEX.Options;
@@ -62,9 +64,19 @@ public static class Mini
             }
         }
     }
+    public static void OnMurderPlayerOthers(MurderInfo info)
+    {
+        var (killer, target) = info.AttemptTuple;
+        if (Age < 18 && target.Is(CustomRoles.Mini))
+        {
+            killer.Notify(Translator.GetString("CantKillKid"));
+            return;
+        }
+        
+    }
     public static string GetProgressText(byte playerId, bool comms = false)
     {
         if (!playerIdList.Contains(playerId)) return "";
-        return Age < 18 ? Utils.ColorString(Color.yellow, $"+({Age})") : "";
+        return Age < 18 ? Utils.ColorString(Color.yellow, $"({Age})") : "";
     }
 }

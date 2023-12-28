@@ -41,17 +41,20 @@ public abstract class RoleBase : IDisposable
     /// 是否拥有技能按钮
     /// </summary>
     public bool HasAbility { get; private set; }
+    public bool HasPet { get; private set; }
     public RoleBase(
         SimpleRoleInfo roleInfo,
         PlayerControl player,
         Func<HasTask> hasTasks = null,
         bool? hasAbility = null,
-        bool? canBeMadmate = null
+        bool? canBeMadmate = null,
+        bool? haspet = null
     )
     {
         Player = player;
         this.hasTasks = hasTasks ?? (roleInfo.CustomRoleType == CustomRoleTypes.Crewmate ? () => HasTask.True : () => HasTask.False);
         CanBeMadmate = canBeMadmate ?? Player.Is(CustomRoleTypes.Crewmate);
+        HasPet = haspet ?? Player.CanPet();
         HasAbility = hasAbility ?? roleInfo.BaseRoleType.Invoke() is
             RoleTypes.Shapeshifter or
             RoleTypes.Engineer or
@@ -182,9 +185,8 @@ public abstract class RoleBase : IDisposable
     /// 不需要验证您的身份，因为调用前已经验证
     /// 请注意：全部模组端都会调用
     /// </summary>
-    /// <param name="shapeshifter">变形目标</param>
-    public virtual void OnUsePet(PlayerControl target)
-    { }
+    /// <param name="player">变形目标</param>
+    public virtual bool OnUsePet(PlayerControl player) => true;
 
     /// <summary>
     /// 帧 Task 处理函数<br/>
@@ -233,6 +235,8 @@ public abstract class RoleBase : IDisposable
     /// <returns>false：将玩家被踢出通风管，其他人将看不到动画。</returns>
     public virtual bool OnEnterVent(PlayerPhysics physics, int ventId) => true;
 
+    public virtual void CheckNotWin(PlayerControl player)
+    {  }
     /// <summary>
     /// 会议开始时调用的函数
     /// </summary>
@@ -509,5 +513,7 @@ public abstract class RoleBase : IDisposable
         CanKillSelf,
         ShapeshiftDuration,
         ShapeshiftCooldown,
+        SkillDuration,
+        SkillCooldown,
     }
 }

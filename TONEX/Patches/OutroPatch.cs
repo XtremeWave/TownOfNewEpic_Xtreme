@@ -6,6 +6,7 @@ using System.Text;
 using TMPro;
 using TONEX.Modules;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Interfaces;
 using TONEX.Templates;
 using UnityEngine;
 using static TONEX.Translator;
@@ -108,7 +109,7 @@ class SetEverythingUpPatch
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
         if (winnerRole >= 0)
         {
-            CustomWinnerText = Utils.GetRoleName(winnerRole);
+            CustomWinnerText = GetWinnerRoleName(winnerRole);
             CustomWinnerColor = Utils.GetRoleColorCode(winnerRole);
             if (winnerRole.IsNeutral())
             {
@@ -161,13 +162,22 @@ class SetEverythingUpPatch
 
         foreach (var role in CustomWinnerHolder.AdditionalWinnerRoles)
         {
-            AdditionalWinnerText.Append('＆').Append(Utils.ColorString(Utils.GetRoleColor(role), Utils.GetRoleName(role)));
+            var addWinnerRole = (CustomRoles)role;
+            AdditionalWinnerText.Append('＆').Append(Utils.ColorString(Utils.GetRoleColor(role), GetWinnerRoleName(addWinnerRole)+ GetString("Win")));
         }
         if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
         {
             if (AdditionalWinnerText.Length < 1) WinnerText.text = $"<color={CustomWinnerColor}>{CustomWinnerText}{GetString("Win")}</color>";
             else WinnerText.text = $"<color={CustomWinnerColor}>{CustomWinnerText}</color>{AdditionalWinnerText}{GetString("Win")}";
         }
+
+        static string GetWinnerRoleName(CustomRoles role)
+        {
+            var name = GetString($"WinnerRoleText.{Enum.GetName(typeof(CustomRoles), role)}");
+            if (name == "" || name.StartsWith("*") || name.StartsWith("<INVALID")) name = Utils.GetRoleName(role);
+            return name;
+        }
+
         LastWinsText = WinnerText.text.RemoveHtmlTags();
 
 

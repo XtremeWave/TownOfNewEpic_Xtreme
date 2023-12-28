@@ -71,6 +71,7 @@ public sealed class Veteran : RoleBase
         buttonName = "Veteran";
         return true;
     }
+    public override bool CanUseAbilityButton() => SkillLimit >= 1;
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.VeteranKill);
@@ -98,6 +99,12 @@ public sealed class Veteran : RoleBase
             Player.Notify(GetString("SkillMaxUsage"));
             return false;
         }
+    }
+    public override bool OnUsePet(PlayerControl player)
+    {
+        SkillLimit--;
+        SendRPC();
+        return true;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {

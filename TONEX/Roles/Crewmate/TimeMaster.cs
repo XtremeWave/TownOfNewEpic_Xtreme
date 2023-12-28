@@ -52,8 +52,8 @@ public sealed class TimeMaster : RoleBase
             .SetValueFormat(OptionFormat.Seconds);
         ReduceCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.ReduceCooldown, new(2.5f, 180f, 2.5f), 10f, false)
     .SetValueFormat(OptionFormat.Seconds);
-        MaxCooldown = FloatOptionItem.Create(RoleInfo, 12, OptionName.MaxCooldown, new(2.5f, 180f, 2.5f), 60f, false)
-            .SetValueFormat(OptionFormat.Seconds);
+        MaxCooldown = FloatOptionItem.Create(RoleInfo, 12, OptionName.MaxCooldown, new(2.5f, 250f, 2.5f), 60f, false)
+  .SetValueFormat(OptionFormat.Seconds);
         OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 13, OptionName.TimeMasterSkillDuration, new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
@@ -84,10 +84,14 @@ public sealed class TimeMaster : RoleBase
         if (rpcType != CustomRPC.SyncTimeMaster) return;
         Marked = reader.ReadBoolean();
     }
+    public void ReduceNowCooldown()
+    {
+        Cooldown = Cooldown + ReduceCooldown.GetFloat();
+        if (Cooldown > MaxCooldown.GetFloat()) Cooldown -= ReduceCooldown.GetFloat();
+    }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
-        Cooldown = Math.Clamp(Cooldown + ReduceCooldown.GetFloat(), MaxCooldown.GetFloat(), OptionSkillCooldown.GetFloat());
-        Player.ResetKillCooldown();
+        ReduceNowCooldown();
         Player.SyncSettings();
         ProtectStartTime = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);

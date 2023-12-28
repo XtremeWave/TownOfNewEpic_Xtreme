@@ -403,6 +403,14 @@ static class ExtendedPlayerControl
 
         return roleCanUse ?? false;
     }
+    public static bool CanUseShapeShiftButton(this PlayerControl pc)
+    {
+        if (!pc.IsAlive()) return false;
+
+        var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseShapeShiftButton();
+
+        return roleCanUse ?? false;
+    }
     public static bool CanUseSabotageButton(this PlayerControl pc)
     {
         var roleCanUse = (pc.GetRoleClass() as IKiller)?.CanUseSabotageButton();

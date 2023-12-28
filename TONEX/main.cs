@@ -255,6 +255,7 @@ public class Main : BasePlugin
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
                 {CustomRoles.Mini,"ffffff" },
+                {CustomRoles.Libertarian,"#33CC99" },
             };
             var type = typeof(RoleBase);
             var roleClassArray =
@@ -369,6 +370,8 @@ public enum CustomWinner
     PlagueDoctor = CustomRoles.PlagueDoctor,
     Vulture = CustomRoles.Vulture,
     Despair = CustomRoles.Despair,
+    RewardOfficer = CustomRoles.RewardOfficer,
+    ColdPotato = CustomRoles.ColdPotato,
 }
 public enum SuffixModes
 {

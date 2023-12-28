@@ -19,6 +19,7 @@ internal static class CustomRoleSelector
         var rd = IRandom.Instance;
         int playerCount = Main.AllAlivePlayerControls.Count();
         int optImpNum = Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors);
+        int optHPNum = HotPotatoManager.HotQuan.GetInt();
         int optNeutralNum = 0;
         if (Options.NeutralRolesMaxPlayer.GetInt() > 0 && Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
             optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
@@ -36,6 +37,15 @@ internal static class CustomRoleSelector
         List<CustomRoles> roleRateList = new();
         List<CustomRoles> ImpRateList = new();
         List<CustomRoles> NeutralRateList = new();
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+        {
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                RoleResult.Add(pc, CustomRoles.ColdPotato);
+                HotPotatoManager.IsAliveCold++;
+            }
+            return;
+        }
 
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
@@ -262,6 +272,7 @@ internal static class CustomRoleSelector
     public static List<CustomRoles> AddonRolesList = new();
     public static void SelectAddonRoles()
     {
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato) return;
         AddonRolesList = new();
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {

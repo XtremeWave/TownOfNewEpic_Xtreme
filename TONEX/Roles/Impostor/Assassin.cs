@@ -88,7 +88,7 @@ public sealed class Assassin : RoleBase, IImpostor
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);
-
+         dis =  Player.GetTruePosition();
         if (!AmongUsClient.Instance.AmHost) return;
 
         if (!Shapeshifting)
@@ -96,7 +96,6 @@ public sealed class Assassin : RoleBase, IImpostor
             Player.SetKillCooldownV2();
             return;
         }
-      dis =  Player.GetTruePosition();
         foreach (var pc in ForAssassin)
         {
             target = Utils.GetPlayerById(pc);
@@ -108,6 +107,7 @@ public sealed class Assassin : RoleBase, IImpostor
                     Utils.TP(Player.NetTransform, target.GetTruePosition());
                     CustomRoleManager.OnCheckMurder(Player, target);
                     ForAssassin.Remove(target.PlayerId);
+                    SendRPC_SyncList();
                 }
             }, 1.5f, "Assassin Assassinate");
         }
@@ -132,5 +132,14 @@ public sealed class Assassin : RoleBase, IImpostor
     {
         buttonName = "Assassinate";
         return ForAssassin.Count >= 1 && !Shapeshifting;
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
+    {
+        //seenが省略の場合seer
+        seen ??= seer;
+        if (ForAssassin.Contains(seen.PlayerId))
+            return Utils.ColorString(Color.red, "🔴");
+        else
+            return "";
     }
 }
