@@ -148,4 +148,5 @@ public enum CountTypes
     Demon,
     BloodKnight,
     Succubus,
+    FAFL,
 }

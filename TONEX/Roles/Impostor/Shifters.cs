@@ -64,7 +64,7 @@ public sealed class Shifters : RoleBase, IImpostor
         if (info.IsSuicide) return;
            var (killer, target) = info.AttemptTuple;
         KillerSkins = new GameData.PlayerOutfit().Set(killer.GetRealName(), killer.Data.DefaultOutfit.ColorId, killer.Data.DefaultOutfit.HatId, killer.Data.DefaultOutfit.SkinId, killer.Data.DefaultOutfit.VisorId, killer.Data.DefaultOutfit.PetId);
-        var outfit2 = KillerSkins;
+
         TargetSkins = new GameData.PlayerOutfit().Set(target.GetRealName(), target.Data.DefaultOutfit.ColorId, target.Data.DefaultOutfit.HatId, target.Data.DefaultOutfit.SkinId, target.Data.DefaultOutfit.VisorId, target.Data.DefaultOutfit.PetId);
         TargetSpeed = Main.AllPlayerSpeed[killer.PlayerId];
         TargetName = Main.AllPlayerNames[killer.PlayerId];
@@ -75,36 +75,27 @@ public sealed class Shifters : RoleBase, IImpostor
         if (!killer.Is(CustomRoles.Shifters)) return;
         GameData.PlayerOutfit outfit = new();
         var sender = CustomRpcSender.Create(name: $"RpcSetSkin({target.Data.PlayerName})");
-        byte colorId = (byte)outfit2.ColorId;
-        target.SetColor(outfit2.ColorId);
-        sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
-            .Write(outfit2.ColorId)
-            .EndRpc();
         if (!killer.Is(CustomRoles.Shifters)) return;
 
         Logger.Info($"Pet={killer.Data.DefaultOutfit.PetId}", "RpcSetSkin");
         new LateTask(() =>
         {
             Main.AllPlayerSpeed[killer.PlayerId] = TargetSpeed;
-            var outfit = TargetSkins;
-            killer.PlayerId = TargetPlayerId;
-           target.PlayerId = KillerPlayerId;
+                 var outfit = TargetSkins;
+        var outfit2 = KillerSkins;
             //凶手变样子
             killer.SetName(outfit.PlayerName);
             sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.SetName)
                 .Write(outfit.PlayerName)
                 .EndRpc();
+            sender.SendMessage();
             Main.AllPlayerNames[killer.PlayerId] = Main.AllPlayerNames[target.PlayerId];
-            killer.SetColor(outfit.ColorId);
-            sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.SetColor)
-                .Write(outfit.ColorId)
-                .EndRpc();
-
+            killer.RpcSetColor((byte)outfit.ColorId);
             killer.SetHat(outfit.HatId, outfit.ColorId);
             sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(outfit.HatId)
                 .EndRpc();
-
+            sender.SendMessage();
             killer.SetSkin(outfit.SkinId, outfit.ColorId);
             sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.SetSkinStr)
                 .Write(outfit.SkinId)
@@ -114,7 +105,7 @@ public sealed class Shifters : RoleBase, IImpostor
             sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.SetVisorStr)
                 .Write(outfit.VisorId)
                 .EndRpc();
-
+            sender.SendMessage();
             killer.SetPet(outfit.PetId);
             sender.AutoStartRpc(killer.NetId, (byte)RpcCalls.SetPetStr)
                 .Write(outfit.PetId)
@@ -127,28 +118,30 @@ public sealed class Shifters : RoleBase, IImpostor
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetName)
                 .Write(outfit2.PlayerName)
                 .EndRpc();
+            sender.SendMessage();
             Main.AllPlayerNames[target.PlayerId] = KillerName;
 
             target.SetHat(outfit2.HatId, outfit2.ColorId);
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
                 .Write(outfit2.HatId)
                 .EndRpc();
-
+            sender.SendMessage();
+            killer.RpcSetColor((byte)outfit2.ColorId);
             target.SetSkin(outfit2.SkinId, outfit2.ColorId);
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetSkinStr)
                 .Write(outfit2.SkinId)
                 .EndRpc();
-
+            sender.SendMessage();
             target.SetVisor(outfit2.VisorId, outfit2.ColorId);
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
                 .Write(outfit2.VisorId)
                 .EndRpc();
-
+            sender.SendMessage();
             target.SetPet(outfit2.PetId);
             sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
                 .Write(outfit2.PetId)
                 .EndRpc();
             sender.SendMessage();
-        }, 0.1f, "Clam");
+        }, 0.5f, "Clam");
     }
 }

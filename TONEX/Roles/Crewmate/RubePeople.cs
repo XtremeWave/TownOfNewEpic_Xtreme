@@ -18,7 +18,7 @@ public sealed class RubePeople : RoleBase
         typeof(RubePeople),
         player => new RubePeople(player),
         CustomRoles.RubePeople,
-        () => RoleTypes.Engineer,
+         () => Options.UsePets.GetBool() ? RoleTypes.Crewmate : RoleTypes.Engineer,
         CustomRoleTypes.Crewmate,
         22568,
         SetupOptionItem,
@@ -48,6 +48,7 @@ public sealed class RubePeople : RoleBase
    public static List<byte> ForRubePeople;
     private long ProtectStartTime;
     private float Cooldown;
+    public int UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.SkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
@@ -70,10 +71,19 @@ public sealed class RubePeople : RoleBase
         AURoleOptions.EngineerCooldown = Cooldown;
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
+    public override void OnGameStart()
+    {
+        UsePetCooldown = OptionSkillCooldown.GetInt();
+    }
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("RubePeopleVetnButtonText");
         return true;
+    }
+    public override bool GetPetButtonText(out string text)
+    {
+        text = GetString("RubePeopleVetnButtonText");
+        return !(UsePetCooldown != 0);
     }
     public void ReduceNowCooldown()
     {
@@ -86,9 +96,24 @@ public sealed class RubePeople : RoleBase
         Player.SyncSettings();
         ProtectStartTime = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
-        Player.Notify(GetString("RubePeopleOnGuard"));
-
+        Player.Notify(GetString("RubePeopleOnGuard"),2f);
         return true;
+    }
+    public override void OnUsePet()
+    {
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != 0)
+        {
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            return;
+        }
+        ReduceNowCooldown();
+        Player.SyncSettings();
+        ProtectStartTime = Utils.GetTimeStamp();
+        if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
+        Player.Notify(GetString("RubePeopleOnGuard"), 2f);
+        UsePetCooldown = OptionSkillCooldown.GetInt();
+        return;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
@@ -114,8 +139,27 @@ public sealed class RubePeople : RoleBase
         }
         return true;
     }
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
+        if (UsePetCooldown <= 0 && Player.IsAlive())
+        {
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
+        }
+    }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {
         Player.RpcResetAbilityCooldown();
+    }
+    public override void AfterMeetingTasks()
+    {
+        UsePetCooldown = OptionSkillCooldown.GetInt();
+    }
+    public override void OnStartMeeting()
+    {
+        ProtectStartTime = 0;
     }
 }

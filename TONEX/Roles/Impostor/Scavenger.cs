@@ -31,7 +31,7 @@ public sealed class Scavenger : RoleBase, IImpostor
             .SetValueFormat(OptionFormat.Seconds);
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
-    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
 
@@ -43,6 +43,6 @@ public sealed class Scavenger : RoleBase, IImpostor
         killer.SetKillCooldownV2();
         NameNotifyManager.Notify(target, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Scavenger), Translator.GetString("KilledByScavenger")));
 
-        info.DoKill = false;
+        return false;
     }
 }

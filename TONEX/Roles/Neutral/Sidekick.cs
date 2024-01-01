@@ -32,15 +32,37 @@ public sealed class Sidekick : RoleBase
     )
     { }
     public bool CanUseSabotageButton() => false;
-    public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
+    public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting)
     {
         var target = player;
-       if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick))
+        if(isOnMeeting) 
+        {  
+            if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick))
         {
             Player.RpcSetCustomRole(CustomRoles.Jackal);
             Player.ResetKillCooldown();
             Player.SetKillCooldown();
 
         }
+        }
+        else
+        {
+            if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick))
+            {
+                Player.RpcSetCustomRole(CustomRoles.Jackal);
+                Player.ResetKillCooldown();
+                Player.SetKillCooldown();
+            }
+        }
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
+    {
+        //seenが省略の場合seer
+        seen ??= seer;
+        if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$");
+        else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "M");
+        else if (seen.Is(CustomRoles.Attendant)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        else
+            return "";
     }
 }

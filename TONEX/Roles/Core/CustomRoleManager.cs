@@ -217,13 +217,11 @@ public static class CustomRoleManager
                 player.GetRoleClass()?.OnSecondsUpdate(player, now);
                 LastSecondsUpdate[player.PlayerId] = now;
                 Mini.OnSecondsUpdate(player,now);
-                HotPotatoManager.OnSecondsUpdate();
             }
 
             player.GetRoleClass()?.OnFixedUpdate(player);
             Chameleon.OnFixedUpdate(player);
             Bait.OnFixedUpdate(player);
-            HotPotatoManager.OnFixedUpdate();
             //その他視点処理があれば実行
             foreach (var onFixedUpdate in OnFixedUpdateOthers)
             {
@@ -568,6 +566,7 @@ public enum CustomRoles
     Medusa,
     Shifters,
     Vicious,
+    EvilGuardian,
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -637,6 +636,7 @@ public enum CustomRoles
     Sidekick,
     Despair,
     RewardOfficer,
+    Vagor_FAFL,
     //GameMode
     HotPotato,
     ColdPotato,

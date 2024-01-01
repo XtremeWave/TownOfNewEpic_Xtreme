@@ -44,6 +44,11 @@ public sealed class BoobyTrap : RoleBase, IImpostor
         text = Translator.GetString("BoobyTrapKillButtonText");
         return true;
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Boom";
+        return true;
+    }
     public void OnMurderPlayerAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return;

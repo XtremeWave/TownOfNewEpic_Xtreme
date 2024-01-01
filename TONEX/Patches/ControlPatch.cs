@@ -310,12 +310,9 @@ internal class HandleHUDPatch
         {
             DestroyableSingleton<HudManager>.Instance.AbilityButton.DoClick();
         }
+       
+
         /*
-        if (player.GetButtonDown(6) && // 6:宠物按钮id 
-        PlayerControl.LocalPlayer.CanUseImpostorVentButton())
-        {
-            DestroyableSingleton<HudManager>.Instance.AbilityButton.DoClick();
-        }
         用于侦测玩家按下了哪个按钮id
         int minButtonId = 1; // 最小按钮ID
         int maxButtonId = 100; // 最大按钮ID

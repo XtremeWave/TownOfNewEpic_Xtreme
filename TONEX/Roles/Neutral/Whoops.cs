@@ -17,7 +17,7 @@ public sealed class Whoops : RoleBase
             CustomRoleTypes.Neutral,
             50900,
             null,
-            "jac|豺狼",
+            "wh|狈",
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,
@@ -34,5 +34,15 @@ public sealed class Whoops : RoleBase
     {
         AURoleOptions.EngineerCooldown = 0;
         AURoleOptions.EngineerInVentMaxTime = 0;
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
+    {
+        //seenが省略の場合seer
+        seen ??= seer;
+        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$$");
+        else if (seen.Is(CustomRoles.Attendant)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "M");
+        else
+            return "";
     }
 }

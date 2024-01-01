@@ -16,7 +16,7 @@ public sealed class Warlock : RoleBase, IImpostor
             typeof(Warlock),
             player => new Warlock(player),
             CustomRoles.Warlock,
-            () => RoleTypes.Shapeshifter,
+       () => Options.UsePets.GetBool() ? RoleTypes.Impostor : RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             1500,
             SetupOptionItem,
@@ -38,6 +38,7 @@ public sealed class Warlock : RoleBase, IImpostor
     PlayerControl CursedPlayer;
     bool IsCursed;
     bool Shapeshifting;
+    public int UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionCanKillAllies = BooleanOptionItem.Create(RoleInfo, 10, GeneralOption.CanKillAllies, false, false);
@@ -49,6 +50,7 @@ public sealed class Warlock : RoleBase, IImpostor
         IsCursed = false;
         Shapeshifting = false;
     }
+    public override void OnGameStart() => UsePetCooldown = (int)Options.DefaultKillCooldown;
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.SyncWarlock);
@@ -61,13 +63,28 @@ public sealed class Warlock : RoleBase, IImpostor
     }
     public bool OverrideKillButtonText(out string text)
     {
+        if (Options.UsePets.GetBool())
+        {
+            text = GetString("WarlockCurseButtonText");
+            return true;
+        }
         text = GetString("WarlockCurseButtonText");
         return !Shapeshifting;
     }
     public bool OverrideKillButtonSprite(out string buttonName)
     {
+        if (Options.UsePets.GetBool())
+        {
+            buttonName = "Curse";
+            return true;
+        }
         buttonName = "Curse";
         return !Shapeshifting;
+    }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Line";
+        return true;
     }
     public override bool GetAbilityButtonText(out string text)
     {
@@ -78,6 +95,16 @@ public sealed class Warlock : RoleBase, IImpostor
     {
         buttonName = "CurseKill";
         return !Shapeshifting && IsCursed;
+    }
+    public override bool GetPetButtonText(out string text)
+    {
+        text = GetString("WarlockShapeshiftButtonText");
+        return IsCursed && !(UsePetCooldown != 0);
+    }
+    public override bool GetPetButtonSprite(out string buttonName)
+    {
+        buttonName = "CurseKill";
+        return IsCursed && !(UsePetCooldown != 0);
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -95,17 +122,88 @@ public sealed class Warlock : RoleBase, IImpostor
             {//まだ呪っていない
                 IsCursed = true;
                 SendRPC();
-                CursedPlayer = target;
+                CursedPlayer = target;  
+                UsePetCooldown = 1;
                 //呪える相手は一人だけなのでキルボタン無効化
                 killer.SetKillCooldownV2(255f);
                 killer.RpcResetAbilityCooldown();
                 killer.RPCPlayCustomSound("Line");
+              
             }
             //どちらにしてもキルは無効
             return false;
         }
         //変身中は通常キル
         return true;
+    }
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
+        if (UsePetCooldown <= 0 && Player.IsAlive())
+        {
+            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+        }
+    }
+    public override void OnUsePet()
+    {
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != 0)
+        {
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            return;
+        }
+        if (CursedPlayer != null && CursedPlayer.IsAlive())
+        {//呪っていて対象がまだ生きていたら
+            Vector2 cpPos = CursedPlayer.transform.position;
+            Dictionary<PlayerControl, float> candidateList = new();
+            float distance;
+            foreach (PlayerControl candidatePC in Main.AllAlivePlayerControls)
+            {
+                if (candidatePC.PlayerId == CursedPlayer.PlayerId) continue;
+                if (Is(candidatePC) && !OptionCanKillSelf.GetBool()) continue;
+                if ((candidatePC.Is(CustomRoleTypes.Impostor) || candidatePC.Is(CustomRoles.Madmate)) && !OptionCanKillAllies.GetBool()) continue;
+                distance = Vector2.Distance(cpPos, candidatePC.transform.position);
+                candidateList.Add(candidatePC, distance);
+                Logger.Info($"{candidatePC?.Data?.PlayerName}の位置{distance}", "Warlock.OnShapeshift");
+            }
+            if (candidateList.Count >= 1)
+            {
+                var nearest = candidateList.OrderBy(c => c.Value).FirstOrDefault();
+                var killTarget = nearest.Key;
+
+                var killed = false;
+                CustomRoleManager.OnCheckMurder(
+                    Player, killTarget,
+                    CursedPlayer, killTarget,
+                    () => killed = true
+                    );
+
+                if (killed)
+                {
+                    killTarget.SetRealKiller(Player);
+                    RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
+                }
+                else
+                {
+                    Player.Notify(GetString("WarlcokKillFaild"));
+                }
+
+                Logger.Info($"{killTarget.GetNameWithRole()} 被操控击杀", "Warlock.OnShapeshift");
+
+            }
+            else
+            {
+                Player.Notify(GetString("WarlockNoTarget"));
+            }
+            Player.SetKillCooldownV2();
+            CursedPlayer = null;
+            SendRPC();
+            Player.SyncSettings();
+            Player.RpcResetAbilityCooldown();
+        }
+        IsCursed = false;
     }
     public override void OnShapeshift(PlayerControl target)
     {
@@ -177,5 +275,6 @@ public sealed class Warlock : RoleBase, IImpostor
     public override void AfterMeetingTasks()
     {
         CursedPlayer = null;
+        UsePetCooldown = (int)Options.DefaultKillCooldown;
     }
 }

@@ -48,7 +48,7 @@ public sealed class Mayor : RoleBase
 
     public int LeftButtonCount;
     //UsePet
-    public long SkillCooldown;
+    public int SkillCooldown;
     public int NoUseCooldown;
     private static void SetupOptionItem()
     {
@@ -58,10 +58,6 @@ public sealed class Mayor : RoleBase
         OptionNumOfUseButton = IntegerOptionItem.Create(RoleInfo, 12, OptionName.MayorNumOfUseButton, new(1, 99, 1), 3, false, OptionHasPortableButton)
             .SetValueFormat(OptionFormat.Times);
     }
-    public override void Add()
-    {
-        SkillCooldown = Utils.GetTimeStamp();
-    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
@@ -70,16 +66,18 @@ public sealed class Mayor : RoleBase
             : opt.GetInt(Int32OptionNames.EmergencyCooldown);
         AURoleOptions.EngineerInVentMaxTime = 1;
         NoUseCooldown = opt.GetInt(Int32OptionNames.EmergencyCooldown);
+        SkillCooldown = NoUseCooldown;
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override void OnGameStart() => SkillCooldown = NoUseCooldown;
+    public override void OnSecondsUpdate(PlayerControl player, long now)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (SkillCooldown == 0)  return;
-         if (SkillCooldown + NoUseCooldown < Utils.GetTimeStamp())
+       if (!AmongUsClient.Instance.AmHost) return;
+        if (SkillCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (SkillCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) SkillCooldown -= 1;
+        if (SkillCooldown <= 0 && Player.IsAlive())
         {
-            SkillCooldown = 0;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("PetSkillCanUse")));
+            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
         }
     }
     public override bool CanUseAbilityButton() => LeftButtonCount > 0;
@@ -95,27 +93,29 @@ public sealed class Mayor : RoleBase
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
-        if (LeftButtonCount > 0 && SkillCooldown + NoUseCooldown < Utils.GetTimeStamp())
+        if (LeftButtonCount > 0 )
         {
             var user = physics.myPlayer;
             physics.RpcBootFromVent(ventId);
             user?.ReportDeadBody(null);
             LeftButtonCount--;
-            SkillCooldown = Utils.GetTimeStamp();
+
             SendRPC();
         }
         return false;
     }
-    public override bool OnUsePet(PlayerControl player)
+    public override void OnUsePet()
     {
-        if (LeftButtonCount > 0)
+        if (!Options.UsePets.GetBool() || LeftButtonCount <= 0) return;
+        if (SkillCooldown != 0)
         {
-            var user = player;
-            user?.ReportDeadBody(null);
-            LeftButtonCount--;
-            SendRPC();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), SkillCooldown, 1f));
+            return;
         }
-        return true;
+        Player?.ReportDeadBody(null);
+            LeftButtonCount--;
+            SendRPC();  
+        SkillCooldown = NoUseCooldown;
     }
     public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
     {
@@ -132,6 +132,7 @@ public sealed class Mayor : RoleBase
         if (HasPortableButton)
             Player.RpcResetAbilityCooldown();
         SendRPC();
+        SkillCooldown = NoUseCooldown;
     }
     public override void OnStartMeeting()
     {

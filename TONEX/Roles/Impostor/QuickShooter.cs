@@ -13,7 +13,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
             typeof(QuickShooter),
             player => new QuickShooter(player),
             CustomRoles.QuickShooter,
-            () => RoleTypes.Shapeshifter,
+       () => Options.UsePets.GetBool() ? RoleTypes.Impostor : RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             3700,
             SetupOptionItem,
@@ -38,6 +38,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
 
     private int ShotLimit;
     private bool Storaging;
+    public int UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.KillCooldown, new(2.5f, 180f, 2.5f), 35f, false)
@@ -51,6 +52,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
     {
         ShotLimit = 0;
     }
+    public override void OnGameStart() => UsePetCooldown = OptionShapeshiftCooldown.GetInt();
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.SetQuickShooterShotLimit);
@@ -71,6 +73,11 @@ public sealed class QuickShooter : RoleBase, IImpostor
         text = GetString("QuickShooterShapeshiftText");
         return true;
     }
+    public override bool GetPetButtonText(out string text)
+    {
+             text = GetString("QuickShooterShapeshiftText");
+        return !(UsePetCooldown != 0);
+    }
     public override int OverrideAbilityButtonUsesRemaining() => ShotLimit;
     public override void OnShapeshift(PlayerControl target)
     {
@@ -89,6 +96,25 @@ public sealed class QuickShooter : RoleBase, IImpostor
             Logger.Info($"{Utils.GetPlayerById(Player.PlayerId)?.GetNameWithRole()} : 剩余子弹{ShotLimit}发", "QuickShooter.OnShapeshift");
         }
     }
+        public override void OnUsePet()
+    {
+                    if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != 0)
+        {
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            return;
+        }
+        if (Player.killTimer < 1)
+        {
+            ShotLimit++;
+            SendRPC();
+            Storaging = true;
+            Player.ResetKillCooldown();
+            Player.SetKillCooldownV2();
+            Player.Notify(GetString("QuickShooterStoraging"));
+            Logger.Info($"{Utils.GetPlayerById(Player.PlayerId)?.GetNameWithRole()} : 剩余子弹{ShotLimit}发", "QuickShooter.OnShapeshift");
+        }
+   }
     public float CalculateKillCooldown()
     {
         float cooldown = (Storaging || ShotLimit < 1) ? OptionKillCooldown.GetFloat() : 0.01f;
@@ -107,5 +133,19 @@ public sealed class QuickShooter : RoleBase, IImpostor
         ShotLimit--;
         ShotLimit = Mathf.Max(ShotLimit, 0);
         if (ShotLimit != before) SendRPC();
+    }
+           public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
+        if (UsePetCooldown <= 0 && Player.IsAlive())
+        {
+            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+        }
+    }
+       public override void AfterMeetingTasks()
+    {
+        UsePetCooldown = OptionShapeshiftCooldown.GetInt();
     }
 }

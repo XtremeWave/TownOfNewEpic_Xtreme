@@ -934,7 +934,7 @@ public static class Utils
         string callerMethodName = callerMethod.Name;
         string callerClassName = callerMethod.DeclaringType.FullName;
         var logger = Logger.Handler("NotifyRoles");
-        logger.Info("NotifyRolesが" + callerClassName + "." + callerMethodName + "から呼び出されました");
+       // logger.Info("NotifyRolesが" + callerClassName + "." + callerMethodName + "から呼び出されました");
         HudManagerPatch.NowCallNotifyRolesCount++;
         HudManagerPatch.LastSetNameDesyncCount = 0;
 
@@ -956,7 +956,7 @@ public static class Utils
             var seerRole = seer.GetRoleClass();
             string fontSize = isForMeeting ? "1.5" : Main.RoleTextSize.ToString();
             if (isForMeeting && (seer.GetClient().PlatformData.Platform is Platforms.Playstation or Platforms.Switch)) fontSize = "70%";
-            logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
+          //  logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":START");
 
             // 会議じゃなくて，キノコカオス中で，seerが生きていてdesyncインポスターの場合に自身の名前を消す
             if (!isForMeeting && isMushroomMixupActive && seer.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true)
@@ -1019,7 +1019,7 @@ public static class Utils
             {
                 //targetがseer自身の場合は何もしない
                 if (target.PlayerId == seer.PlayerId) continue;
-                logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
+              //  logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":START");
 
                 // 会議じゃなくて，キノコカオス中で，targetが生きていてseerがdesyncインポスターの場合にtargetの名前を消す
                 if (!isForMeeting && isMushroomMixupActive && target.IsAlive() && !seer.Is(CustomRoleTypes.Impostor) && seer.GetCustomRole().GetRoleInfo()?.IsDesyncImpostor == true)
@@ -1099,9 +1099,9 @@ public static class Utils
                     target.RpcSetNamePrivate(TargetName, true, seer, force: NoCache);
                 }
 
-                logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
+               // logger.Info("NotifyRoles-Loop2-" + target.GetNameWithRole() + ":END");
             }
-            logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
+           // logger.Info("NotifyRoles-Loop1-" + seer.GetNameWithRole() + ":END");
         }
     }
     public static void MarkEveryoneDirtySettings()

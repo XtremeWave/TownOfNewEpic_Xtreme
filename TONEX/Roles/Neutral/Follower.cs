@@ -100,6 +100,11 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         if (!OptionKnowTargetRole.GetBool()) return;
         if (seen.PlayerId == BetTarget) enabled = true;
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Bet";
+        return true;
+    }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;

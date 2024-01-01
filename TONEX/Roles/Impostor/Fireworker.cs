@@ -79,7 +79,11 @@ public sealed class Fireworker : RoleBase, IImpostor
     {
         AURoleOptions.ShapeshifterDuration = State != FireworkerState.FireEnd ? 1f : 30f;
     }
-
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Boom";
+        return true;
+    }
     public override void OnShapeshift(PlayerControl target)
     {
         var shapeshifting = !Is(target);

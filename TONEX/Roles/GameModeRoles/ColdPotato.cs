@@ -4,8 +4,7 @@ using Hazel;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
-using static UnityEngine.GraphicsBuffer;
-using System.Collections.Generic;
+using System.Text;
 
 namespace TONEX.Roles.GameModeRoles;
 public sealed class ColdPotato : RoleBase, IKiller
@@ -15,7 +14,7 @@ public sealed class ColdPotato : RoleBase, IKiller
             typeof(ColdPotato),
             player => new ColdPotato(player),
             CustomRoles.ColdPotato,
-            () => RoleTypes.Shapeshifter,
+            () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             4900,
             null,
@@ -32,8 +31,10 @@ public sealed class ColdPotato : RoleBase, IKiller
     )
     {
         CustomRoleManager.MarkOthers.Add(MarkOthers);
+        LastTime = -1;
     }
     public static int BoomTime;
+    public long LastTime;
     public bool IsKiller { get; private set; } = false;
     //public override bool CanUseAbilityButton() => true;
     public bool CanUseShapeShiftButton() => true;
@@ -54,37 +55,13 @@ public sealed class ColdPotato : RoleBase, IKiller
     public bool CanUseKillButton() => false;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
-    public override void ApplyGameOptions(IGameOptions opt)
+    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        opt.SetVision(false);
-        AURoleOptions.ShapeshifterCooldown = HotPotatoManager.Boom.GetInt();
-    }
-    public static void SendRPC(byte playerId,bool add, Vector3 loc = new())
-    {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMorticianArrow, SendOption.Reliable, -1);
-        writer.Write(playerId);
-        writer.Write(add);
-        if (add)
-        {
-            writer.Write(loc.x);
-            writer.Write(loc.y);
-            writer.Write(loc.z);
-        }
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
-    {
-        if (rpcType != CustomRPC.SetVultureArrow) return;
-        if (reader.ReadBoolean())
-            LocateArrow.Add(Player.PlayerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
-        else LocateArrow.RemoveAllTarget(Player.PlayerId);
-    }
-    public override void OnFixedUpdate(PlayerControl player)
-    {
-        if (!AmongUsClient.Instance.AmHost || !player.IsAlive()) return;
-        if (HotPotatoManager.BoomTimes<=0)
-        {
-            Player.RpcResetAbilityCooldown();
-        }
+        //seenが省略の場合seer
+        seen ??= seer;
+        //seeおよびseenが自分である場合以外は関係なし
+        if (!Is(seer) || !Is(seen)) return "";
+
+        return string.Format(GetString("HotPotatoTimeRemain"), HotPotatoManager.BoomTimes);
     }
 }

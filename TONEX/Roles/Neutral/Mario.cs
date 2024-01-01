@@ -61,6 +61,11 @@ public sealed class Mario : RoleBase
         text = GetString("MarioVentButtonText");
         return true;
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "MarioJump";
+        return true;
+    }
     public override int OverrideAbilityButtonUsesRemaining() => OptionVentNums.GetInt() - VentedTimes;
     public override string GetProgressText(bool comms = false) => Utils.ColorString(Utils.ShadeColor(RoleInfo.RoleColor, 0.25f), $"({VentedTimes}/{OptionVentNums.GetInt()})");
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)

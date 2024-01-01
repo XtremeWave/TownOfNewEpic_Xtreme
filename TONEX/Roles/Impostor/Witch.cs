@@ -144,6 +144,11 @@ public sealed class Witch : RoleBase, IImpostor
             Player.RPCPlayCustomSound("Curse");
         }
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Curse";
+        return true;
+    }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;

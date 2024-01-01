@@ -108,6 +108,11 @@ public sealed class Medic : RoleBase, IKiller
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({ProtectLimit})");
     public static bool InProtect(byte id) => ProtectList.Contains(id) && !(PlayerState.GetByPlayerId(id)?.IsDead ?? true);
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Shield";
+        return true;
+    }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return true;

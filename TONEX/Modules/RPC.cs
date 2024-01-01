@@ -56,7 +56,7 @@ public enum CustomRPC
     SetKickReason,
 
     //TONEX
-
+    SetVagor,
 
     //GameMode
     SyncHpNameNotify,
@@ -358,6 +358,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.VultureLimit:
                 Vulture.ReceiveRPC_Limit(reader);
+                break;
+            case CustomRPC.ViciousKill:
+                Vicious.ReceiveRPC_Limit(reader,rpcType);
                 break;
             default:
                 CustomRoleManager.DispatchRpc(reader, rpcType);

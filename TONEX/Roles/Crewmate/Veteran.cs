@@ -4,6 +4,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using static TONEX.Translator;
 using Hazel;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Veteran : RoleBase
@@ -13,7 +14,7 @@ public sealed class Veteran : RoleBase
             typeof(Veteran),
             player => new Veteran(player),
             CustomRoles.Veteran,
-            () => RoleTypes.Engineer,
+         () => Options.UsePets.GetBool() ? RoleTypes.Crewmate : RoleTypes.Engineer,
             CustomRoleTypes.Crewmate,
             21800,
             SetupOptionItem,
@@ -39,6 +40,7 @@ public sealed class Veteran : RoleBase
 
     private int SkillLimit;
     private long ProtectStartTime;
+    private int UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.VeteranSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -53,6 +55,7 @@ public sealed class Veteran : RoleBase
         SkillLimit = OptionSkillNums.GetInt();
         ProtectStartTime = 0;
     }
+    public override void OnGameStart() => UsePetCooldown = OptionSkillCooldown.GetInt();
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
@@ -60,6 +63,13 @@ public sealed class Veteran : RoleBase
             ? 255f
             : OptionSkillCooldown.GetFloat();
         AURoleOptions.EngineerInVentMaxTime = 1f;
+    }
+    public override int OverrideAbilityButtonUsesRemaining() => SkillLimit;
+   
+    public override bool GetGameStartSound(out string sound)
+ {
+ sound = "Gunload";
+        return true;
     }
     public override bool GetAbilityButtonText(out string text)
     {
@@ -91,7 +101,7 @@ public sealed class Veteran : RoleBase
             ProtectStartTime = Utils.GetTimeStamp();
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
             Player.RPCPlayCustomSound("Gunload");
-            Player.Notify(GetString("VeteranOnGuard"), SkillLimit);
+            Player.Notify(string.Format(GetString("VeteranOnGuard"), SkillLimit, 2f));
             return true;
         }
         else
@@ -100,16 +110,21 @@ public sealed class Veteran : RoleBase
             return false;
         }
     }
-    public override bool OnUsePet(PlayerControl player)
+    public override bool GetPetButtonText(out string text)
     {
-        SkillLimit--;
-        SendRPC();
-        return true;
+        text = GetString("VeteranVetnButtonText");
+        return !(UsePetCooldown != 0);
+    }
+    public override bool GetPetButtonSprite(out string buttonName)
+    {
+        buttonName = "Veteran";
+        return !(UsePetCooldown != 0);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (ProtectStartTime == 0) return;
+        Logger.Info($"兵反弹击杀", "Veteran.OnCheckMurderAsTarget");
         if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
         {
             ProtectStartTime = 0;

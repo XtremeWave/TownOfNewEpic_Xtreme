@@ -65,6 +65,11 @@ public sealed class Vampire : RoleBase, IImpostor
         }
         return false;
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Bite";
+        return true;
+    }
     public override void OnFixedUpdate(PlayerControl _)
     {
         if (!AmongUsClient.Instance.AmHost || !GameStates.IsInTask) return;

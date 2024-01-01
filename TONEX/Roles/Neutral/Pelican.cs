@@ -86,6 +86,11 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         var target = Utils.GetPlayerById(id);
         return target != null && target.IsAlive() && !target.inVent && !target.Is(CustomRoles.GM) && !IsEaten(id);
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Eat";
+        return true;
+    }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(EatenPlayers.Count >= 1 ? Utils.ShadeColor(RoleInfo.RoleColor, 0.25f) : Color.gray, $"({EatenPlayers.Count})");
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {

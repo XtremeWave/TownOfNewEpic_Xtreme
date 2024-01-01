@@ -57,6 +57,11 @@ public sealed class Terrorist : RoleBase
             Win();
         }
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Boom";
+        return true;
+    }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {
         if (exiled.PlayerId != Player.PlayerId)

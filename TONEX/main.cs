@@ -372,6 +372,7 @@ public enum CustomWinner
     Despair = CustomRoles.Despair,
     RewardOfficer = CustomRoles.RewardOfficer,
     ColdPotato = CustomRoles.ColdPotato,
+    FAFL = CustomRoles.Vagor_FAFL,
 }
 public enum SuffixModes
 {

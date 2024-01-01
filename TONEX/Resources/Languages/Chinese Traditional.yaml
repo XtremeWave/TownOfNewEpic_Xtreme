@@ -192,6 +192,7 @@ WinnerRoleText.Hater: "單身狗"
 WinnerRoleText.Provocateur: "神風特攻隊"
 WinnerRoleText.Sunnyboy: "陽光開朗大男孩"
 WinnerRoleText.Follower: "追隨者"
+WinnerRoleText.FAFL: "异世阵营"
 #以下是职业简介（显示在开局以及任务栏的文本）/ Shows at Impostor/Crewmate Screen
 ## 内鬼阵营 / Impostor Blurbs
 BountyHunterInfo: "拿下您的目標"

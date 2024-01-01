@@ -1,11 +1,14 @@
-﻿using AmongUs.GameOptions;
+using AmongUs.GameOptions;
 using Hazel;
 using Il2CppSystem.Collections.Generic;
+using MS.Internal.Xml.XPath;
 using TONEX.Modules;
+using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
 using static TONEX.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Assassin : RoleBase, IImpostor
@@ -15,7 +18,7 @@ public sealed class Assassin : RoleBase, IImpostor
             typeof(Assassin),
             player => new Assassin(player),
             CustomRoles.Assassin,
-            () => RoleTypes.Shapeshifter,
+       () => Options.UsePets.GetBool() ? RoleTypes.Impostor : RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             1600,
             SetupOptionItem,
@@ -39,6 +42,7 @@ public sealed class Assassin : RoleBase, IImpostor
     }
 
     public static List<byte> ForAssassin;
+    public int UsePetCooldown;
     private static void SetupOptionItem()
     {
         MarkCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.AssassinMarkCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -51,6 +55,7 @@ public sealed class Assassin : RoleBase, IImpostor
         ForAssassin = new();
         Shapeshifting = false;
     }
+    public override void OnGameStart() => UsePetCooldown = AssassinateCooldown.GetInt();
     private static void SendRPC_SyncList()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
@@ -80,17 +85,39 @@ public sealed class Assassin : RoleBase, IImpostor
             killer.ResetKillCooldown();
             killer.SetKillCooldownV2();
             killer.RPCPlayCustomSound("Clothe");
+            TargetArrow.Add(Player.PlayerId, target.PlayerId);
+            Utils.NotifyRoles();
             return false;
         }
     }
+    public override void OnUsePet()
+    {
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != 0)
+        {
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            return;
+        }
+        Player.SetKillCooldownV2();
+       foreach (var pc in ForAssassin)
+        {
+         var target = Utils.GetPlayerById(pc);
+            SendRPC_SyncList();
+                if (!(target == null || !target.IsAlive() || target.IsEaten() || target.inVent || !GameStates.IsInTask))
+                {
+                    target.RpcMurderPlayerV2(target);
+                    target.SetRealKiller(Player);
+                    ForAssassin.Remove(target.PlayerId);
+                    SendRPC_SyncList();
+                }
+        }
+            return;
+    }
     private bool Shapeshifting;
-    private Vector2 dis;
     public override void OnShapeshift(PlayerControl target)
     {
         Shapeshifting = !Is(target);
-         dis =  Player.GetTruePosition();
         if (!AmongUsClient.Instance.AmHost) return;
-
         if (!Shapeshifting)
         {
             Player.SetKillCooldownV2();
@@ -98,21 +125,35 @@ public sealed class Assassin : RoleBase, IImpostor
         }
         foreach (var pc in ForAssassin)
         {
-            target = Utils.GetPlayerById(pc);
+         var ps = Utils.GetPlayerById(pc);
             SendRPC_SyncList();
             new LateTask(() =>
             {
                 if (!(target == null || !target.IsAlive() || target.IsEaten() || target.inVent || !GameStates.IsInTask))
                 {
-                    Utils.TP(Player.NetTransform, target.GetTruePosition());
-                    CustomRoleManager.OnCheckMurder(Player, target);
-                    ForAssassin.Remove(target.PlayerId);
+                    Player.RpcMurderPlayerV2(ps);
+                    ForAssassin.Remove(ps.PlayerId);
                     SendRPC_SyncList();
                 }
             }, 1.5f, "Assassin Assassinate");
         }
-        Utils.TP(Player.NetTransform, dis);
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Clothe";
+        return true;
+    }
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
+        if (UsePetCooldown <= 0 && Player.IsAlive())
+        {
+            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+        }
+    }
+
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("AssassinMarkButtonText");
@@ -133,6 +174,16 @@ public sealed class Assassin : RoleBase, IImpostor
         buttonName = "Assassinate";
         return ForAssassin.Count >= 1 && !Shapeshifting;
     }
+        public override bool GetPetButtonText(out string text)
+    {
+                text = GetString("AssassinShapeshiftText");
+        return ForAssassin.Count >= 1 && !(UsePetCooldown != 0);
+    }
+    public override bool GetPetButtonSprite(out string buttonName)
+    {
+             buttonName = "Mark";
+        return ForAssassin.Count >= 1 && !(UsePetCooldown != 0);
+    }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer
@@ -141,5 +192,9 @@ public sealed class Assassin : RoleBase, IImpostor
             return Utils.ColorString(Color.red, "🔴");
         else
             return "";
+    }
+   public override void AfterMeetingTasks()
+    {
+        UsePetCooldown = (int)AssassinateCooldown.GetInt();
     }
 }

@@ -269,6 +269,11 @@ public sealed class Sniper : RoleBase, IImpostor
                 );
         }
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "AWP";
+        return true;
+    }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!Player.IsAlive()) return;

@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel;
+using InnerNet;
 using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Impostor;
+using TONEX.Roles.Vanilla;
 using UnityEngine;
 using static TONEX.Translator;
 
@@ -349,7 +351,7 @@ class FixedUpdatePatch
         LocateArrow.OnFixedUpdate(player);
 
         CustomRoleManager.OnFixedUpdate(player);
-        
+
 
         if (AmongUsClient.Instance.AmHost)
         {//実行クライアントがホストの場合のみ実行
@@ -674,6 +676,10 @@ class PlayerControlProtectPlayerPatch
 {
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target)
     {
+        var player = __instance;      
+         if (!target.IsEaten()) player.GetRoleClass()?.OnProtectPlayer(target);
+ 
+
         Logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}", "ProtectPlayer");
     }
 }
@@ -694,7 +700,7 @@ class PlayerControlSetRolePatch
         var targetName = __instance.GetNameWithRole();
         Logger.Info($"{targetName} =>{roleType}", "PlayerControl.RpcSetRole");
         if (!ShipStatus.Instance.enabled) return true;
-        if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost)
+        if (roleType is RoleTypes.CrewmateGhost or RoleTypes.ImpostorGhost or RoleTypes.GuardianAngel)
         {
             var targetIsKiller = target.GetRoleClass() is IKiller;
             var ghostRoles = new Dictionary<PlayerControl, RoleTypes>();
@@ -703,9 +709,13 @@ class PlayerControlSetRolePatch
                 var self = seer.PlayerId == target.PlayerId;
                 var seerIsKiller = seer.GetRoleClass() is IKiller;
 
-                if ((self && targetIsKiller) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor)))
+                if ((self && targetIsKiller && !target.Is(CustomRoles.EvilGuardian)) || (!seerIsKiller && target.Is(CustomRoleTypes.Impostor) && !target.Is(CustomRoles.EvilGuardian)))
                 {
-                    ghostRoles[seer] = RoleTypes.ImpostorGhost;
+                    ghostRoles[seer] = RoleTypes.Impostor;
+                }
+                else if(target.Is(CustomRoles.EvilGuardian))
+                {
+                    ghostRoles[seer] = RoleTypes.GuardianAngel;
                 }
                 else
                 {
@@ -719,6 +729,10 @@ class PlayerControlSetRolePatch
             else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.ImpostorGhost))
             {
                 roleType = RoleTypes.ImpostorGhost;
+            }
+            else if (ghostRoles.All(kvp => kvp.Value == RoleTypes.GuardianAngel))
+            {
+                roleType = RoleTypes.GuardianAngel;
             }
             else
             {

@@ -63,6 +63,11 @@ public sealed class EvilGuesser : RoleBase, IImpostor, IMeetingButton
     public string ButtonName { get; private set; } = "Target";
     public bool ShouldShowButton() => Player.IsAlive();
     public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Gunfire";
+        return true;
+    }
     public override bool OnSendMessage(string msg, out MsgRecallMode recallMode)
     {
         bool isCommand = GuesserMsg(Player, msg, out bool spam);

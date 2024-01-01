@@ -199,6 +199,30 @@ public sealed class Arsonist : RoleBase, IKiller
         }
         return false;
     }
+    public override void OnUsePet()
+    {
+                if (GameStates.IsInGame && IsDouseDone(Player))
+        {
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.PlayerId != Player.PlayerId)
+                {
+                    //生存者は焼殺
+                    pc.SetRealKiller(Player);
+                    pc.RpcMurderPlayer(pc);
+                    var state = PlayerState.GetByPlayerId(pc.PlayerId);
+                    state.DeathReason = CustomDeathReason.Torched;
+                    state.SetDead();
+                }
+                else
+                    RPC.PlaySoundRPC(pc.PlayerId, Sounds.KillSound);
+            }
+            CustomWinnerHolder.ShiftWinnerAndSetWinner(CustomWinner.Arsonist); //焼殺で勝利した人も勝利させる
+            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
+            return;
+        }
+        return;
+    }
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("ArsonistDouseButtonText");

@@ -138,12 +138,13 @@ public sealed class Swooper : RoleBase, IImpostor
         if (IsInvis())
         {
             var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - Utils.GetTimeStamp();
-            str.Append(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
+            return string.Format(GetString("SwooperInvisStateCountdown"), remainTime);
         }
         else if (LastTime != -1)
         {
             var cooldown = LastTime + (long)SwooperCooldown.GetFloat() - Utils.GetTimeStamp();
-            str.Append(string.Format(GetString("SwooperInvisCooldownRemain"), cooldown));
+
+            return string.Format(GetString("SwooperInvisCooldownRemain"), cooldown);
         }
         else
         {

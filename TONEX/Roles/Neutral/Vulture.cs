@@ -59,6 +59,11 @@ public sealed class Vulture : RoleBase
         EatTime = 0;
     }
     public override string GetReportButtonText() => GetString("VultureReportButtonText");
+        public override bool GetReportButtonSprite(out string buttonName)
+        {
+        buttonName = GetString("VultureEat");
+        return true;
+        } 
     private static void SendRPCLimit()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VultureLimit, SendOption.Reliable, -1);

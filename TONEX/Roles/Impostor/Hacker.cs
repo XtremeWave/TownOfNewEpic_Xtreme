@@ -49,6 +49,7 @@ public sealed class Hacker : RoleBase, IImpostor
     {
         HackLimit = OptionHackLimit.GetInt();
     }
+
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.SetHackerHackLimit);

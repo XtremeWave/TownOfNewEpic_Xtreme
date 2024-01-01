@@ -15,8 +15,8 @@ public sealed class HotPotato : RoleBase, IKiller
             typeof(HotPotato),
             player => new HotPotato(player),
             CustomRoles.HotPotato,
-            () => RoleTypes.Shapeshifter,
-            CustomRoleTypes.Impostor,
+            () => RoleTypes.Impostor,
+            CustomRoleTypes.Neutral,
             4900,
             null,
             "ho",
@@ -79,14 +79,6 @@ public sealed class HotPotato : RoleBase, IKiller
         info.CanKill = false;
         return false;
     }
-    public override void OnFixedUpdate(PlayerControl player)
-    {
-        if (!AmongUsClient.Instance.AmHost || !player.IsAlive()) return;
-        if (HotPotatoManager.BoomTimes <= 0)
-        {
-            Player.RpcResetAbilityCooldown();
-        }
-    }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         //seenが省略の場合seer
@@ -94,6 +86,6 @@ public sealed class HotPotato : RoleBase, IKiller
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
-        return string.Format(GetString("HotPotatoTimeRemain"), HotPotatoManager.RoundTime.ToString());
+        return string.Format(GetString("HotPotatoTimeRemain"), HotPotatoManager.BoomTimes);
     }
 }

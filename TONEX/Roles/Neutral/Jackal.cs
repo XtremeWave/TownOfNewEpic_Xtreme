@@ -1,5 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
+using TONEX.Modules;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
@@ -98,6 +100,11 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         else
         return "";
     }
+    public override bool GetAdminButtonSprite(out string buttonName)
+    {
+        buttonName = "Sidekick";
+        return SidekickLimit >= 1;
+    }
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("GangsterButtonText");
@@ -112,6 +119,27 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
     public bool CanUseImpostorVentButton() => CanVent;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(HasImpostorVision);
     public void ApplySchrodingerCatOptions(IGameOptions option) => ApplyGameOptions(option);
+    public void SetSpelled(PlayerControl target)
+    {
+        SidekickLimit--;
+        SendRPC();
+        Player.SetKillCooldownV2();
+        NameColorManager.Add(Player.PlayerId, target.PlayerId, "#00b4eb");
+        NameColorManager.Add(target.PlayerId, Player.PlayerId, "#00b4eb");
+        if (JackalCanSaveSidekick.GetBool())   
+            target.RpcSetCustomRole(CustomRoles.Attendant);
+        else
+        {
+            if (target.CanUseKillButton())
+                target.RpcSetCustomRole(CustomRoles.Sidekick);
+            else
+                target.RpcSetCustomRole(CustomRoles.Whoops);
+        }
+
+        Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
+        target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
+        Utils.NotifyRoles();
+    }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         if (SidekickLimit < 1) return true;
@@ -119,42 +147,20 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
 
         if (CanBeSidekick(target))
         {
-            SidekickLimit--;
-            SendRPC();
-
-            killer.ResetKillCooldown();
-            killer.SetKillCooldown();
-            killer.RpcProtectedMurderPlayer(target);
-            target.RpcProtectedMurderPlayer(killer);
-            target.RpcProtectedMurderPlayer(target);
-            if (JackalCanSaveSidekick.GetBool())
-            {
-                target.RpcSetCustomRole(CustomRoles.Attendant);
-            }
-            else
-            {
-                if (target.CanUseKillButton())
-                    target.RpcSetCustomRole(CustomRoles.Sidekick);
-                else
-                    target.RpcSetCustomRole(CustomRoles.Whoops);
-            }
-
-            killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
-            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
-            Utils.NotifyRoles();
-
-            return false;
+            info.DoKill = killer.CheckDoubleTrigger(target, () => { SetSpelled(target); });
         }
-        killer.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterRecruitmentFailure")));
-        return true;
+        else info.DoKill = true;
+        return info.DoKill;
     }
     public static bool CanBeSidekick(PlayerControl pc) => pc != null && (!pc.GetCustomRole().IsNeutral()) && !pc.Is(CountTypes.Jackal);
-    public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
-        if (seen.Is(CustomRoles.Whoops) || seen.Is(CustomRoles.Sidekick) || seen.Is(CustomRoles.Attendant)) enabled = true;
-    }
-    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
-    {
-        if (seer.Is(CustomRoles.Whoops) || seer.Is(CustomRoles.Sidekick) || seer.Is(CustomRoles.Attendant)) enabled = true;
+        //seen¤¬Ê¡ÂÔ¤ÎˆöºÏseer
+        seen ??= seer;
+        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$$");
+        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$");
+        else if (seen.Is(CustomRoles.Attendant)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "??");
+        else
+        return "";
     }
 }

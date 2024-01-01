@@ -73,6 +73,11 @@ public sealed class Deceiver : RoleBase, IKiller
     public bool CanUseKillButton() => Player.IsAlive() && SellLimit >= 1;
     public bool CanUseSabotageButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Bet";
+        return true;
+    }
     public bool OverrideKillButtonText(out string text)
     {
         text = Translator.GetString("DeceiverButtonText");

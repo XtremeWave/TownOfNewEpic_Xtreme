@@ -5,6 +5,9 @@ using UnityEngine;
 using TONEX.Modules;
 using static TONEX.Translator;
 using Hazel;
+using Epic.OnlineServices.Presence;
+using System.Linq;
+using TONEX.Roles.Crewmate;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Vicious : RoleBase, IImpostor
@@ -28,6 +31,7 @@ public sealed class Vicious : RoleBase, IImpostor
     )
     { 
        Limit = 0;
+        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
     }
     enum OptionName
     {
@@ -61,21 +65,22 @@ public sealed class Vicious : RoleBase, IImpostor
         KillCooldown = OptionKillCooldown.GetFloat();
         Limit = 0;
     }
-   private void SendRPC()
+    private static void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.ViciousKill);
-        sender.Writer.Write(Limit);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ViciousKill, SendOption.Reliable, -1);
+        writer.Write(Limit);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public static void ReceiveRPC_Limit(MessageReader reader, CustomRPC rpcType)
     {
         if (rpcType != CustomRPC.ViciousKill) return;
         Limit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => KillCooldown;
-    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    public static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
     {
-        if (info.IsSuicide) return;
-        var (killer,target) = info.AttemptTuple;
+        var (killer, target) = info.AttemptTuple;
+        if (info.IsSuicide) return true;
         if (killer.Is(CustomRoleTypes.Impostor))
         {
             if (OptionViciousCountMode.GetInt() == 2)
@@ -84,7 +89,13 @@ public sealed class Vicious : RoleBase, IImpostor
                 SendRPC();
             }
         }
-        else if (killer.PlayerId == Player.PlayerId)
+        return true;
+    }
+    public void BeforeMurderPlayerAsKiller(MurderInfo info)
+    {
+        if (info.IsSuicide) return;
+        var (killer,target) = info.AttemptTuple;
+        if (killer.PlayerId == Player.PlayerId)
         {
             if (OptionViciousCountMode.GetInt() == 1)
             {

@@ -23,6 +23,7 @@ using TONEX.Roles.Core;
 using TONEX.Roles.Neutral;
 using TONEX;
 using TONEX.Roles.Core.Interfaces;
+using Il2CppInterop.Generator.Extensions;
 
 namespace TONEX;
 
@@ -88,25 +89,19 @@ class ExternalRpcPetPatch
         if (!LastProcess.ContainsKey(pc.PlayerId)) LastProcess.TryAdd(pc.PlayerId, Utils.GetTimeStamp() - 2);
         if (LastProcess[pc.PlayerId] + 1 >= Utils.GetTimeStamp()) return true;
         LastProcess[pc.PlayerId] = Utils.GetTimeStamp();
-        __instance.CancelPet();
-        physics.RpcCancelPet();
-        physics.RpcCancelPet();
-        physics.RpcCancelPet();
-        physics.RpcCancelPet();
         Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} petted their pet", "PetActionTrigger");
         var user = __instance.myPlayer;
-        
-        if ((!user.GetRoleClass()?.OnUsePet(pc) ?? true))
-        {  
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.CancelPet, SendOption.Reliable, user.GetClientId());
-            writer.WriteNetObject(user);
-            writer.WritePacked(0);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            __instance.CancelPet();
+
             physics.RpcCancelPet();
-        Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} cancel petting", "PetActionTrigger");
-            return false;
-        }        
+            bool canpet = user.CanPet();
+            if(canpet)        Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} cancel petting{canpet}", "PetActionTrigger");
+        user.GetRoleClass()?.OnUsePet();     
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(user.NetId, (byte)RpcCalls.CancelPet, SendOption.Reliable, -1);
+            writer.WriteNetObject(user);
+        writer.WritePacked(10);
+        writer.Write(10);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+        physics.RpcCancelPet();
         return true;
 
     }

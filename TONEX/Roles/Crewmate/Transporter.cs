@@ -31,7 +31,11 @@ public sealed class Transporter : RoleBase
     {
         TransporterTeleportMax
     }
-
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Teleport";
+        return true;
+    }
     private static void SetupOptionItem()
     {
         OptionTeleportNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.TransporterTeleportMax, new(1, 99, 1), 3, false)

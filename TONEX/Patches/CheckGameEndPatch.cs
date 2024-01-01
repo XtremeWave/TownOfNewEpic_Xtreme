@@ -32,17 +32,20 @@ class GameEndChecker
         //热土豆用
         if (Options.CurrentGameMode == CustomGameMode.HotPotato)
         {
-            foreach (var cp in Main.AllAlivePlayerControls)
+            var playerList = Main.AllAlivePlayerControls.ToList();
+            if (playerList.Count == 1)
             {
-                if (cp.Is(CustomRoles.ColdPotato))
+                foreach (var cp in playerList)
                 {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.ColdPotato);
                     CustomWinnerHolder.WinnerIds.Add(cp.PlayerId);
-                }
-            }
-            ShipStatus.Instance.enabled = false;
+                    ShipStatus.Instance.enabled = false;
             StartEndGame(reason);
             predicate = null;
             return false;
+                }
+            }
+
         }
         //ゲーム終了時
         if (CustomWinnerHolder.WinnerTeam != CustomWinner.Default)
@@ -78,6 +81,11 @@ class GameEndChecker
                      .Where(pc => pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Attendant) || pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Whoops))
                      .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
+                case CustomWinner.FAFL:
+                    Main.AllPlayerControls
+                     .Where(pc => pc.Is(CustomRoles.Vagor_FAFL) )
+                     .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    break;
             }
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
@@ -89,12 +97,15 @@ class GameEndChecker
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
                 }
-                //RubePeople(我实在不会怎么写重写在胜利时移除玩家ID了QAQ)
-                foreach (var pc in RubePeople.ForRubePeople)
+                //RubePeople 胜利时移除玩家ID了
+                if (CustomRoles.RubePeople.IsExist() && RubePeople.ForRubePeople.Count != 0)
                 {
-                    if (CustomWinnerHolder.WinnerIds.Contains(pc))
+                    foreach (var pc in Main.AllPlayerControls)
                     {
-                        CustomWinnerHolder.WinnerIds.Remove(pc);
+                        if (RubePeople.ForRubePeople.Contains(pc.PlayerId))
+                        {
+                            CustomWinnerHolder.WinnerIds.Remove(pc.PlayerId);
+                        }
                     }
                 }
                 //追加胜利
@@ -252,6 +263,7 @@ class GameEndChecker
             int DM = Utils.AlivePlayersCount(CountTypes.Demon);
             int BK = Utils.AlivePlayersCount(CountTypes.BloodKnight);
             int SC = Utils.AlivePlayersCount(CountTypes.Succubus);
+            int FAFL = Utils.AlivePlayersCount(CountTypes.FAFL);
 
             foreach (var dualPc in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Schizophrenic)))
             {
@@ -260,7 +272,7 @@ class GameEndChecker
                 else if (dualPc.Is(CountTypes.Succubus)) SC++;
             }
 
-            if (Imp == 0 && Crew == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0) //全灭
+            if (Imp == 0 && Crew == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && FAFL == 0) //全灭
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.None);
@@ -270,40 +282,45 @@ class GameEndChecker
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
             }
-            else if (JK == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= Imp) //内鬼胜利
+            else if (JK == 0 && PL == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= Imp) //内鬼胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             }
-            else if (Imp == 0 && PL == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= JK) //豺狼胜利
+            else if (Imp == 0 && PL == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= JK) //豺狼胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
             }
-            else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && SC == 0 && Crew <= PL) //鹈鹕胜利
+            else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= PL) //鹈鹕胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pelican);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pelican);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && BK == 0 && SC == 0 && Crew <= DM) //玩家胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= DM) //玩家胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Demon);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Demon);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && SC == 0 && Crew <= BK) //嗜血骑士胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && SC == 0 && Crew <= BK) //嗜血骑士胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.BloodKnight);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.BloodKnight);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && BK == 0 && Crew <= SC) //魅魔胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && BK == 0 && Crew <= SC) //魅魔胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Succubus);
             }
-            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0) //船员胜利
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0 && Crew <= FAFL) //异世阵营胜利
+            {
+                reason = GameOverReason.ImpostorByKill;
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.FAFL);
+            }
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && FAFL == 0 && DM == 0 && SC == 0) //船员胜利
             {
                 reason = GameOverReason.HumansByVote;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);
@@ -316,9 +333,19 @@ class GameEndChecker
     class HotPotatoGameEndPredicate : GameEndPredicate
     {
         public override bool CheckForEndGame(out GameOverReason reason)
-        {
+        {   
             reason = GameOverReason.ImpostorByKill;
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.ColdPotato);
+            var playerList = Main.AllAlivePlayerControls.ToList();
+            if (playerList.Count == 1)
+            {
+                foreach (var cp in playerList)
+                {
+                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.ColdPotato);
+                    CustomWinnerHolder.WinnerIds.Add(cp.PlayerId);
+                    return true;
+                }
+            }
+            else { return false; }
             return true;
         }
     }

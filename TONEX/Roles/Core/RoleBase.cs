@@ -181,12 +181,21 @@ public abstract class RoleBase : IDisposable
     { }
 
     /// <summary>
+    /// 保护别人时调用的函数
+    /// 不需要验证您的身份，因为调用前已经验证
+    /// 请注意：全部模组端都会调用
+    /// </summary>
+    /// <param name="target">守护目标</param>
+    public virtual void OnProtectPlayer(PlayerControl target)
+    { }
+
+    /// <summary>
     /// 摸宠物时调用的函数
     /// 不需要验证您的身份，因为调用前已经验证
     /// 请注意：全部模组端都会调用
     /// </summary>
-    /// <param name="player">变形目标</param>
-    public virtual bool OnUsePet(PlayerControl player) => true;
+    public virtual void OnUsePet()
+    { }
 
     /// <summary>
     /// 帧 Task 处理函数<br/>
@@ -480,6 +489,54 @@ public abstract class RoleBase : IDisposable
     public virtual bool GetReportButtonSprite(out string buttonName)
     {
         buttonName = default;
+        return false;
+    }
+    /// <summary>
+    /// 更改摸宠物的文本
+    /// </summary>
+    public virtual bool GetPetButtonText(out string text)
+    {
+        text = default;
+        return false;
+    }
+    /// <summary>
+    /// 更改摸宠物的图标
+    /// </summary>
+    public virtual bool GetPetButtonSprite(out string text)
+    {
+        text = default;
+        return false;
+    }
+    /// <summary>
+    /// 更改使用按钮的文本
+    /// </summary>
+    public virtual string GetUseButtonText() => GetString(StringNames.UseLabel);
+    /// <summary>
+    /// 更改使用按钮的图标
+    /// </summary>
+    public virtual bool GetUseButtonSprite(out string buttonName)
+    {
+        buttonName = default;
+        return false;
+    }
+    /// <summary>
+    /// 更改管理室地图的文本（？）
+    /// </summary>
+    public virtual string GetAdminButtonText() => GetString(StringNames.AdminMapSystem);
+    /// <summary>
+    /// 更改理室地图的图标（？）
+    /// </summary>
+    public virtual bool GetAdminButtonSprite(out string buttonName)
+    {
+        buttonName = default;
+        return false;
+    }
+    /// <summary>
+    /// 更改游戏开始时的音效
+    /// </summary>
+    public virtual bool GetGameStartSound(out string sound)
+    {
+       sound = default;
         return false;
     }
 

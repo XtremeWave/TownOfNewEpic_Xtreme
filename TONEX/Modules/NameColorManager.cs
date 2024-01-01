@@ -45,17 +45,6 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Charmed];
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Charmed];
 
-        //²òÀÇ¸ú°à»¥ÈÏQAQ
-        if (seer.Is(CustomRoles.Attendant) && target.Is(CustomRoles.Jackal)) color = Main.roleColors[CustomRoles.Jackal];
-        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Attendant)) color = Main.roleColors[CustomRoles.Attendant];
-        if (seer.Is(CustomRoles.Attendant) && target.Is(CustomRoles.Attendant)) color = Main.roleColors[CustomRoles.Attendant];
-        if (seer.Is(CustomRoles.Whoops) && target.Is(CustomRoles.Jackal)) color = Main.roleColors[CustomRoles.Jackal];
-        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Whoops)) color = Main.roleColors[CustomRoles.Whoops];
-        if (seer.Is(CustomRoles.Whoops) && target.Is(CustomRoles.Whoops)) color = Main.roleColors[CustomRoles.Whoops];
-        if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Jackal)) color = Main.roleColors[CustomRoles.Jackal];
-        if (seer.Is(CustomRoles.Jackal) && target.Is(CustomRoles.Sidekick)) color = Main.roleColors[CustomRoles.Sidekick];
-        if (seer.Is(CustomRoles.Sidekick) && target.Is(CustomRoles.Sidekick)) color = Main.roleColors[CustomRoles.Sidekick];
-
 
         if (!string.IsNullOrEmpty(color)) return true;
         else return seer == target

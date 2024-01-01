@@ -47,6 +47,11 @@ public sealed class Cleaner : RoleBase, IImpostor
         text = Translator.GetString("MinerTeleButtonText");
         return true;
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "Clothe";
+        return true;
+    }
     public override string GetReportButtonText() => Translator.GetString("CleanerReportButtonText");
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {

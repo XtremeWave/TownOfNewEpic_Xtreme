@@ -1,8 +1,12 @@
+using AmongUs.GameOptions;
 using HarmonyLib;
+using Hazel.Dtls;
 using System.Linq;
 using System.Text;
+using TMPro;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Crewmate;
 using UnityEngine;
 using static TONEX.Translator;
 
@@ -21,6 +25,10 @@ class HudManagerPatch
     public static TMPro.TextMeshPro LowerInfoText;
     public static void Postfix(HudManager __instance)
     {
+        var pc = PlayerControl.LocalPlayer;
+        var roleClass2 = pc.GetRoleClass();
+        var AdminLabel = roleClass2?.GetAdminButtonText() ?? GetString(StringNames.QCSelfWasOnAdmin);
+        __instance.AdminButton.OverrideText(AdminLabel);
         if (!GameStates.IsModHost) return;
         var player = PlayerControl.LocalPlayer;
         if (player == null) return;
@@ -52,6 +60,9 @@ class HudManagerPatch
         {
             if (player.IsAlive())
             {
+                 //未使用的方法
+                 //   __instance.ToggleUseAndPetButton(useTarget: someUsable, canPlayNormally: true, canPet: false);
+
                 //CustomRoleManager.AllActiveRoles.Do(r => Logger.Test(r.Key + " - " + r.Value.MyState.GetCustomRole().ToString()));
                 var roleClass = player.GetRoleClass();
                 if (roleClass != null)
@@ -60,6 +71,11 @@ class HudManagerPatch
                     __instance.KillButton.OverrideText(killLabel);
                     var reportLabel = roleClass?.GetReportButtonText() ?? GetString(StringNames.ReportLabel);
                     __instance.ReportButton.OverrideText(reportLabel);
+                    var useLabel = roleClass?.GetUseButtonText() ?? GetString(StringNames.UseLabel);
+                    __instance.UseButton.OverrideText(useLabel);
+                    __instance.UseButton.OverrideColor(Utils.GetRoleColor(player.GetCustomRole()));
+                    __instance.UseButton.SetCooldownFill(-1f);
+                
                     if (roleClass.HasAbility)
                     {
                         if (roleClass.GetAbilityButtonText(out var abilityLabel)) __instance.AbilityButton.OverrideText(abilityLabel);
@@ -68,10 +84,13 @@ class HudManagerPatch
                         if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);
                         else __instance.AbilityButton.SetInfiniteUses();
                     }
-                    if (roleClass.HasPet)
-                    {
 
+                    if (Options.UsePets.GetBool())
+                    {
+                        var petLabel = roleClass?.GetPetButtonText(out string name) == true ? name : "";
+                        __instance.PetButton.OverrideText(petLabel);
                     }
+
                 }
 
                 //バウンティハンターのターゲットテキスト
@@ -121,7 +140,13 @@ class HudManagerPatch
                 __instance.ImpostorVentButton.Hide();
                 __instance.KillButton.Hide();
                 __instance.AbilityButton.Show();
-                __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
+                if (player.Is(CustomRoles.EvilGuardian))
+                {
+                   __instance.AbilityButton.OverrideText(GetString("KillButtonText"));
+                }
+                else
+                    __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
+                __instance.PetButton.Hide();
                 if (LowerInfoText != null) LowerInfoText.enabled = false;
             }
         }
@@ -199,6 +224,7 @@ class SetHudActivePatch
     public static void Postfix(HudManager __instance, [HarmonyArgument(2)] bool isActive)
     {
         __instance.ReportButton.ToggleVisible(!GameStates.IsLobby && isActive);
+        __instance.PetButton.ToggleVisible(!GameStates.IsLobby && isActive);
         if (!GameStates.IsModHost) return;
         IsActive = isActive;
         if (!isActive) return;

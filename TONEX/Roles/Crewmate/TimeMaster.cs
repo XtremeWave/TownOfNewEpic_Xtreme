@@ -15,7 +15,7 @@ public sealed class TimeMaster : RoleBase
             typeof(TimeMaster),
             player => new TimeMaster(player),
             CustomRoles.TimeMaster,
-            () => RoleTypes.Engineer,
+            () => Options.UsePets.GetBool() ? RoleTypes.Crewmate : RoleTypes.Engineer,
             CustomRoleTypes.Crewmate,
             226312,
             SetupOptionItem,
@@ -46,6 +46,7 @@ public sealed class TimeMaster : RoleBase
     public static Dictionary<byte, Vector2> TimeMasterbacktrack = new();
     private long ProtectStartTime;
     private float Cooldown;
+    private int UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 14, OptionName.TimeMasterSkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
@@ -64,6 +65,10 @@ public sealed class TimeMaster : RoleBase
         Cooldown = OptionSkillCooldown.GetFloat();
         TimeMasterbacktrack = new();
     }
+    public override void OnGameStart()
+    {
+        UsePetCooldown = OptionSkillCooldown.GetInt();
+    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown = Cooldown;
@@ -71,8 +76,13 @@ public sealed class TimeMaster : RoleBase
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = GetString("TimeStopsVetnButtonText");
+        text = GetString("TimeMasterVetnButtonText");
         return true;
+    }
+    public override bool GetPetButtonText(out string text)
+    {
+        text = GetString("TimeMasterVetnButtonText");
+        return !(UsePetCooldown != 0);
     }
     private void SendRPC()
     {
@@ -125,6 +135,47 @@ public sealed class TimeMaster : RoleBase
             player.Notify(string.Format(GetString("TimeMasterOffGuard")));
         }
     }
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
+        if (UsePetCooldown <= 0 && Player.IsAlive())
+        {
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
+        }
+    }
+    public override void OnUsePet()
+    {
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != 0)
+        {
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+        }
+        ReduceNowCooldown();
+        Player.SyncSettings();
+        ProtectStartTime = Utils.GetTimeStamp();
+        if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
+        Player.Notify(GetString("TimeMasterOnGuard"));
+        foreach (var player in Main.AllPlayerControls)
+        {
+            if (TimeMasterbacktrack.ContainsKey(player.PlayerId))
+            {
+                player.RPCPlayCustomSound("Teleport");
+                var position = TimeMasterbacktrack[player.PlayerId];
+                Utils.TP(player.NetTransform, position);
+                TimeMasterbacktrack.Remove(player.PlayerId);
+            }
+            else
+            {
+                TimeMasterbacktrack.Add(player.PlayerId, player.GetTruePosition());
+                SendRPC();
+                Marked = true;
+            }
+        }
+        return;
+    }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {
         Player.RpcResetAbilityCooldown();
@@ -147,5 +198,13 @@ public sealed class TimeMaster : RoleBase
             return false;
         }
         return true;
+    }
+    public override void AfterMeetingTasks()
+    {
+        UsePetCooldown = OptionSkillCooldown.GetInt();
+    }
+    public override void OnStartMeeting()
+    {
+        ProtectStartTime = 0;
     }
 }

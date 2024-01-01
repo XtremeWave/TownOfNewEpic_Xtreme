@@ -1,10 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using TONEX.Modules;
 using TONEX.Roles.Core;
-using System;
+using UnityEngine;
 using static TONEX.Translator;
-using TONEX.Roles.Neutral;
+using Hazel;
 using System.Collections.Generic;
+using TONEX.Roles.Neutral;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class TimeStops : RoleBase
@@ -44,7 +45,7 @@ public sealed class TimeStops : RoleBase
     private List<byte> TimeStopsstop;
     private long ProtectStartTime;
     private float Cooldown;
-    public long UsePetCooldown;
+    public int UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.TimeStopsSkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
@@ -59,9 +60,12 @@ public sealed class TimeStops : RoleBase
     }
     public override void Add()
     {
-        UsePetCooldown = Utils.GetTimeStamp();
         ProtectStartTime = 0;
         Cooldown = OptionSkillCooldown.GetFloat();
+    }
+    public override void OnGameStart()
+    {
+        UsePetCooldown = OptionSkillCooldown.GetInt();
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -72,6 +76,26 @@ public sealed class TimeStops : RoleBase
     {
         text = GetString("TimeStopsVetnButtonText");
         return true;
+    }
+        public override bool GetAbilityButtonSprite(out string buttonName)
+    {
+        buttonName = "TheWorld";
+        return true;
+    }
+            public override bool GetPetButtonSprite(out string buttonName)
+    {
+        buttonName = "TheWorld";
+        return !(UsePetCooldown != 0);
+    }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "TheWorld";
+        return true;
+    }
+    public override bool GetPetButtonText(out string text)
+    {
+        text = GetString("TimeStopsVetnButtonText");
+        return !(UsePetCooldown != 0);
     }
     public void ReduceNowCooldown()
     {
@@ -86,6 +110,7 @@ public sealed class TimeStops : RoleBase
         ProtectStartTime = Utils.GetTimeStamp();
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
             Player.Notify(GetString("TimeStopsOnGuard"));
+        CustomSoundsManager.RPCPlayCustomSoundAll("TheWorld");
         foreach (var player in Main.AllAlivePlayerControls)
         {
             if (Player == player) continue;
@@ -110,26 +135,38 @@ public sealed class TimeStops : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ProtectStartTime == 0 || UsePetCooldown == 0) return;
+        if (ProtectStartTime == 0) return;
         if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
         {
             ProtectStartTime = 0;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("TimeStopsOffGuard")));
         }
-        if (UsePetCooldown + Cooldown < Utils.GetTimeStamp() && Options.UsePets.GetBool())
+    }
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;     
+        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
+        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting)  UsePetCooldown -= 1;
+        if (UsePetCooldown <= 0 && Player.IsAlive())
         {
-            UsePetCooldown = 0;
-            player.RpcProtectedMurderPlayer();
+             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
-    public override bool OnUsePet(PlayerControl pc)
+    public override void OnUsePet()
     {
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != 0)
+        {
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            return;
+        }
         ReduceNowCooldown();
         Player.SyncSettings();
         Player.RpcResetAbilityCooldown();
         ProtectStartTime = Utils.GetTimeStamp();
+        UsePetCooldown = OptionSkillCooldown.GetInt();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
         Player.Notify(GetString("TimeStopsOnGuard"));
         foreach (var player in Main.AllAlivePlayerControls)
@@ -151,7 +188,6 @@ public sealed class TimeStops : RoleBase
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
             }, OptionSkillDuration.GetFloat(), "Time Stop");
         }
-        return true;
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
@@ -163,5 +199,13 @@ public sealed class TimeStops : RoleBase
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {
         Player.RpcResetAbilityCooldown();
+    }
+    public override void AfterMeetingTasks()
+    {
+        UsePetCooldown = OptionSkillCooldown.GetInt();
+    }
+    public override void OnStartMeeting()
+    {
+        ProtectStartTime = 0;
     }
 }

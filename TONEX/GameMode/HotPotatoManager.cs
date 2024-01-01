@@ -33,7 +33,7 @@ internal static class HotPotatoManager
 
     public static OptionItem HotQuan;//热土豆数量
     public static OptionItem Boom; //爆炸时间;Remaining time of explosion
-    public static OptionItem TD;//总时长;Totalduration
+
 
     public static void SetupCustomOption()
     {
@@ -45,167 +45,88 @@ internal static class HotPotatoManager
            .SetGameMode(CustomGameMode.HotPotato)
            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
            .SetValueFormat(OptionFormat.Seconds);
-        TD = IntegerOptionItem.Create(62_293_010, "RoundTime", new(100, 300, 20), 300, TabGroup.GameSettings, false)
-      .SetGameMode(CustomGameMode.HotPotato)
-      .SetColor(new Color32(245, 82, 82, byte.MaxValue))
-      .SetValueFormat(OptionFormat.Seconds);
     }
     [GameModuleInitializer]
     public static void Init()
     {
         if (Options.CurrentGameMode != CustomGameMode.HotPotato) return;
         BoomTimes = Boom.GetInt() + 9;
-        RoundTime = TD.GetInt() + 9 + BoomTimes;
         HotPotatoMax = HotQuan.GetInt();
         IsAliveCold = 0;
         IsAliveHot = 0;
-        IsDistribution = false;
     }
-    public static void OnFixedUpdate()
+    [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
+    class FixedUpdatePatch
     {
-        if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.HotPotato || !AmongUsClient.Instance.AmHost || Main.AllAlivePlayerControls.ToList().Count == 0) return;
-        if (!IsDistribution)
+        private static long LastFixedUpdate = new();
+        public static void Postfix(PlayerControl __instance)
         {
-            foreach (var pc in Main.AllAlivePlayerControls)
-            {
-                pc.Notify(GetString("GameStartHP"));
-            }
-            new LateTask(() =>
-            {
-                List<PlayerControl> HotPotatoList = new();
-                if (Main.AllAlivePlayerControls.ToList().Count <= HotPotatoMax + 1)
+            if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.HotPotato || !AmongUsClient.Instance.AmHost || Main.AllAlivePlayerControls.ToList().Count == 0) return;
+            bool notifyRoles = true;
+                //一些巴拉巴拉的东西
+                var playerList = Main.AllAlivePlayerControls.ToList();
+                //土豆数量检测
+                if (playerList.Count >= 9 && playerList.Count <= 11 && HotPotatoMax >= 3)
+                {
+                    HotPotatoMax = 2;
+                }
+                else if (playerList.Count >= 5 && playerList.Count <= 7 && HotPotatoMax >= 2)
                 {
                     HotPotatoMax = 1;
                 }
-                for (int i = 0; i < HotPotatoMax; i++)
+
+
+
+                if (playerList.Count <= HotPotatoMax + 1)
                 {
-                    var pcList = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole() != CustomRoles.HotPotato).ToList();
-                    var Ho = pcList[IRandom.Instance.Next(0, pcList.Count - 1)];
-                    if (!HotPotatoList.Contains(Ho))
-                    {
-                        HotPotatoList.Add(Ho);
-                    }
-                    else
-                    {
-                        i--;
-                    }
+                    HotPotatoMax = 1;
                 }
-                foreach (var pc in Main.AllAlivePlayerControls)
+                //爆炸时间为0时
+                if (BoomTimes <= 0)
                 {
-                    if (HotPotatoList.Contains(pc))
-                    {
-                        pc.RpcSetCustomRole(CustomRoles.HotPotato);
-                        IsAliveCold--;
-                        IsAliveHot++;
-                    }
-                    pc.Notify(GetString("HotPotatoDistribution"));
-                }
-                IsDistribution = true;
-            }, BoomTimes);
-        }
-        else
-        {
-
-
-            bool notifyRoles = false;
-            //一些巴拉巴拉的东西
-            var playerList = Main.AllAlivePlayerControls.ToList();
-            if (playerList.Count == 1)
-            {
-                foreach (var cp in playerList)
-                {
-                    CustomWinnerHolder.ResetAndSetWinner(CustomWinner.ColdPotato);
-                    CustomWinnerHolder.WinnerIds.Add(cp.PlayerId);
-                }
-            }
-            else if (RoundTime <= 0)
-            {
-                foreach (var cp in Main.AllAlivePlayerControls)
-                {
-                    if (cp.Is(CustomRoles.ColdPotato))
-                    {
-                        CustomWinnerHolder.ResetAndSetWinner(CustomWinner.ColdPotato);
-                        CustomWinnerHolder.WinnerIds.Add(cp.PlayerId);
-                    }
-                }
-
-            }
-            //土豆数量检测
-            if (playerList.Count >= 9 && playerList.Count <= 11 && HotPotatoMax >= 3)
-            {
-                HotPotatoMax = 2;
-            }
-            else if (playerList.Count >= 5 && playerList.Count <= 7 && HotPotatoMax >= 2)
-            {
-                HotPotatoMax = 1;
-            }
-
-
-
-            if (playerList.Count <= HotPotatoMax + 1)
-            {
-                HotPotatoMax = 1;
-            }
-            //爆炸时间为0时
-            if (BoomTimes <= 0)
-            {
-                List<PlayerControl> HPL = new();
-                BoomTimes = Boom.GetInt();
-                foreach (var pc in Main.AllAlivePlayerControls)
-                {
-                    if (pc.Is(CustomRoles.HotPotato)) pc.RpcMurderPlayerV2(pc);
-                    Logger.Info($"炸死一群", "awa");
-                }
-                for (int i = 0; i < HotPotatoMax; i++)
-                {
-                    var pcList = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole() != CustomRoles.HotPotato).ToList();
-                    var HP = pcList[IRandom.Instance.Next(0, pcList.Count - 1)];
-                    if (!HPL.Contains(HP))
-                    {
-                        IsAliveCold--;
-                        IsAliveHot++;
-                        HP.RpcSetCustomRole(CustomRoles.HotPotato);
-                        HP.Notify(GetString("GetHotPotato"));
-                        Logger.Info($"分配热土豆", "awa");  
-                        var pos = HP.GetTruePosition();
-                    float minDis = float.MaxValue;
-                    string minName = string.Empty;
+                    List<PlayerControl> HPL = new();
+                    BoomTimes = Boom.GetInt();
                     foreach (var pc in Main.AllAlivePlayerControls)
                     {
-                        if (pc.PlayerId == HP.PlayerId || !pc.Is(CustomRoles.ColdPotato)) continue;
-                        if (pc.Is(CustomRoles.ColdPotato))
+                        if (pc.Is(CustomRoles.HotPotato))
                         {
-                        var dis = Vector2.Distance(pc.GetTruePosition(), pos);
-                        if (dis < minDis && dis < 1.5f)
-                        {
-                            minDis = dis;
-                            minName = pc.GetRealName();
+                            pc.RpcMurderPlayerV2(pc);
+                            notifyRoles = true;
                         }
-                            LocateArrow.Add(HP.PlayerId, pc.transform.position);
-                               ColdPotato.SendRPC(HP.PlayerId,true, pc.GetTruePosition());
-                            }
-                    }
 
+
+                        Logger.Info($"炸死一群", "awa");
                     }
-                    else
+                    for (int i = 0; i < HotPotatoMax; i++)
                     {
-                        i--;
+                        var pcList = Main.AllAlivePlayerControls.Where(x => x.GetCustomRole() != CustomRoles.HotPotato).ToList();
+                        var HP = pcList[IRandom.Instance.Next(0, pcList.Count - 1)];
+                        if (!HPL.Contains(HP))
+                        {
+                            IsAliveCold--;
+                            IsAliveHot++;
+                            HP.RpcSetCustomRole(CustomRoles.HotPotato);
+                            HP.Notify(GetString("GetHotPotato"), 1f);
+                            Logger.Info($"分配热土豆", "awa");
+                            notifyRoles = true;
+                        }
+                        else
+                        {
+                            i--;
+                        }
                     }
                 }
-            }
-            foreach (var pc in Main.AllPlayerControls)
-            {
-                // 必要时刷新玩家名字
-                if (notifyRoles) Utils.NotifyRoles(pc);
-            }
+                if (LastFixedUpdate == Utils.GetTimeStamp()) return;
+                LastFixedUpdate = Utils.GetTimeStamp();
+                //减少爆炸冷却
+                BoomTimes--;
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    // 必要时刷新玩家名字
+                    if (notifyRoles) Utils.NotifyRoles(pc);
+                }
         }
-    }
-    public static void OnSecondsUpdate()
-    {
-        if (!GameStates.IsInTask || Options.CurrentGameMode != CustomGameMode.HotPotato || !AmongUsClient.Instance.AmHost) return;
-        //减少爆炸冷却
-        BoomTimes--;
-        RoundTime--;
+
     }
  
 }
