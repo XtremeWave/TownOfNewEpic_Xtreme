@@ -50,7 +50,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
             Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
         }
     }
-    public bool CheckWin(ref CustomRoles winnerRole)
+    public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)
     {
         return CustomWinnerHolder.WinnerTeam != CustomWinner.Lovers
             && !CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.Lovers)

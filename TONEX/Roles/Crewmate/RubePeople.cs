@@ -11,7 +11,7 @@ using MS.Internal.Xml.XPath;
 
 namespace TONEX.Roles.Crewmate;
 
-public sealed class RubePeople : RoleBase
+public sealed class RubePeople : RoleBase,IRemoveWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
     SimpleRoleInfo.Create(
@@ -85,6 +85,16 @@ public sealed class RubePeople : RoleBase
         text = GetString("RubePeopleVetnButtonText");
         return !(UsePetCooldown != 0);
     }
+    public void CheckWin(ref CustomWinner WinnerTeam, ref HashSet<byte> WinnerIds)
+    {
+        if (ForRubePeople.Count != 0)
+        {
+            foreach(var item in ForRubePeople)
+            {
+                if (WinnerIds.Contains(item))   CustomWinnerHolder.WinnerIds.Remove(item);
+            }
+        }
+    }
     public void ReduceNowCooldown()
     {
         Cooldown = Cooldown + ReduceCooldown.GetFloat();
@@ -113,7 +123,7 @@ public sealed class RubePeople : RoleBase
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
         Player.Notify(GetString("RubePeopleOnGuard"), 2f);
         UsePetCooldown = OptionSkillCooldown.GetInt();
-        return;
+
     }
     public override void OnFixedUpdate(PlayerControl player)
     {

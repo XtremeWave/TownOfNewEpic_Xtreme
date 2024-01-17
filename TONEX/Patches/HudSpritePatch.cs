@@ -23,10 +23,12 @@ class HudSpritePatch
     private static Sprite? Defalt_Use => DestroyableSingleton<HudManager>.Instance.UseButton?.graphic?.sprite;
     private static Sprite? Defalt_Admin => DestroyableSingleton<HudManager>.Instance.AdminButton?.graphic?.sprite;
     private static SpriteRenderer? Defalt_Remain => DestroyableSingleton<HudManager>.Instance.AbilityButton?.usesRemainingSprite;
+    private static GameObject? Defalt_Set => DestroyableSingleton<HudManager>.Instance.SettingsButton;
+    private static PassiveButton? Defalt_Map => DestroyableSingleton<HudManager>.Instance.MapButton;
     public static void Postfix(HudManager __instance)
     {
         var player = PlayerControl.LocalPlayer;
-        if (__instance == null || player == null || !GameStates.IsModHost || !GameStates.IsInTask) return;
+        if (__instance == null || player == null || !GameStates.IsModHost) return;
         if (!SetHudActivePatch.IsActive || !player.IsAlive()) return;
 
         Sprite newKillButton = Defalt_Kill ?? __instance.KillButton.graphic.sprite;
@@ -37,6 +39,8 @@ class HudSpritePatch
         SpriteRenderer newRemain = Defalt_Remain ?? __instance.AbilityButton.usesRemainingSprite;
         Sprite newUseButton = Defalt_Use ?? __instance.UseButton.graphic.sprite;
         Sprite newAdminButton = Defalt_Admin ?? __instance.AdminButton.graphic.sprite;
+        GameObject newSetting = Defalt_Set ?? __instance.SettingsButton;
+        PassiveButton newMap = Defalt_Map ?? __instance.MapButton;
 
 
         if (Main.EnableCustomButton.Value)
@@ -53,18 +57,44 @@ class HudSpritePatch
                 newAbilityButton = CustomButton.GetSprite(newAbilityButtonName);
             if (player.GetRoleClass()?.GetReportButtonSprite(out var newReportButtonName) ?? false)
                 newReportButton = CustomButton.GetSprite(newReportButtonName);
-            if (player.GetRoleClass()?.GetPetButtonSprite(out var newPetButtonName) ?? false && Options.UsePets.GetBool() && player.GetRoleClass()?.GetPetButtonSprite(out var ButtonName) == true)
-                newPetButton = CustomButton.GetSprite(newPetButtonName);
+
+            if (player.GetRoleClass()?.GetPetButtonSprite(out var newPetButtonName) == true && Options.UsePets.GetBool())
+            {
+                var PetButton = newPetButtonName;
+                newPetButton = CustomButton.GetSprite(PetButton);
+                __instance.PetButton?.graphic?.material?.SetFloat("_Desat", 0f);
+            }
+            else if (player.GetRoleClass()?.GetPetButtonSprite(out var newPetButtonNameV2) == false && Options.UsePets.GetBool() && newPetButtonNameV2 != null)
+            {
+                var PetButton = newPetButtonNameV2;
+                if(PetButton != null)
+                {
+                 newPetButton = CustomButton.GetSprite(PetButton);
+                    __instance.PetButton?.graphic?.material?.SetFloat("_Desat", 1f);
+                }
+            }
+
             if (player.GetRoleClass()?.GetUseButtonSprite(out var newUseButtonName) ?? false)
                 newUseButton = CustomButton.GetSprite(newUseButtonName);
             if (player.GetRoleClass()?.GetAdminButtonSprite(out var newAdminButtonName) ?? false)
                 newAdminButton = CustomButton.GetSprite(newAdminButtonName);
 
+
             Sprite newSprite = CustomButton.GetSprite("UseNum");
-                SpriteRenderer spriteRenderer = __instance.AbilityButton.usesRemainingSprite;// 获取当前对象的 SpriteRenderer 组件
-                if (spriteRenderer != null)
+            newRemain.sprite = newSprite;          
+
+
+            Sprite qwqnew = CustomButton.GetSprite("UseNum");
+                SpriteRenderer spriteerer = newSetting.GetComponent<SpriteRenderer>();
+                if (spriteerer != null)
                 {
-                    spriteRenderer.sprite = newSprite; // 将新的 Sprite 对象赋值给 SpriteRenderer 组件的 sprite 属性
+                    spriteerer.sprite = qwqnew;
+                }
+            Sprite newmap = CustomButton.GetSprite("UseNum");
+                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+                if (spritemap != null)
+                {
+                spritemap.sprite = newmap;
                 }
         }
 
@@ -98,6 +128,14 @@ class HudSpritePatch
         {
             __instance.AbilityButton.usesRemainingSprite = newRemain;
         }
+        if (__instance.SettingsButton != newSetting && newSetting != null)
+        {
+           __instance.SettingsButton = newSetting;
+        }
+        if (__instance.MapButton != newMap && newMap != null)
+        {
+            __instance.MapButton = newMap;
+        }
         if (__instance.UseButton.graphic.sprite != newUseButton && newUseButton != null)
         {
             __instance.UseButton.graphic.sprite = newUseButton;
@@ -106,6 +144,7 @@ class HudSpritePatch
         {
             __instance.AdminButton.graphic.sprite = newAdminButton;
         }
+        __instance.PetButton?.graphic?.material?.SetFloat("_Desat", player.GetRoleClass()?.GetPetButtonSprite(out var AWA) == false && Options.UsePets.GetBool() ? 1f : 0f);
         __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat", __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
     }
 }

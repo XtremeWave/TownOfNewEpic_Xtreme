@@ -97,6 +97,14 @@ class GameEndChecker
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
                 }
+                //移除胜利
+                foreach (var pc in Main.AllPlayerControls)
+                {
+                    if (pc.GetRoleClass() is IRemoveWinner removeWinner)
+                    {
+                        removeWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
+                    }
+                }
                 //RubePeople 胜利时移除玩家ID了
                 if (CustomRoles.RubePeople.IsExist() && RubePeople.ForRubePeople.Count != 0)
                 {
@@ -114,10 +122,22 @@ class GameEndChecker
                     if (pc.GetRoleClass() is IAdditionalWinner additionalWinner)
                     {
                         var winnerRole = pc.GetCustomRole();
-                        if (additionalWinner.CheckWin(ref winnerRole))
+                        var ct = pc.GetCountTypes();
+                        if (additionalWinner.CheckWin(ref winnerRole, ref ct))
                         {
                             CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                             CustomWinnerHolder.AdditionalWinnerRoles.Add(winnerRole);
+                        }
+                    }
+                }
+                foreach (var nv in Main.AllPlayerControls)
+                {
+                    if (!nv.Is(CustomRoles.Non_Villain) || Non_Villain.DigitalLifeList.Count <=0) continue;
+                    foreach (var pc in Non_Villain.DigitalLifeList)
+                    {
+                        if (CustomWinnerHolder.WinnerIds.Contains(nv.PlayerId) && Non_Villain.BlessingCode[pc].ContainsKey((Non_Villain.Blessing)5))
+                        {
+                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
                         }
                     }
                 }

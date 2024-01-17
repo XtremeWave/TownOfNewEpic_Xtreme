@@ -4,9 +4,11 @@ using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
 using System.Linq;
+using TONEX.Attributes;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
 using TONEX.Roles.Crewmate;
+using TONEX.Roles.Neutral;
 using Mathf = UnityEngine.Mathf;
 
 namespace TONEX.Modules;
@@ -122,6 +124,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
+            player.RpcSetCustomRole(CustomRoles.Bewilder);
+            Utils.NotifyRoles(player);
         }
 
         // 为漫步者的凶手
@@ -129,8 +133,15 @@ public class PlayerGameOptionsSender : GameOptionsSender
         {
             Main.AllPlayerSpeed[player.PlayerId] = Rambler.OptionSpeed.GetFloat();
             player.RpcSetCustomRole(CustomRoles.Rambler);
+            Utils.NotifyRoles(player);
         }
-
+        // 最好的请过来
+        if (Main.AllPlayerControls.Any(x => Non_Villain.BlessingCode[x].ContainsKey((Non_Villain.Blessing)2) || Non_Villain.BlessingCode[x].ContainsKey((Non_Villain.Blessing)4)))
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, 5f);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 5f);
+        }
 
         // 投掷傻瓜蛋啦！！！！！
         if (Grenadier.IsBlinding(player))
@@ -168,8 +179,9 @@ public class PlayerGameOptionsSender : GameOptionsSender
         }
         MeetingTimeManager.ApplyGameOptions(opt);
 
+
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);
-        AURoleOptions.ProtectionDurationSeconds = 0f;
+        AURoleOptions.ProtectionDurationSeconds = Main.CanPublic.Value ? 60f : 0;
 
         return opt;
     }

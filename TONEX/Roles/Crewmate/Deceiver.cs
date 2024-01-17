@@ -22,8 +22,7 @@ public sealed class Deceiver : RoleBase, IKiller
             SetupOptionItem,
             "de|贗品商|赝品",
             "#e0e0e0",
-            true,
-            introSound: () => GetIntroSound(RoleTypes.Crewmate)
+            true
         );
     public Deceiver(PlayerControl player)
     : base(
@@ -72,6 +71,7 @@ public sealed class Deceiver : RoleBase, IKiller
     public float CalculateKillCooldown() => CanUseKillButton() ? OptionSellCooldown.GetFloat() : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && SellLimit >= 1;
     public bool CanUseSabotageButton() => false;
+    public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public override bool GetGameStartSound(out string sound)
     {

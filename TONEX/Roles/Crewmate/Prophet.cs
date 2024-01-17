@@ -21,8 +21,7 @@ public sealed class Prophet : RoleBase, IKiller
             SetupOptionItem,
             "pr",
             "#ffe185",
-            true,
-            introSound: () => GetIntroSound(RoleTypes.Crewmate)
+            true
         );
     public Prophet(PlayerControl player)
     : base(

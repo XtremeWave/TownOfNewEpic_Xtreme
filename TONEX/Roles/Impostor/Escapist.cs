@@ -54,11 +54,11 @@ public sealed class Escapist : RoleBase, IImpostor
         text = Marked ? Translator.GetString("EscapistTeleportButtonText") : Translator.GetString("EscapistMarkButtonText");
         return !Shapeshifting;
     }
-            public override bool GetPetButtonText(out string text)
-            {
-                       text = Marked ? Translator.GetString("EscapistTeleportButtonText") : Translator.GetString("EscapistMarkButtonText");
+    public override bool GetPetButtonText(out string text)
+    {
+        text = Marked ? Translator.GetString("EscapistTeleportButtonText") : Translator.GetString("EscapistMarkButtonText");
         return !(UsePetCooldown != 0);
-            }
+    }
     public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "Telport";

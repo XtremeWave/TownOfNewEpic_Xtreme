@@ -231,6 +231,33 @@ public static class Utils
 
         return false;
     }
+    public static Color color2;
+    public static void ColorFlash(this PlayerControl player, Color color, float duration = -1, bool canbeblack = false, float duar = 0.3f)
+    {
+        //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
+        bool ReactorCheck = IsActive(GetCriticalSabotageSystemType());
+        float Duration;
+        if (duration != -1) Duration = duration;
+        else Duration = Options.KillFlashDuration.GetFloat();
+        if (ReactorCheck) Duration += 0.2f; //リアクター中はブラックアウトを長くする
+        color2 = color;
+        //実行
+        var state = PlayerState.GetByPlayerId(player.PlayerId);
+        if (canbeblack) state.IsBlackOut = true;
+        if (player.AmOwner) FlashColor(color, duar);
+        else if (player.IsModClient())
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ColorFlash, SendOption.Reliable, player.GetClientId());
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
+        else if (!ReactorCheck) player.ReactorFlash(0f); //リアクターフラッシュ
+        player.MarkDirtySettings();
+        _ = new LateTask(() =>
+        {
+            state.IsBlackOut = false; //ブラックアウト解除
+            player.MarkDirtySettings();
+        }, Duration, "RemoveKillFlash");
+    }
     public static void KillFlash(this PlayerControl player)
     {
         //キルフラッシュ(ブラックアウト+リアクターフラッシュ)の処理
@@ -1061,6 +1088,7 @@ public static class Utils
                     var TargetRoleText = targetRoleData.enabled ? $"<size={fontSize}>{targetRoleData.text}</size>\r\n" : "";
 
                     TargetSuffix.Clear();
+                    TargetSuffix.Append(seerRole?.GetLowerText(seer, target, isForMeeting: isForMeeting));
                     //seerに関わらず発動するLowerText
                     TargetSuffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target, isForMeeting: isForMeeting));
 
@@ -1117,6 +1145,7 @@ public static class Utils
     {
         foreach (var roleClass in CustomRoleManager.AllActiveRoles.Values)
             roleClass.AfterMeetingTasks();
+        Signal.AfterMeet();
         if (Options.AirShipVariableElectrical.GetBool())
             AirShipElectricalDoors.Initialize();
         DoorsReset.ResetDoors();
@@ -1180,14 +1209,14 @@ public static class Utils
     {
         string f = $"{Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory)}/TONEX-logs/";
         string t = DateTime.Now.ToString("yyyy-MM-dd_HH.mm.ss");
-        string filename = $"{f}TONEX-v{Main.PluginVersion}-{t}.log";
+        string filename = $"{f}TONEX-v{Main.PluginShowVersion}-{t}.log";
         if (!Directory.Exists(f)) Directory.CreateDirectory(f);
         FileInfo file = new(@$"{Environment.CurrentDirectory}/BepInEx/LogOutput.log");
         file.CopyTo(@filename);
         if (PlayerControl.LocalPlayer != null)
         {
-            if (popup) PlayerControl.LocalPlayer.ShowPopUp(string.Format(GetString("Message.DumpfileSaved"), $"TONEX - v{Main.PluginVersion}-{t}.log"));
-            else AddChatMessage(string.Format(GetString("Message.DumpfileSaved"), $"TONEX - v{Main.PluginVersion}-{t}.log"));
+            if (popup) PlayerControl.LocalPlayer.ShowPopUp(string.Format(GetString("Message.DumpfileSaved"), $"TONEX - v{Main.PluginShowVersion}-{t}.log"));
+            else AddChatMessage(string.Format(GetString("Message.DumpfileSaved"), $"TONEX - v{Main.PluginShowVersion}-{t}.log"));
         }
         ProcessStartInfo psi = new ProcessStartInfo("Explorer.exe")
         { Arguments = "/e,/select," + @filename.Replace("/", "\\") };
@@ -1212,6 +1241,7 @@ public static class Utils
         var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白 */ , 11.5f);
 
         var builder = new StringBuilder();
+        var pc = GetPlayerById(id);
         builder.Append(isForChat ? Main.AllPlayerNames[id] : ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
         string progressText = string.IsNullOrEmpty(GetProgressText(id)) ? GetProgressText(id) : GetKillCountText(id);
         builder.AppendFormat("<pos={0}em>", pos).Append(isForChat ? progressText.RemoveColorTags() : progressText).Append("</pos>");
@@ -1221,11 +1251,31 @@ public static class Utils
         // "Lover's Suicide " = 8em
         // "回線切断 " = 4.5em
         pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID is SupportedLangs.English or SupportedLangs.Russian ? 8f : 4.5f;
+
+        string oldRoleName = GetOldRoleName(pc);
+        var newRoleName = GetTrueRoleName(id, false);
+        if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
+        {
+            builder.AppendFormat("<pos={0}em>", pos);
+            builder.Append(isForChat ? $"  {oldRoleName}{GetSubRolesText(id)} => " + GetTrueRoleName(id, false).RemoveColorTags() : $" {oldRoleName}{GetSubRolesText(id)} =>" + GetTrueRoleName(id, false));
+            builder.Append(isForChat ? GetSubRolesText(id).RemoveColorTags() : GetSubRolesText(id));
+            return builder.ToString();
+        }
         builder.AppendFormat("<pos={0}em>", pos);
         builder.Append(isForChat ? GetTrueRoleName(id, false).RemoveColorTags() : GetTrueRoleName(id, false));
         builder.Append(isForChat ? GetSubRolesText(id).RemoveColorTags() : GetSubRolesText(id));
-        builder.Append("</pos>");
+
         return builder.ToString();
+    }
+    private static string GetOldRoleName(PlayerControl pc)
+    {
+        foreach (var role in Main.SetRolesList)
+        {
+            if (role.Item2.PlayerId == pc.PlayerId || role.Item2.PlayerId.Equals(pc.PlayerId))
+                return role.Item1;
+        }
+        Logger.Info($"失败", "LoadImage");
+        return null;
     }
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", string.Empty);
     public static string RemoveHtmlTagsExcept(this string str, string exceptionLabel) => Regex.Replace(str, "<(?!/*" + exceptionLabel + ")[^>]*?>", string.Empty);

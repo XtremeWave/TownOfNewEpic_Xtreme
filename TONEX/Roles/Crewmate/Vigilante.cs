@@ -48,6 +48,7 @@ public sealed class Vigilante : RoleBase, IKiller
     public float CalculateKillCooldown() => CanUseKillButton() ? 0f : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && !IsKilled;
     public bool CanUseSabotageButton() => false;
+    public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {

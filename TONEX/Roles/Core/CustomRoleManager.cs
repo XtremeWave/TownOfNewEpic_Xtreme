@@ -58,7 +58,7 @@ public static class CustomRoleManager
 
         var killerRole = attemptKiller.GetRoleClass();
         var targetRole = attemptTarget.GetRoleClass();
-
+        if (!attemptKiller.CanUseSkill()) return false;
         // 首先凶手确实是击杀类型的职业
         if (killerRole is IKiller killer)
         {
@@ -217,11 +217,13 @@ public static class CustomRoleManager
                 player.GetRoleClass()?.OnSecondsUpdate(player, now);
                 LastSecondsUpdate[player.PlayerId] = now;
                 Mini.OnSecondsUpdate(player,now);
+                Chameleon.OnSecondsUpdate(player, now);
             }
 
             player.GetRoleClass()?.OnFixedUpdate(player);
-            Chameleon.OnFixedUpdate(player);
+            
             Bait.OnFixedUpdate(player);
+            Signal.OnFixedUpdate(player);
             //その他視点処理があれば実行
             foreach (var onFixedUpdate in OnFixedUpdateOthers)
             {
@@ -361,6 +363,9 @@ public static class CustomRoleManager
                     break;
                 case CustomRoles.Libertarian:
                     Libertarian.Add(pc.PlayerId);
+                    break;
+                case CustomRoles.Signal:
+                    Signal.Add(pc.PlayerId);
                     break;
             }
         }
@@ -521,6 +526,7 @@ public enum CustomRoles
     SerialKiller,
     ShapeMaster,
     EvilGuesser,
+    EvilSwapper,
     KillingMachine,
     Zombie,
     Sniper,
@@ -585,9 +591,9 @@ public enum CustomRoles
     SpeedBooster,
     Dictator,
     Doctor,
-    Detective,
     Vigilante,
     NiceGuesser,
+    NiceSwapper,
     Transporter,
     TimeManager,
     Veteran,
@@ -606,6 +612,8 @@ public enum CustomRoles
     TimeMaster,
     Prophet,
     RubePeople,
+    Adventurer,
+    Unyielding,
     //Neutral
     Arsonist,
     Jester,
@@ -637,6 +645,9 @@ public enum CustomRoles
     Despair,
     RewardOfficer,
     Vagor_FAFL,
+    Non_Villain,
+    Lawyer,
+    Prosecutors,
     //GameMode
     HotPotato,
     ColdPotato,
@@ -673,6 +684,7 @@ public enum CustomRoles
     Chameleon,
     Mini,
     Libertarian,
+    Signal,
 }
 public enum CustomRoleTypes
 {

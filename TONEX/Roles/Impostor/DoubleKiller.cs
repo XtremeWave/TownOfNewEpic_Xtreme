@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using static TONEX.Translator;
 using Hazel;
 using UnityEngine;
+using MS.Internal.Xml.XPath;
 
 namespace TONEX.Roles.Impostor;
 public sealed class DoubleKiller : RoleBase, IImpostor
@@ -15,7 +16,7 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             typeof(DoubleKiller),
             player => new DoubleKiller(player),
             CustomRoles.DoubleKiller,
-            () => RoleTypes.Impostor,
+            () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             1238687,
             SetupOptionItem,
@@ -33,13 +34,14 @@ public sealed class DoubleKiller : RoleBase, IImpostor
     static OptionItem DoubleKillerDefaultKillCooldown;
     static OptionItem TwoKillCooldown;
     public List<byte> DoubleKillerReady;
-    public int DoubleKillerTwoTime;
+    public long DoubleKillerTwoTime;
     enum OptionName
     {
         DoubleKillerDefaultKillCooldown,
         DoubleKillerTwoKillCooldown,
     }
     private float KillCooldown;
+    private bool ShCooldown;
     private static void SetupOptionItem()
     {
         DoubleKillerDefaultKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DoubleKillerDefaultKillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -50,19 +52,18 @@ public sealed class DoubleKiller : RoleBase, IImpostor
     public override void Add()
     {
         KillCooldown = DoubleKillerDefaultKillCooldown.GetFloat();
-        DoubleKillerTwoTime = TwoKillCooldown.GetInt() + 8;
+        ShCooldown = false;
         DoubleKillerReady = new();
     }
-    public float CalculateKillCooldown() => KillCooldown;
-    private void SendRPC()
+    public override void OnGameStart()
     {
-        using var sender = CreateSender(CustomRPC.DoubleKillerBeKillTime);
-        sender.Writer.Write(DoubleKillerTwoTime);
+        DoubleKillerTwoTime = Utils.GetTimeStamp();
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public float CalculateKillCooldown() => KillCooldown;
+
+    public override void ApplyGameOptions(IGameOptions opt)
     {
-        if (rpcType != CustomRPC.DoubleKillerBeKillTime) return;
-        DoubleKillerTwoTime = reader.ReadInt32();
+        AURoleOptions.ShapeshifterCooldown = ShCooldown ? 255f : TwoKillCooldown.GetFloat();
     }
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
@@ -74,8 +75,10 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             KillCooldown = 0f;
             killer.ResetKillCooldown();
             killer.SyncSettings();
-            DoubleKillerTwoTime = TwoKillCooldown.GetInt();
-            SendRPC();
+            ShCooldown = false;
+            DoubleKillerTwoTime = Utils.GetTimeStamp();
+            Player.RpcResetAbilityCooldown();
+            killer.SyncSettings();
         }
         else
         {
@@ -84,27 +87,34 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             killer.SyncSettings();
         }
     }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
+    public override bool CanUseAbilityButton() => DoubleKillerTwoTime != -1 && !ShCooldown;
+    public override bool GetAbilityButtonSprite(out string buttonName)
+    {
+        return base.GetAbilityButtonSprite(out buttonName);
+    }
+    public override bool GetAbilityButtonText(out string text)
+    {
+        return base.GetAbilityButtonText(out text);
+    }
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (DoubleKillerTwoTime == 0) return;
-        if (DoubleKillerTwoTime >= 1 && Player.IsAlive() && !GameStates.IsMeeting)
+        var now = Utils.GetTimeStamp();
+
+        if (DoubleKillerTwoTime + (long)TwoKillCooldown.GetFloat() < now && DoubleKillerTwoTime != -1)
         {
-            DoubleKillerTwoTime -= 1;
-            SendRPC();
-        }
-        if (DoubleKillerTwoTime <= 0 && Player.IsAlive() && !DoubleKillerReady.Contains(Player.PlayerId))
-        {
-            Player.Notify(GetString("DoubleKillerReady"));
+            DoubleKillerTwoTime = -1;
+            Player.Notify(GetString("DoubleKillerReady"),2f);
             DoubleKillerReady.Add(Player.PlayerId);
+            ShCooldown = true;
+            Player.RpcResetAbilityCooldown();
+            Player.SyncSettings();
         }
     }
-    public override string GetProgressText(bool comms = false)
+    public override void AfterMeetingTasks()
     {
-        if (DoubleKillerTwoTime >= 1)
-            return Utils.ColorString(Color.red, $"({DoubleKillerTwoTime})");
-        else
-            return Utils.ColorString(Color.yellow, GetString("(DoubleKillerTimeReady)")); 
+        ShCooldown = false;
+        DoubleKillerTwoTime = Utils.GetTimeStamp();
+        Player.RpcResetAbilityCooldown();
     }
-    public override void AfterMeetingTasks() => DoubleKillerTwoTime = TwoKillCooldown.GetInt();
 }

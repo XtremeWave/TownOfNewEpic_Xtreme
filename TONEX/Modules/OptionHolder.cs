@@ -129,7 +129,6 @@ public static class Options
     //// 游戏设置 ////
 
     public static OptionItem EnableGM;
-    public static OptionItem UsePets;
 
     // 驱逐相关设定
     public static OptionItem CEMode;
@@ -327,6 +326,7 @@ public static class Options
     public static OptionItem AddedTheAirShip;
     public static OptionItem AddedTheFungle;
     // public static OptionItem AddedDleks;
+    public static OptionItem UsePets;
 
     public static OptionItem LadderDeath;
     public static OptionItem LadderDeathChance;
@@ -528,9 +528,6 @@ public static class Options
         EnableGM = BooleanOptionItem.Create(100, "GM", false, TabGroup.GameSettings, false)
             .SetColor(Utils.GetRoleColor(CustomRoles.GM))
             .SetHeader(true);
-       UsePets = BooleanOptionItem.Create(101, "CanUsePet", false, TabGroup.GameSettings, false)
-    .SetColor(Utils.GetRoleColor(CustomRoles.Veteran))
-    .SetHeader(true);
 
         bool setupExpNow = false;
 
@@ -1031,6 +1028,10 @@ public static class Options
            .SetColor(new Color32(193, 255, 209, byte.MaxValue))
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
+
+        UsePets = BooleanOptionItem.Create(3_048_002, "CanUsePet", false, TabGroup.GameSettings, false)
+.SetColor(Color.cyan)
+.SetHeader(true);
 
         // 幽灵相关设定
         TextOptionItem.Create(3_100_008, "MenuTitle.Ghost", TabGroup.GameSettings)

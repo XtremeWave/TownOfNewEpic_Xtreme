@@ -110,6 +110,7 @@ public sealed class TimeStops : RoleBase
         ProtectStartTime = Utils.GetTimeStamp();
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
             Player.Notify(GetString("TimeStopsOnGuard"));
+        Player.ColorFlash(Utils.GetRoleColor(CustomRoles.SchrodingerCat));
         CustomSoundsManager.RPCPlayCustomSoundAll("TheWorld");
         foreach (var player in Main.AllAlivePlayerControls)
         {

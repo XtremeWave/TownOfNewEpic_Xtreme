@@ -57,6 +57,7 @@ public enum CustomRPC
 
     //TONEX
     SetVagor,
+    ForNV,
 
     //GameMode
     SyncHpNameNotify,
@@ -103,6 +104,7 @@ public enum CustomRPC
     SetProphetList,
     VeteranKill,
     MiniAge,
+    SignalPosition,
     DoubleKillerBeKillTime,
     SetRewardOfficerTarget,
     ViciousKill,
@@ -110,6 +112,8 @@ public enum CustomRPC
     SetVultureArrow,
     SetHotPotatoBoomTime,
     MayorCanUseButton,
+    ColorFlash,
+    AdventurerSabotage,
 }
 public enum Sounds
 {
@@ -322,6 +326,9 @@ internal class RPCHandlerPatch
                 Utils.FlashColor(new(1f, 0f, 0f, 0.3f));
                 if (Constants.ShouldPlaySfx()) RPC.PlaySound(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
                 break;
+            case CustomRPC.ColorFlash:
+                Utils.FlashColor(Utils.color2);
+                break;
             case CustomRPC.OnClickMeetingButton:
                 var target = Utils.GetPlayerById(reader.ReadByte());
                 if (__instance.GetRoleClass() is IMeetingButton meetingButton) meetingButton.OnClickButton(target);
@@ -343,6 +350,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.MiniAge:
                 Mini.ReceiveRPC(reader,rpcType);
+                break;
+            case CustomRPC.SignalPosition:
+                Signal.ReceiveRPC(reader, rpcType);
                 break;
             case CustomRPC.SetMarkedPlayer:
                 Assassin.ReceiveRPC_SyncList(reader);

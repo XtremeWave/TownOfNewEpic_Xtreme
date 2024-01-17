@@ -119,7 +119,7 @@ internal class EAC
                     }
                     break;
                 case RpcCalls.MurderPlayer:
-                    if (GameStates.IsLobby)
+                    if (GameStates.IsLobby! || Main.CanPublic.Value)
                     {
                         WarnHost();
                         Report(pc, "非法击杀");

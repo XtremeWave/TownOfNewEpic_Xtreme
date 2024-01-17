@@ -149,12 +149,12 @@ class IntroCutscenePatch
                 __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
                     break;
             case CustomRoleTypes.Crewmate:
-                __instance.TeamTitle.text = GetString("TeamCrewmate");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(140, 255, 255, byte.MaxValue);
+                __instance.TeamTitle.text = $"{GetString("TeamCrewmate")}\n{string.Format(GetString("ImpostorNum"),Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors))}";
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
                 break;
             case CustomRoleTypes.Neutral:
                 __instance.TeamTitle.text = GetString("TeamNeutral");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 171, 27, byte.MaxValue);
+                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
                 break;
         }
         if (PlayerControl.LocalPlayer.GetRoleClass()?.GetGameStartSound(out var newsound) ?? false)
@@ -162,7 +162,6 @@ class IntroCutscenePatch
             new LateTask(() =>
             {
                 PlayerControl.LocalPlayer.RPCPlayCustomSound(newsound);
-                Utils.NotifyRoles();
             }, 4f, "Sound");
         }
         else
@@ -175,7 +174,6 @@ class IntroCutscenePatch
                     new LateTask(() =>
                     {
                         PlayerControl.LocalPlayer.RPCPlayCustomSound("Shapeshifter");
-                        Utils.NotifyRoles();
                     }, 3.8f, "Sound");
                     break;
                 }
@@ -184,7 +182,6 @@ class IntroCutscenePatch
                     new LateTask(() =>
                     {
                         RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
-                        Utils.NotifyRoles();
                     }, 4f, "Sound");
                     break;
                 }
@@ -194,7 +191,6 @@ class IntroCutscenePatch
                     new LateTask(() =>
                     {
                         RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
-                        Utils.NotifyRoles();
                     }, 4f, "Sound");
                     break;
                 }
@@ -206,8 +202,7 @@ class IntroCutscenePatch
                 {
                     new LateTask(() =>
                     {
-                        RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.ImpTransform);
-                        Utils.NotifyRoles();
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = DestroyableSingleton<HnSImpostorScreamSfx>.Instance.HnSOtherImpostorTransformSfx;
                     }, 4f, "Sound");
                     break;
                 }
@@ -216,7 +211,6 @@ class IntroCutscenePatch
                     new LateTask(() =>
                     {
                         PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                        Utils.NotifyRoles();
                     }, 4f, "Sound");
                     break;
                 }
@@ -226,7 +220,6 @@ class IntroCutscenePatch
                    new LateTask(() =>
                     {
                         PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Impostor);
-                        Utils.NotifyRoles();
                     }, 4f, "Sound");  
                     break;
                 } 

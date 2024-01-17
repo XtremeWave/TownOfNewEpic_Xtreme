@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using TONEX.Modules;
 using TONEX.Roles.AddOns.Impostor;
+using TONEX.Attributes;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Impostor;
@@ -24,7 +25,7 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player.Is(role)) return;
-
+        Main.SetRolesList.Add((Utils.GetTrueRoleName(player.PlayerId, false), player));
         if (role < CustomRoles.NotAssigned)
         {
             player.GetRoleClass()?.Dispose();
@@ -130,7 +131,47 @@ static class ExtendedPlayerControl
         Logger.Info($"Set:{player?.Data?.PlayerName}:{name} for All", "RpcSetNameEx");
         player.RpcSetName(name);
     }
-
+    public static void SetOutFitStatic(this PlayerControl target, int colorId = 255, string hatId = "", string skinId = "", string visorId = "", string petId = "")
+    {
+        var sender = CustomRpcSender.Create(name: $"Camouflage.RpcSetSkin({target.Data.PlayerName})");
+        if (colorId != 255)
+        {
+            target.SetColor(colorId);
+            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetColor)
+                .Write(colorId)
+            .EndRpc();
+        }
+        if (hatId != "")
+        {
+            target.SetHat(hatId, colorId);
+            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetHatStr)
+                .Write(hatId)
+            .EndRpc();
+        }
+        if (skinId != "")
+        {
+            target.SetSkin(skinId, colorId);
+            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetSkinStr)
+                .Write(skinId)
+            .EndRpc();
+        }
+        if (hatId != "")
+        {
+            target.SetVisor(visorId, colorId);
+            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetVisorStr)
+                .Write(visorId)
+            .EndRpc();
+        }
+        if (petId != "")
+        {
+            target.SetPet(petId);
+            sender.AutoStartRpc(target.NetId, (byte)RpcCalls.SetPetStr)
+                .Write(petId)
+                .EndRpc();
+        }
+        sender.SendMessage();
+    }
+   
     public static void RpcSetNamePrivate(this PlayerControl player, string name, bool DontShowOnModdedClient = false, PlayerControl seer = null, bool force = false)
     {
         //player: 名前の変更対象
@@ -422,6 +463,10 @@ static class ExtendedPlayerControl
         Main.AllPlayerKillCooldown[player.PlayerId] = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
+        if (Main.AllPlayerKillCooldown[player.PlayerId] < 1.6f && Main.CanPublic.Value)
+        {
+            Main.AllPlayerKillCooldown[player.PlayerId] = 1.6f;
+        }
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -434,6 +479,13 @@ static class ExtendedPlayerControl
         killer.MurderPlayer(target, SucceededFlags);
     }
     public const MurderResultFlags SucceededFlags = MurderResultFlags.Succeeded | MurderResultFlags.DecisionByHost;
+    public static bool CanUseSkill(this PlayerControl pc)
+    {
+        if (Main.CantUseSkillList.Count <= 0) return true;
+        if (Main.CantUseSkillList.Contains(pc))
+            return false;
+        return true;
+    }
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
         killer.RpcMurderPlayer(target, true);
@@ -441,14 +493,16 @@ static class ExtendedPlayerControl
     public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
     {
         if (target == null) target = killer;
-        if (AmongUsClient.Instance.AmClient)
+        if (AmongUsClient.Instance.AmClient && !Main.CanPublic.Value)
         {
-            killer.MurderPlayer(target);
+            killer.RpcMurderPlayer(target, true);
         }
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
+        killer.MurderPlayer(target, SucceededFlags);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, PsendOption, -1);
         messageWriter.WriteNetObject(target);
         messageWriter.Write((int)SucceededFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        target.Data.IsDead = true;
         Utils.NotifyRoles();
     }
     public static void RpcProtectedMurderPlayer(this PlayerControl killer, PlayerControl target = null)
@@ -710,4 +764,5 @@ static class ExtendedPlayerControl
         }
         return !state.IsDead;
     }
+    public static SendOption PsendOption = Main.CanPublic.Value ? SendOption.None : SendOption.Reliable;
 }

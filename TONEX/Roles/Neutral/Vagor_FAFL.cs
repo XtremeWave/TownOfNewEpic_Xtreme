@@ -22,8 +22,13 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
             CustomRoles.Vagor_FAFL,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            7565_1,
+            7565_1_1_1,
+#if DEBUG
             SetupOptionItem,
+#else
+            null,
+#endif
+
             "Zhongli|Vagor|µÛ¾ý|ÏÐÓÎ",
              "#E6AD0A",
             true,
@@ -57,6 +62,7 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     public int UsePetCooldown;
     private static void SetupOptionItem()
     {
+
     }
     public override bool GetGameStartSound(out string sound)
     {
@@ -108,7 +114,7 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
         var (killer, target) = info.AttemptTuple;
         if (!IsFallen)
         {
-            if (killer.CheckDoubleTrigger(target, () => { SetSpelled(killer, target, info); }))
+            if (killer.CheckDoubleTrigger(target, () => { NormalKill(killer, target, info); }))
             {
                 var killpercent = Random.Range(0, 100);
                 if (killpercent <= 2)
@@ -150,7 +156,7 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
         return false;
     }
     public bool IsKiller { get; private set; } = true;
-    public void SetSpelled(PlayerControl killer, PlayerControl target, MurderInfo info)
+    public void NormalKill(PlayerControl killer, PlayerControl target, MurderInfo info)
     {
         var killpercent = Random.Range(0, 100);
         if (NormalKillCount < 6)
@@ -203,7 +209,6 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
         return $"{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
 
     }
-
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;

@@ -186,7 +186,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         var team = candidates[rand.Next(candidates.Count)];
         RpcSetTeam(team);
     }
-    public bool CheckWin(ref CustomRoles winnerRole)
+    public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)
     {
         bool? won = Team switch
         {

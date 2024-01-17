@@ -40,7 +40,7 @@ public sealed class Veteran : RoleBase
 
     private int SkillLimit;
     private long ProtectStartTime;
-    private int UsePetCooldown;
+    private long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.VeteranSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -53,9 +53,13 @@ public sealed class Veteran : RoleBase
     public override void Add()
     {
         SkillLimit = OptionSkillNums.GetInt();
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
-    public override void OnGameStart() => UsePetCooldown = OptionSkillCooldown.GetInt();
+    public override void OnGameStart()  
+    {
+        if(Options.UsePets.GetBool())UsePetCooldown = Utils.GetTimeStamp();
+}
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
@@ -110,26 +114,56 @@ public sealed class Veteran : RoleBase
             return false;
         }
     }
+    public override void OnUsePet()
+    {
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != -1)
+        {
+            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
+            return;
+        }
+        if (SkillLimit >= 1)
+        {
+            SkillLimit--;
+            SendRPC();
+            ProtectStartTime = Utils.GetTimeStamp();
+            if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
+            Player.RPCPlayCustomSound("Gunload");
+            UsePetCooldown = Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("VeteranOnGuard"), SkillLimit, 2f));
+        }
+        else
+        {
+            Player.Notify(GetString("SkillMaxUsage"));
+            return;
+        }
+    }
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("VeteranVetnButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "Veteran";
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ProtectStartTime == 0) return;
-        Logger.Info($"兵反弹击杀", "Veteran.OnCheckMurderAsTarget");
-        if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
         {
-            ProtectStartTime = 0;
+            ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("VeteranOffGuard"), SkillLimit));
+        }
+        if (UsePetCooldown + (long)OptionSkillCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
+        {
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)

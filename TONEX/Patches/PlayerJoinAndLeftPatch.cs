@@ -262,6 +262,16 @@ class CreatePlayerPatch
                     }
                 }, 3.2f, "DisplayDirectorModeWarnning");
             }
+         if (Options.UsePets.GetBool())
+            {
+                _ = new LateTask(() =>
+                {
+                    if (!AmongUsClient.Instance.IsGameStarted && client.Character != null)
+                    {
+                        Utils.SendMessage($"{GetString("Message.PetModeNotice")}", client.Character.PlayerId);
+                    }
+                }, 3.2f, "DisplayDirectorModeWarnning");
+            }
         }
     }
 }

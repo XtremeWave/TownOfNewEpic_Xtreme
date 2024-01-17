@@ -1,6 +1,7 @@
 using AmongUs.GameOptions;
 using HarmonyLib;
 using Hazel.Dtls;
+using LibCpp2IL.Elf;
 using System.Linq;
 using System.Text;
 using TMPro;
@@ -68,17 +69,17 @@ class HudManagerPatch
                 if (roleClass != null)
                 {
                     var killLabel = (roleClass as IKiller)?.OverrideKillButtonText(out string text) == true ? text : GetString(StringNames.KillLabel);
-                    __instance.KillButton.OverrideText(killLabel);
+                    __instance.KillButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()), killLabel));
                     var reportLabel = roleClass?.GetReportButtonText() ?? GetString(StringNames.ReportLabel);
-                    __instance.ReportButton.OverrideText(reportLabel);
+                    __instance.ReportButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()),reportLabel));
                     var useLabel = roleClass?.GetUseButtonText() ?? GetString(StringNames.UseLabel);
-                    __instance.UseButton.OverrideText(useLabel);
+                    __instance.UseButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()),useLabel));
                     __instance.UseButton.OverrideColor(Utils.GetRoleColor(player.GetCustomRole()));
                     __instance.UseButton.SetCooldownFill(-1f);
                 
                     if (roleClass.HasAbility)
                     {
-                        if (roleClass.GetAbilityButtonText(out var abilityLabel)) __instance.AbilityButton.OverrideText(abilityLabel);
+                        if (roleClass.GetAbilityButtonText(out var abilityLabel)) __instance.AbilityButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()), abilityLabel));
                         __instance.AbilityButton.ToggleVisible(roleClass.CanUseAbilityButton() && GameStates.IsInTask);
                         int uses = roleClass.OverrideAbilityButtonUsesRemaining();
                         if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);
@@ -87,8 +88,14 @@ class HudManagerPatch
 
                     if (Options.UsePets.GetBool())
                     {
-                        var petLabel = roleClass?.GetPetButtonText(out string name) == true ? name : "";
-                        __instance.PetButton.OverrideText(petLabel);
+                        if (roleClass?.GetPetButtonText(out string name) == true)
+                        {
+                            __instance.PetButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()),name));
+                        }
+                        else if (roleClass?.GetPetButtonText(out string petlabel) == false)
+                        {
+                            __instance.PetButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()),petlabel));
+                        }   
                     }
 
                 }

@@ -142,7 +142,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
             ? Utils.ColorString(Utils.GetRoleColor(CustomRoles.Follower), "♦") : "";
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? Utils.ShadeColor(RoleInfo.RoleColor, 0.25f) : Color.gray, $"({BetLimit})");
-    public bool CheckWin(ref CustomRoles winnerRole)
+    public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)
     {
         if (BetTarget == byte.MaxValue) return false;
         var targetPs = PlayerState.GetByPlayerId(BetTarget);

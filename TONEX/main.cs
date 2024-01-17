@@ -39,10 +39,11 @@ public class Main : BasePlugin
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "1.0.0";
+    public const string PluginShowVersion = "1.0_20240201_";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
-    public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonx.cc/zh" : "https://tonx.cc";
+    public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonex.cc" : "https://tonex.cc/En";
     public static readonly bool ShowQQButton = false;
     public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
     public static readonly bool ShowDiscordButton = false;
@@ -65,6 +66,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> ShowResults { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
+    public static ConfigEntry<bool> CanPublic { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> AutoStartGame { get; private set; }
     public static ConfigEntry<bool> AutoEndGame { get; private set; }
@@ -100,7 +102,8 @@ public class Main : BasePlugin
     public static List<PlayerControl> LoversPlayers = new();
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
-
+    public static List<(string, PlayerControl)> SetRolesList = new List<(string, PlayerControl)>();
+    public static List<PlayerControl> CantUseSkillList = new();
     /// <summary>
     /// 基本的に速度の代入は禁止.スピードは増減で対応してください.
     /// </summary>
@@ -154,6 +157,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
+        CanPublic = Config.Bind("Client Options", "HorseMode", false);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);
@@ -373,6 +377,8 @@ public enum CustomWinner
     RewardOfficer = CustomRoles.RewardOfficer,
     ColdPotato = CustomRoles.ColdPotato,
     FAFL = CustomRoles.Vagor_FAFL,
+    Congu = CustomRoles.Non_Villain,
+    Lawyer = CustomRoles.Lawyer,
 }
 public enum SuffixModes
 {

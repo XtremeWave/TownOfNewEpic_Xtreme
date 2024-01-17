@@ -173,7 +173,6 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.BoobyTrap or
                 CustomRoles.Zombie or
                 CustomRoles.Mare or
-                CustomRoles.Detective or
                 CustomRoles.TimeManager or
                 CustomRoles.Jester or
                 CustomRoles.Medic or

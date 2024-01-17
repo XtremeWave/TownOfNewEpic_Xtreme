@@ -9,6 +9,7 @@ namespace TONEX;
 public static class OptionsMenuBehaviourStartPatch
 {
     private static ClientOptionItem UnlockFPS;
+    private static ClientOptionItem CanPublic;
     private static ClientOptionItem HorseMode;
     private static ClientOptionItem AutoStartGame;
     private static ClientOptionItem AutoEndGame;
@@ -44,6 +45,10 @@ public static class OptionsMenuBehaviourStartPatch
                 Application.targetFrameRate = Main.UnlockFPS.Value ? 240 : 60;
                 Logger.SendInGame(string.Format(Translator.GetString("FPSSetTo"), Application.targetFrameRate));
             }
+        }
+        if (CanPublic == null || CanPublic.ToggleButton == null)
+        {
+            CanPublic = ClientOptionItem.Create("CanPublic", Main.CanPublic, __instance);
         }
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {

@@ -91,15 +91,12 @@ class ExternalRpcPetPatch
         LastProcess[pc.PlayerId] = Utils.GetTimeStamp();
         Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} petted their pet", "PetActionTrigger");
         var user = __instance.myPlayer;
-
-            physics.RpcCancelPet();
+        if (!user.CanUseSkill()) return false;
+        physics.RpcCancelPet();
             bool canpet = user.CanPet();
             if(canpet)        Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} cancel petting{canpet}", "PetActionTrigger");
         user.GetRoleClass()?.OnUsePet();     
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(user.NetId, (byte)RpcCalls.CancelPet, SendOption.Reliable, -1);
-            writer.WriteNetObject(user);
-        writer.WritePacked(10);
-        writer.Write(10);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
         physics.RpcCancelPet();
         return true;

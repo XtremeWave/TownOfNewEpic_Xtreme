@@ -16,10 +16,12 @@ namespace TONEX;
 [HarmonyPatch(typeof(AmongUsClient), nameof(AmongUsClient.CoStartGame))]
 internal class ChangeRoleSettings
 {
+
     public static void Postfix(AmongUsClient __instance)
     {
         try
         {
+
             //注:この時点では役職は設定されていません。
             Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.GuardianAngel, 0, 0);
             if (Options.DisableVanillaRoles.GetBool())
@@ -28,7 +30,7 @@ internal class ChangeRoleSettings
                 Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Engineer, 0, 0);
                 Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
             }
-
+            Main.SetRolesList = new();
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();
             Main.AllPlayerSpeed = new();
@@ -62,6 +64,8 @@ internal class ChangeRoleSettings
             Main.LastNotifyNames = new();
 
             Main.PlayerColors = new();
+
+            Main.CantUseSkillList.Clear();
             //名前の記録
             RPC.SyncAllPlayerNames();
 

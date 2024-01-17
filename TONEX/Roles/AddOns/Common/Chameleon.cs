@@ -27,13 +27,13 @@ public static class Chameleon
     }
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-    public static void OnFixedUpdate(PlayerControl player)
+    public static void OnSecondsUpdate(PlayerControl player, long now)
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player.Is(CustomRoles.Chameleon))
         {
             var color = IRandom.Instance.Next(0, 18);
-            player.RpcSetColor((byte)color);
+            player.SetOutFitStatic(color);
         }
     }
 }

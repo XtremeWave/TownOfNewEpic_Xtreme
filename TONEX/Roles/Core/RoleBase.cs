@@ -562,6 +562,7 @@ public abstract class RoleBase : IDisposable
         Cooldown,
         KillCooldown,
         CanVent,
+        CanKill,
         VentCooldown,
         ImpostorVision,
         CanUseSabotage,

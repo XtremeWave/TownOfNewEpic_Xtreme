@@ -41,6 +41,7 @@ internal class PingTrackerUpdatePatch
             if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("DebugMode")));
             if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("LowLoadMode")));
             if (Options.EnableDirectorMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(new Color32(214, 157, 133, byte.MaxValue), GetString("DirectorMode")));
+            if (Options.UsePets.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.cyan, GetString("PetMode")));
         }
 
         var offset_x = 1.2f; //右端からのオフセット
@@ -59,7 +60,7 @@ internal class VersionShowerStartPatch
     private static void Postfix(VersionShower __instance)
     {
         TMPTemplate.SetBase(__instance.text);
-        Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginVersion}";
+        Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginShowVersion}";
 #if DEBUG
         Main.CredentialsText = $"\r\n<color=#fffcbe>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
 #endif

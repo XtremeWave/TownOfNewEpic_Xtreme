@@ -46,7 +46,6 @@ internal static class CustomRoleSelector
             }
             return;
         }
-
         foreach (var cr in Enum.GetValues(typeof(CustomRoles)))
         {
             CustomRoles role = (CustomRoles)Enum.Parse(typeof(CustomRoles), cr.ToString());
@@ -72,6 +71,121 @@ internal static class CustomRoleSelector
             else roleRateList.Add(role);
         }
 
+#region 抽取隐藏职业
+        if (!Options.DisableHiddenRoles.GetBool())
+        {
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+
+            var sp = UnityEngine.Random.Range(0, 100);
+            if (sp < 5 && !rolesToAssign.Contains(CustomRoles.Bard))
+            {
+                var shouldExecute = true;
+                if (ImpRateList.Count > 0)
+                {
+                    var remove = ImpRateList[rd.Next(0, ImpRateList.Count)];
+                    ImpRateList.Remove(remove);
+                }
+                else if (ImpOnList.Count > 0)
+                {
+                    var remove = ImpOnList[rd.Next(0, ImpOnList.Count)];
+                    ImpOnList.Remove(remove);
+                }
+                else
+                {
+                    shouldExecute = false;
+                }
+                if (shouldExecute)
+                {
+                    rolesToAssign.Add(CustomRoles.Bard);
+
+                    readyRoleNum++;
+                }
+                sp = UnityEngine.Random.Range(0, 100);
+            }
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+
+            if (sp < 50 && !rolesToAssign.Contains(CustomRoles.Non_Villain) && readyNeutralNum < optNeutralNum)
+            {
+                var shouldExecute = true;
+                if (NeutralRateList.Count > 0)
+                {
+                    var remove = NeutralRateList[rd.Next(0, NeutralOnList.Count)];
+                    NeutralRateList.Remove(remove);
+                }
+                else if (NeutralOnList.Count > 0)
+                {
+                    var remove = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
+                    NeutralOnList.Remove(remove);
+                }
+                else
+                {
+                    shouldExecute = false;
+                }
+                if (shouldExecute)
+                {
+                    rolesToAssign.Add(CustomRoles.Non_Villain);
+                    readyRoleNum++;
+                    readyNeutralNum++;
+                }
+                sp = UnityEngine.Random.Range(0, 100);
+            }
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+
+            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNeutralNum < optNeutralNum)
+            {
+                var shouldExecute = true;
+                if (NeutralRateList.Count > 0)
+                {
+                    var remove = NeutralRateList[rd.Next(0, NeutralRateList.Count)];
+                    NeutralRateList.Remove(remove);
+                }
+                else if (NeutralOnList.Count > 0)
+                {
+                    var remove = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
+                    NeutralOnList.Remove(remove);
+                }
+                else
+                {
+                    shouldExecute = false;
+                }
+                if (shouldExecute)
+                {
+                    rolesToAssign.Add(CustomRoles.Vagor_FAFL);
+                    readyRoleNum++;
+                    readyNeutralNum++;
+                }
+                sp = UnityEngine.Random.Range(0, 100);
+            }
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+
+            if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
+            {
+                var shouldExecute = true;
+                if (NeutralRateList.Count > 0)
+                {
+                    var remove = NeutralRateList[rd.Next(0, NeutralRateList.Count)];
+                    NeutralRateList.Remove(remove);
+                }
+                else if (NeutralOnList.Count > 0)
+                {
+                    var remove = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
+                    NeutralOnList.Remove(remove);
+                }
+                else
+                {
+                    shouldExecute = false;
+                }
+                if (shouldExecute)
+                {
+                    rolesToAssign.Add(CustomRoles.Sunnyboy);
+                    readyRoleNum++;
+                    readyNeutralNum++;
+                }
+                sp = UnityEngine.Random.Range(0, 100);
+            }
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+        }
+        #endregion
         // 抽取优先职业（内鬼）
         while (ImpOnList.Count > 0)
         {
@@ -97,10 +211,12 @@ internal static class CustomRoleSelector
                 if (readyRoleNum >= optImpNum) break;
             }
         }
-
         // 抽取优先职业（中立）
         while (NeutralOnList.Count > 0 && optNeutralNum > 0)
         {
+            
+            
+            
             var select = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
             NeutralOnList.Remove(select);
             rolesToAssign.Add(select);
@@ -152,13 +268,7 @@ internal static class CustomRoleSelector
 
     // 职业抽取结束
     EndOfAssign:
-
-        // 隐藏职业
-        if (!Options.DisableHiddenRoles.GetBool())
-        {
-            if (rd.Next(0, 100) < 3 && rolesToAssign.Remove(CustomRoles.Jester)) rolesToAssign.Add(CustomRoles.Sunnyboy);
-            if (rd.Next(0, 100) < 5 && rolesToAssign.Remove(CustomRoles.Arrogance)) rolesToAssign.Add(CustomRoles.Bard);
-        }
+       
 
         // Dev Roles List Edit
         foreach (var dr in Main.DevRole)

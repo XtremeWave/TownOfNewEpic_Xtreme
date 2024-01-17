@@ -16,6 +16,7 @@ using TONEX.Roles.Impostor;
 using TONEX.Roles.Vanilla;
 using UnityEngine;
 using static TONEX.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX;
 
@@ -126,52 +127,92 @@ class CheckMurderPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.MurderPlayer))]
 class MurderPlayerPatch
 {
+
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.MurderPlayer));
     public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state /* 成功したキルかどうか */ )
     {
-        logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}({resultFlags})");
-        var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
-        var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
-        var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
-        var isSucceeded = __state = !isProtectedByClient && !isProtectedByHost && !isFailed;
-        if (isProtectedByClient)
+        if (!Main.CanPublic.Value)
         {
-            logger.Info("守護されているため，キルは失敗します");
-        }
-        if (isProtectedByHost)
-        {
-            logger.Info("守護されているため，キルはホストによってキャンセルされました");
-        }
-        if (isFailed)
-        {
-            logger.Info("キルはホストによってキャンセルされました");
-        }
-
-        if (isSucceeded)
-        {
-            if (target.shapeshifting)
+            logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}({resultFlags})");
+            var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
+            var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
+            var isFailed = resultFlags.HasFlag(MurderResultFlags.FailedError);
+            var isSucceeded = __state = !isProtectedByClient && !isProtectedByHost && !isFailed;
+            if (isProtectedByClient)
             {
-                //シェイプシフトアニメーション中
-                //アニメーション時間を考慮して1s、加えてクライアントとのラグを考慮して+0.5s遅延する
-                _ = new LateTask(
-                    () =>
-                    {
-                        if (GameStates.IsInTask)
-                        {
-                            target.RpcShapeshift(target, false);
-                        }
-                    },
-                    1.5f, "RevertShapeshift");
+                logger.Info("守護されているため，キルは失敗します");
             }
-            else
+            if (isProtectedByHost)
             {
-                if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out var shapeshifting) && shapeshifting)
+                logger.Info("守護されているため，キルはホストによってキャンセルされました");
+            }
+            if (isFailed)
+            {
+                logger.Info("キルはホストによってキャンセルされました");
+            }
+
+            if (isSucceeded)
+            {
+                if (target.shapeshifting)
                 {
-                    //シェイプシフト強制解除
-                    target.RpcShapeshift(target, false);
+                    //シェイプシフトアニメーション中
+                    //アニメーション時間を考慮して1s、加えてクライアントとのラグを考慮して+0.5s遅延する
+                    _ = new LateTask(
+                        () =>
+                        {
+                            if (GameStates.IsInTask)
+                            {
+                                target.RpcShapeshift(target, false);
+                            }
+                        },
+                        1.5f, "RevertShapeshift");
+                }
+                else
+                {
+                    if (Main.CheckShapeshift.TryGetValue(target.PlayerId, out var shapeshifting) && shapeshifting)
+                    {
+                        //シェイプシフト強制解除
+                        target.RpcShapeshift(target, false);
+                    }
+                }
+                Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
+            }
+        }
+        else
+        {
+            Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer");
+            if (AmongUsClient.Instance.AmHost && Main.CanPublic.Value)
+            {
+                if (resultFlags == MurderResultFlags.Succeeded)
+                {
+                    __instance.RpcSpecificMurderPlayer(__instance);
+                    EAC.Report(__instance, "No check murder");
+                    EAC.WarnHost();
+                    EAC.HandleCheat(__instance, "No check murder");
+                    return;
+                }
+                //As long as the check murder is done by host, the murder result flags will always have DecisionByHost
+                //Succeed means the client send a murder player rpc without check murder to host
+            }
+            if (AmongUsClient.Instance.AmHost && Main.CanPublic.Value)
+            {
+                if (resultFlags == MurderResultFlags.FailedProtected)
+                {
+                    target.RemoveProtection();
+                    __instance.CheckMurder(target);
+                    target.SendKeepProtect();
+                    return;
+                }
+                if (resultFlags == MurderResultFlags.Succeeded)
+                {
+                    Logger.SendInGame($"玩家{target.GetRealName()}被绕过公开保护直接击杀。");
+                }
+                if (resultFlags == ExtendedPlayerControl.SucceededFlags)
+                {
+                    target.RemoveProtection();
                 }
             }
-            Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
+
         }
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
@@ -200,6 +241,7 @@ class MurderPlayerPatch
             Main.FirstDied = target.PlayerId;
     }
 }
+
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
 class ShapeshiftPatch
 {
@@ -351,7 +393,7 @@ class FixedUpdatePatch
         LocateArrow.OnFixedUpdate(player);
 
         CustomRoleManager.OnFixedUpdate(player);
-
+           
 
         if (AmongUsClient.Instance.AmHost)
         {//実行クライアントがホストの場合のみ実行
@@ -487,7 +529,7 @@ class FixedUpdatePatch
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
-
+                Suffix.Append(seerRole?.GetLowerText(seer, target));
                 //seerに関わらず発動するLowerText
                 Suffix.Append(CustomRoleManager.GetLowerTextOthers(seer, target));
 
@@ -590,6 +632,7 @@ class SetColorPatch
         return true;
     }
 }
+#region 管道
 [HarmonyPatch(typeof(Vent), nameof(Vent.EnterVent))]
 class EnterVentPatch
 {
@@ -611,7 +654,7 @@ class CoEnterVentPatch
         Logger.Info($"{__instance.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
         var user = __instance.myPlayer;
-
+        if (!user.CanUseSkill()) return false;
         if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
                     (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
                 !user.CanUseImpostorVentButton()) //インポスターベントも使えない
@@ -632,7 +675,7 @@ class CoEnterVentPatch
         return true;
     }
 }
-
+#endregion
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.SetName))]
 class SetNamePatch
 {

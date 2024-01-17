@@ -61,7 +61,7 @@ public static class NameTagManager
         else if (player.AmOwner && GameStates.IsLobby)
             name = Options.GetSuffixMode() switch
             {
-                SuffixModes.TONEX => name += $"\r\n<color={Main.ModColor}>TONEX v{Main.PluginVersion}</color>",
+                SuffixModes.TONEX => name += $"\r\n<color={Main.ModColor}>TONEX v{Main.PluginShowVersion}</color>",
                 SuffixModes.Streaming => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Streaming")}</color></size>",
                 SuffixModes.Recording => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.Recording")}</color></size>",
                 SuffixModes.RoomHost => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixMode.RoomHost")}</color></size>",
@@ -223,7 +223,7 @@ public static class NameTagManager
                 upper += Options.CurrentGameMode switch
                 {  
                     CustomGameMode.HotPotato => $"<color=#87cefa>{GetString("HotPotatoMode")}</color>",
-                    _ => $"<color=#87cefa>{Main.PluginVersion}</color>",
+                    _ => $"<color=#87cefa>{Main.PluginShowVersion}</color>",
           
                 };
                 name = upper + "</size>\r\n" + name;
