@@ -39,7 +39,7 @@ public class Main : BasePlugin
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "1.0.0";
-    public const string PluginShowVersion = "1.0_20240201_dev1";
+    public const string PluginShowVersion = "1.0_20240201_dev_1";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
