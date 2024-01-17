@@ -11,7 +11,7 @@
   </br></br>
 
   <h1>:fire: 𝓐𝓷𝓷𝓸𝓾𝓷𝓬𝓮𝓶𝓮𝓷𝓽 :fire:</h1>
-  <p>Since May 20, TOHE stopped development due to some reasons. At the request of many players, TOHE will maintain the most basic adaptation and synchronize updates with TOH to ensure that players in need can still play normally. TOHE has renamed TONX<br>Because Of this, we no longer in the "name of inheritance", so we restart our project, named it "TONEX"</p>
+  <p>Since May 20, TOHE stopped development due to some reasons. At the request of many players, TOHE will maintain the most basic adaptation and synchronize updates with TOH to ensure that players in need can still play normally. TOHE has renamed TONX<br>Because Of this, no longer in the name of inheritance</p>
 
   </br></br>
 
