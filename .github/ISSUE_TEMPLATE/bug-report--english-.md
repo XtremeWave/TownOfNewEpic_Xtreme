@@ -3,7 +3,7 @@ name: Bug report (English)
 about: Create a report to help us improve
 title: "[Bug] "
 labels: Bug
-assignees: KARPED1EM
+assignees: Slok7565
 
 ---
 

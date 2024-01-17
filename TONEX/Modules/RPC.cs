@@ -355,7 +355,7 @@ internal class RPCHandlerPatch
                 Signal.ReceiveRPC(reader, rpcType);
                 break;
             case CustomRPC.SetMarkedPlayer:
-                Assassin.ReceiveRPC_SyncList(reader);
+                Ninja.ReceiveRPC_SyncList(reader);
                 break;
             case CustomRPC.SetYangPlayer:
                 Onmyoji.ReceiveRPC_SyncYangList(reader);

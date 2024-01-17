@@ -3,7 +3,7 @@ name: Question (English)
 about: Ask the developers any questions
 title: "[Question]"
 labels: Question
-assignees: KARPED1EM
+assignees: Slok7565
 
 ---
 

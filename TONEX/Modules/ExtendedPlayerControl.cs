@@ -502,7 +502,7 @@ static class ExtendedPlayerControl
         messageWriter.WriteNetObject(target);
         messageWriter.Write((int)SucceededFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        target.Data.IsDead = true;
+        //target.Data.IsDead = true;
         Utils.NotifyRoles();
     }
     public static void RpcProtectedMurderPlayer(this PlayerControl killer, PlayerControl target = null)

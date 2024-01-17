@@ -110,7 +110,7 @@ public sealed class FortuneTeller : RoleBase
                 => "Impulse",
 
                 CustomRoles.Vampire or
-                CustomRoles.Assassin or
+                CustomRoles.Ninja or
                 CustomRoles.Escapist or
                 CustomRoles.Sniper or
                 CustomRoles.Vigilante or

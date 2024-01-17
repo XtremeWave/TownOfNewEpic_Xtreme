@@ -533,7 +533,7 @@ public enum CustomRoles
     Vampire,
     Witch,
     Warlock,
-    Assassin,
+    Ninja,
     Hacker,
     Miner,
     Escapist,

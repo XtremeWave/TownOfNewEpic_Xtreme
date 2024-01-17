@@ -93,7 +93,7 @@ internal class Cloud
                 LastRepotTimeStamp = Utils.GetTimeStamp();
                 EacClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 EacClientSocket.Connect(IP, EAC_PORT);
-                Logger.Warn("已连接至TONX服务器", "EAC Cloud");
+                Logger.Warn("已连接至TONEX服务器", "EAC Cloud");
             }
             catch (Exception ex)
             {
@@ -113,7 +113,7 @@ internal class Cloud
         //StartConnect();
         if (EacClientSocket == null || !EacClientSocket.Connected)
         {
-            //Logger.Warn("未连接至TONX服务器，报告被取消", "EAC Cloud");
+            //Logger.Warn("未连接至TONEX服务器，报告被取消", "EAC Cloud");
             return;
         }
         EacClientSocket.Send(Encoding.Default.GetBytes(msg));

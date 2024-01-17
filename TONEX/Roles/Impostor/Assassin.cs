@@ -11,68 +11,68 @@ using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Impostor;
-public sealed class Assassin : RoleBase, IImpostor
+public sealed class Ninja : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Assassin),
-            player => new Assassin(player),
-            CustomRoles.Assassin,
+            typeof(Ninja),
+            player => new Ninja(player),
+            CustomRoles.Ninja,
        () => Options.UsePets.GetBool() ? RoleTypes.Impostor : RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             1600,
             SetupOptionItem,
             "as|忍者"
         );
-    public Assassin(PlayerControl player)
+    public Ninja(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
     {
-        ForAssassin = new();
+        ForNinja = new();
     }
 
     static OptionItem MarkCooldown;
-    static OptionItem AssassinateCooldown;
+    static OptionItem NinjaateCooldown;
     enum OptionName
     {
-        AssassinMarkCooldown,
-        AssassinAssassinateCooldown,
+        NinjaMarkCooldown,
+        NinjaNinjaateCooldown,
     }
 
-    public static List<byte> ForAssassin;
+    public static List<byte> ForNinja;
     public int UsePetCooldown;
     private static void SetupOptionItem()
     {
-        MarkCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.AssassinMarkCooldown, new(2.5f, 180f, 2.5f), 20f, false)
+        MarkCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.NinjaMarkCooldown, new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        AssassinateCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.AssassinAssassinateCooldown, new(2.5f, 180f, 2.5f), 10f, false)
+        NinjaateCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.NinjaNinjaateCooldown, new(2.5f, 180f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Add()
     {
-        ForAssassin = new();
+        ForNinja = new();
         Shapeshifting = false;
     }
-    public override void OnGameStart() => UsePetCooldown = AssassinateCooldown.GetInt();
+    public override void OnGameStart() => UsePetCooldown = NinjaateCooldown.GetInt();
     private static void SendRPC_SyncList()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SetMarkedPlayer, SendOption.Reliable, -1);
-        writer.Write(ForAssassin.Count);
-        for (int i = 0; i < ForAssassin.Count; i++)
-            writer.Write(ForAssassin[i]);
+        writer.Write(ForNinja.Count);
+        for (int i = 0; i < ForNinja.Count; i++)
+            writer.Write(ForNinja[i]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC_SyncList(MessageReader reader)
     {
         int count = reader.ReadInt32();
-        ForAssassin = new();
+        ForNinja = new();
         for (int i = 0; i < count; i++)
-            ForAssassin.Add(reader.ReadByte());
+            ForNinja.Add(reader.ReadByte());
     }
     public float CalculateKillCooldown() => MarkCooldown.GetFloat();
-    public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.ShapeshifterCooldown = AssassinateCooldown.GetFloat();
+    public override void ApplyGameOptions(IGameOptions opt) => AURoleOptions.ShapeshifterCooldown = NinjaateCooldown.GetFloat();
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         if (info.IsSuicide) return true;
@@ -80,7 +80,7 @@ public sealed class Assassin : RoleBase, IImpostor
         if (Shapeshifting) return true;
         else
         {
-            ForAssassin.Add(target.PlayerId);
+            ForNinja.Add(target.PlayerId);
           SendRPC_SyncList();
             killer.ResetKillCooldown();
             killer.SetKillCooldownV2();
@@ -99,7 +99,7 @@ public sealed class Assassin : RoleBase, IImpostor
             return;
         }
         Player.SetKillCooldownV2();
-       foreach (var pc in ForAssassin)
+       foreach (var pc in ForNinja)
         {
          var target = Utils.GetPlayerById(pc);
             SendRPC_SyncList();
@@ -107,7 +107,7 @@ public sealed class Assassin : RoleBase, IImpostor
                 {
                     target.RpcMurderPlayerV2(target);
                     target.SetRealKiller(Player);
-                    ForAssassin.Remove(target.PlayerId);
+                    ForNinja.Remove(target.PlayerId);
                     SendRPC_SyncList();
                 }
         }
@@ -123,7 +123,7 @@ public sealed class Assassin : RoleBase, IImpostor
             Player.SetKillCooldownV2();
             return;
         }
-        foreach (var pc in ForAssassin)
+        foreach (var pc in ForNinja)
         {
          var ps = Utils.GetPlayerById(pc);
             SendRPC_SyncList();
@@ -132,10 +132,10 @@ public sealed class Assassin : RoleBase, IImpostor
                 if (!(target == null || !target.IsAlive() || target.IsEaten() || target.inVent || !GameStates.IsInTask))
                 {
                     Player.RpcMurderPlayerV2(ps);
-                    ForAssassin.Remove(ps.PlayerId);
+                    ForNinja.Remove(ps.PlayerId);
                     SendRPC_SyncList();
                 }
-            }, 1.5f, "Assassin Assassinate");
+            }, 1.5f, "Ninja Ninjaate");
         }
     }
     public override bool GetGameStartSound(out string sound)
@@ -156,13 +156,13 @@ public sealed class Assassin : RoleBase, IImpostor
 
     public bool OverrideKillButtonText(out string text)
     {
-        text = GetString("AssassinMarkButtonText");
+        text = GetString("NinjaMarkButtonText");
         return !Shapeshifting;
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = GetString("AssassinShapeshiftText");
-        return ForAssassin.Count >= 1 && !Shapeshifting;
+        text = GetString("NinjaShapeshiftText");
+        return ForNinja.Count >= 1 && !Shapeshifting;
     }
     public bool OverrideKillButtonSprite(out string buttonName)
     {
@@ -171,30 +171,30 @@ public sealed class Assassin : RoleBase, IImpostor
     }
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
-        buttonName = "Assassinate";
-        return ForAssassin.Count >= 1 && !Shapeshifting;
+        buttonName = "Ninjaate";
+        return ForNinja.Count >= 1 && !Shapeshifting;
     }
         public override bool GetPetButtonText(out string text)
     {
-                text = GetString("AssassinShapeshiftText");
-        return ForAssassin.Count >= 1 && !(UsePetCooldown != 0);
+                text = GetString("NinjaShapeshiftText");
+        return ForNinja.Count >= 1 && !(UsePetCooldown != 0);
     }
     public override bool GetPetButtonSprite(out string buttonName)
     {
              buttonName = "Mark";
-        return ForAssassin.Count >= 1 && !(UsePetCooldown != 0);
+        return ForNinja.Count >= 1 && !(UsePetCooldown != 0);
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer
         seen ??= seer;
-        if (ForAssassin.Contains(seen.PlayerId))
+        if (ForNinja.Contains(seen.PlayerId))
             return Utils.ColorString(Color.red, "🔴");
         else
             return "";
     }
    public override void AfterMeetingTasks()
     {
-        UsePetCooldown = (int)AssassinateCooldown.GetInt();
+        UsePetCooldown = (int)NinjaateCooldown.GetInt();
     }
 }

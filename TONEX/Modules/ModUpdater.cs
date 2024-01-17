@@ -167,7 +167,7 @@ public class ModUpdater
             {
                 using HttpClient client = new();
                 client.DefaultRequestHeaders.Add("User-Agent", "TONEX Updater");
-                client.DefaultRequestHeaders.Add("Referer", "tonx.cc");
+                client.DefaultRequestHeaders.Add("Referer", "tonex.cc");
                 using var response = await client.GetAsync(new Uri(url), HttpCompletionOption.ResponseContentRead);
                 if (!response.IsSuccessStatusCode || response.Content == null)
                 {

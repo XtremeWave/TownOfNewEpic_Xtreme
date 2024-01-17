@@ -3,7 +3,7 @@ name: Feature request (English)
 about: Suggest an idea for this project
 title: "[Feature]"
 labels: New Feature
-assignees: KARPED1EM
+assignees: Slok7565
 
 ---
 

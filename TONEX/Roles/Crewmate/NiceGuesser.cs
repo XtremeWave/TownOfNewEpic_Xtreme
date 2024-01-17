@@ -1,4 +1,4 @@
-﻿/*using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
@@ -77,4 +77,4 @@ public sealed class NiceGuesser : RoleBase, IMeetingButton
         ShowGuessPanel(target.PlayerId, MeetingHud.Instance);
         return false;
     }
-}*/
+}

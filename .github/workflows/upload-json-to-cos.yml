@@ -2,7 +2,7 @@ name: Upload info.json to cos when file changed
 
 on:
   push:
-    branches: [ "TONX" ]
+    branches: [ "TONEX" ]
     paths: [ "info.json" ]
 
 permissions:

@@ -16,7 +16,7 @@ Thank you for using TOHE!
 - Fixed bug that Terrorists may not trigger victory checks after being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
 - Fixed bug that Executioner may not change role after their target being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
 - Fixed bug that the player swallowed by the Pelican may not return to the map after the pelican being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
-- Fixed bug that Assassin kill cooldown resets to mark cooldown after assassination instead of default kill cooldown
+- Fixed bug that Ninja kill cooldown resets to mark cooldown after assassination instead of default kill cooldown
 - Fixed bug that Swooper is still considered invisible after skill ends
 - Fixed bug that host sometimes does not respond when clicking the vent button as a Swooper
 - Fixed bug that Concealer's skills don't expire
