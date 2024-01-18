@@ -157,7 +157,7 @@ public sealed class Swooper : RoleBase, IImpostor
         if (!IsInvis()) return;
         var (killer, target) = info.AttemptTuple;
 
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        target.RpcTeleport(target.GetTruePosition());
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         killer.SetKillCooldownV2();
 

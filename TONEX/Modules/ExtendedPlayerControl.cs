@@ -493,16 +493,19 @@ static class ExtendedPlayerControl
     public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
     {
         if (target == null) target = killer;
-        if (AmongUsClient.Instance.AmClient && !Main.CanPublic.Value)
+
+        if (!Main.CanPublic.Value)
         {
             killer.RpcMurderPlayer(target, true);
+            return;
         }
+
         killer.MurderPlayer(target, SucceededFlags);
         MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, PsendOption, -1);
         messageWriter.WriteNetObject(target);
-        messageWriter.Write((int)SucceededFlags);
+        messageWriter.Write((int)SucceededFlags); //Prevent server side protect
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        //target.Data.IsDead = true;
+        target.Data.IsDead = true;
         Utils.NotifyRoles();
     }
     public static void RpcProtectedMurderPlayer(this PlayerControl killer, PlayerControl target = null)

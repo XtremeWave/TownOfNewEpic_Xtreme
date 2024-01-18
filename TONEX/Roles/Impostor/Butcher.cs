@@ -77,7 +77,7 @@ public sealed class Butcher : RoleBase, IImpostor
                 messageWriter.WriteNetObject(target);
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             }
-            Utils.TP(killer.NetTransform, ops);
+            killer.RpcTeleport(ops);
         }, 0.05f, "Butcher Murder");
 
         return;

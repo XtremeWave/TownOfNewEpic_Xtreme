@@ -56,7 +56,7 @@ public sealed class EvilGuardian : RoleBase, IImpostor
         if (IRandom.Instance.Next(0, 100) < OptionProbability.GetInt())
         {
  target.Notify(string.Format(GetString("KillForEvilGuardian")), 2f);
-        Utils.TP(Player.NetTransform, target.GetTruePosition());
+        Player.RpcTeleport(target.GetTruePosition());
         RPC.PlaySoundRPC(Player.PlayerId, Sounds.KillSound);
         target.Data.IsDead = true;
         target.SetRealKiller(Player);

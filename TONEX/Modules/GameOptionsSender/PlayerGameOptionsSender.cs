@@ -135,13 +135,6 @@ public class PlayerGameOptionsSender : GameOptionsSender
             player.RpcSetCustomRole(CustomRoles.Rambler);
             Utils.NotifyRoles(player);
         }
-        // 最好的请过来
-        if (Main.AllPlayerControls.Any(x => Non_Villain.BlessingCode[x].ContainsKey((Non_Villain.Blessing)2) || Non_Villain.BlessingCode[x].ContainsKey((Non_Villain.Blessing)4)))
-        {
-            opt.SetVision(false);
-            opt.SetFloat(FloatOptionNames.CrewLightMod, 5f);
-            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 5f);
-        }
 
         // 投掷傻瓜蛋啦！！！！！
         if (Grenadier.IsBlinding(player))

@@ -38,8 +38,8 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.0";
-    public const string PluginShowVersion = "1.0_20240201_dev_1";
+    public const string PluginVersion = "1.0";
+    public const string PluginShowVersion = "1.0_20240120_dev_1";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -157,7 +157,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
-        CanPublic = Config.Bind("Client Options", "HorseMode", false);
+        CanPublic = Config.Bind("Client Options", "CanPublic", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);

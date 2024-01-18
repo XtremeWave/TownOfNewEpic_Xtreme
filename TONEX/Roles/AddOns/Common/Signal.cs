@@ -54,21 +54,21 @@ public static class Signal
         {
             if (pc.Is(CustomRoles.Signal))
             {
-                Utils.TP(pc.NetTransform, Signalbacktrack);
+                pc.RpcTeleport(Signalbacktrack);
             }
         }
         hasSended = false;
     }
     public static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MiniAge, SendOption.Reliable, -1);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SignalPosition, SendOption.Reliable, -1);
         writer.Write(Signalbacktrack.x);
         writer.Write(Signalbacktrack.y);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType != CustomRPC.MiniAge) return;
+        if (rpcType != CustomRPC.SignalPosition) return;
         var x = reader.ReadSingle();
         var y = reader.ReadSingle();
         Signalbacktrack = new(x, y);

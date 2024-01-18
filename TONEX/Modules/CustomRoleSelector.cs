@@ -71,7 +71,8 @@ internal static class CustomRoleSelector
             else roleRateList.Add(role);
         }
 
-#region 抽取隐藏职业
+        #region 抽取隐藏职业
+#if RELEASE
         if (!Options.DisableHiddenRoles.GetBool())
         {
             if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -185,7 +186,8 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
         }
-        #endregion
+#endif
+#endregion
         // 抽取优先职业（内鬼）
         while (ImpOnList.Count > 0)
         {

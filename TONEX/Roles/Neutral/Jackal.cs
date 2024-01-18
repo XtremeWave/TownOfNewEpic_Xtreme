@@ -86,7 +86,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner
         OptionSidekickLimit = IntegerOptionItem.Create(RoleInfo, 16, OptionName.JackalSidekickLimit, new(1, 15, 1), 1, false, OptionItemCanSidekick)
             .SetValueFormat(OptionFormat.Times);
         JackalCanSaveSidekick = BooleanOptionItem.Create(RoleInfo, 17, OptionName.CanSaveSidekick, true, false , OptionItemCanSidekick);
-        RecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 10, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 2, false);
+        RecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 10, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false);
     }
     public override void Add()
     {

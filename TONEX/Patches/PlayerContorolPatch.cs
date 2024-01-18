@@ -129,7 +129,7 @@ class MurderPlayerPatch
 {
 
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.MurderPlayer));
-    public static void Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state /* 成功したキルかどうか */ )
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state /* 成功したキルかどうか */ )
     {
         if (!Main.CanPublic.Value)
         {
@@ -177,42 +177,28 @@ class MurderPlayerPatch
                 }
                 Camouflage.RpcSetSkin(target, ForceRevert: true, RevertToDefault: true);
             }
+
+            return true;
         }
         else
         {
             Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer");
-            if (AmongUsClient.Instance.AmHost && Main.CanPublic.Value)
+            if (AmongUsClient.Instance.AmHost)
             {
                 if (resultFlags == MurderResultFlags.Succeeded)
                 {
-                    __instance.RpcSpecificMurderPlayer(__instance);
-                    EAC.Report(__instance, "No check murder");
-                    EAC.WarnHost();
-                    EAC.HandleCheat(__instance, "No check murder");
-                    return;
+                    Logger.SendInGame($"玩家{target.GetRealName()}被绕过公开保护直接击杀。");
+                    return true;
                 }
-                //As long as the check murder is done by host, the murder result flags will always have DecisionByHost
-                //Succeed means the client send a murder player rpc without check murder to host
-            }
-            if (AmongUsClient.Instance.AmHost && Main.CanPublic.Value)
-            {
                 if (resultFlags == MurderResultFlags.FailedProtected)
                 {
                     target.RemoveProtection();
                     __instance.CheckMurder(target);
                     target.SendKeepProtect();
-                    return;
-                }
-                if (resultFlags == MurderResultFlags.Succeeded)
-                {
-                    Logger.SendInGame($"玩家{target.GetRealName()}被绕过公开保护直接击杀。");
-                }
-                if (resultFlags == ExtendedPlayerControl.SucceededFlags)
-                {
-                    target.RemoveProtection();
+                    return false;
                 }
             }
-
+            return true;
         }
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
@@ -397,8 +383,10 @@ class FixedUpdatePatch
 
         if (AmongUsClient.Instance.AmHost)
         {//実行クライアントがホストの場合のみ実行
+#if  RELEASE
             if (GameStates.IsLobby && ((ModUpdater.hasUpdate && ModUpdater.forceUpdate) || ModUpdater.isBroken || !Main.AllowPublicRoom || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion) && AmongUsClient.Instance.IsGamePublic)
                 AmongUsClient.Instance.ChangeGamePublic(false);
+#endif
 
             if (GameStates.IsInTask && ReportDeadBodyPatch.CanReport[__instance.PlayerId] && ReportDeadBodyPatch.WaitReport[__instance.PlayerId].Count > 0)
             {

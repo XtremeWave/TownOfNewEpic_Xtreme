@@ -76,7 +76,7 @@ public sealed class Escapist : RoleBase, IImpostor
         {
             Marked = false;
             Player.RPCPlayCustomSound("Teleport");
-            Utils.TP(Player.NetTransform, MarkedPosition);
+            Player.RpcTeleport(MarkedPosition);
             Logger.Msg($"{Player.GetNameWithRole()}：{MarkedPosition}", "Escapist.OnShapeshift");
         }
         else
@@ -99,7 +99,7 @@ public sealed class Escapist : RoleBase, IImpostor
         {
             Marked = false;
             Player.RPCPlayCustomSound("Teleport");
-            Utils.TP(Player.NetTransform, MarkedPosition);
+            Player.RpcTeleport(MarkedPosition);
             Logger.Msg($"{Player.GetNameWithRole()}：{MarkedPosition}", "Escapist.OnShapeshift");
         }
         else
