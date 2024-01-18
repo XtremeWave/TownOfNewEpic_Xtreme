@@ -112,7 +112,7 @@ public sealed class TimeMaster : RoleBase
             {
                 player.RPCPlayCustomSound("Teleport");
                 var position = TimeMasterbacktrack[player.PlayerId];
-                Utils.TP(player.NetTransform, position);
+                player.RpcTeleport(position);
                 TimeMasterbacktrack.Remove(player.PlayerId);
             }
             else
@@ -164,7 +164,7 @@ public sealed class TimeMaster : RoleBase
             {
                 player.RPCPlayCustomSound("Teleport");
                 var position = TimeMasterbacktrack[player.PlayerId];
-                Utils.TP(player.NetTransform, position);
+                player.RpcTeleport(position);
                 TimeMasterbacktrack.Remove(player.PlayerId);
             }
             else
@@ -191,7 +191,7 @@ public sealed class TimeMaster : RoleBase
                 if (TimeMasterbacktrack.ContainsKey(player.PlayerId))
                 {
                     var position = TimeMasterbacktrack[player.PlayerId];
-                    Utils.TP(player.NetTransform, position);
+                    player.RpcTeleport(position);
                 }
             }
             killer.SetKillCooldownV2(target: target, forceAnime: true);

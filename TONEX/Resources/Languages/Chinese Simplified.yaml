@@ -1321,6 +1321,9 @@ ShowUsePetCooldown: "使用宠物冷却还剩余{0}秒"
 RubePeopleOnGuard: "进入挑衅阶段"
 RubePeopleOffGuard: "挑衅结束"
 KillForEvilGuardian: "您被邪恶天使击杀了！"
+Non_Blessing: "当前无祝福"
+MoneyCount: "现金数量"
+Blessing: "当前祝福"
 
 
 # 信息 / Messages
@@ -1511,6 +1514,7 @@ RubePeopleVetnButtonText: "挑衅"
 TimeMasterVetnButtonText: "回溯&记录"
 StarFromHeaven: "元素爆发·天星"
 CoreOfTheLand: "元素战技·地心"
+LiuDeHuaKillButtonText: "发红包"
 
 
 # 作弊 / EAC

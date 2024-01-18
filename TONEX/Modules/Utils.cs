@@ -77,9 +77,57 @@ public static class Utils
     public static void TPAll(Vector2 location)
     {
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
-            TP(pc.NetTransform, location);
+            pc.RpcTeleport(location);
     }
+    public static void RpcTeleport(this PlayerControl player, Vector2 location)
+    {
+        Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
+        Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        if (player.inVent
+            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+        {
+            Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+            player.MyPhysics.RpcBootFromVent(0);
+        }
+        if (player.onLadder
+            || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+        {
+            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+            return;
+        }
 
+        var net = player.NetTransform;
+        var numHost = (ushort)(net.lastSequenceId + 2);
+        var numClient = (ushort)(net.lastSequenceId + 48);
+
+        // Host side
+        if (AmongUsClient.Instance.AmHost)
+        {
+            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
+            playerlastSequenceId += 10;
+            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            player.NetTransform.SnapTo(location, numHost);
+        }
+        else
+        {
+            // Local Teleport For Client
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
+            NetHelpers.WriteVector2(location, localMessageWriter);
+            localMessageWriter.Write(numClient);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
+        }
+
+        // For Client side
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, messageWriter);
+        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        // Global Teleport
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, globalMessageWriter);
+        globalMessageWriter.Write(numClient);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
+    }
     public static void TP(CustomNetworkTransform nt, Vector2 location)
     {
         location += new Vector2(0, 0.3636f);

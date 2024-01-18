@@ -60,8 +60,8 @@ public sealed class SoulCatcher : RoleBase, IImpostor
                 if (!(!GameStates.IsInTask || !Player.IsAlive() || !target.IsAlive() || Player.inVent || target.inVent))
                 {
                     var originPs = target.GetTruePosition();
-                    Utils.TP(target.NetTransform, Player.GetTruePosition());
-                    Utils.TP(Player.NetTransform, originPs);
+                    target.RpcTeleport(Player.GetTruePosition());
+                    Player.RpcTeleport(originPs);
                 }
             }, 1.5f, "SoulCatcher.OnShapeshift");
         }

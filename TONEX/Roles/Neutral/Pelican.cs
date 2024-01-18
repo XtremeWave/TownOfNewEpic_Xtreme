@@ -97,7 +97,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
         if (!CanEat(target.PlayerId)) return false;
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        target.RpcTeleport(target.GetTruePosition());
         EatPlayer(killer, target);
         killer.SetKillCooldownV2();
         killer.RPCPlayCustomSound("Eat");
@@ -110,7 +110,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         EatenPlayers.Add(target.PlayerId);
         SendRPC();
 
-        Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
+        target.RpcTeleport(Utils.GetBlackRoomPS());
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
@@ -148,7 +148,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
             var target = Utils.GetPlayerById(id);
             if (target == null) continue;
 
-            Utils.TP(target.NetTransform, MyLastPos);
+            target.RpcTeleport(MyLastPos);
             Main.AllPlayerSpeed[id] = Main.AllPlayerSpeed[id] - 0.5f + OriginalSpeed[id];
             ReportDeadBodyPatch.CanReport[id] = true;
 
@@ -183,7 +183,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
             var pos = Utils.GetBlackRoomPS();
             var dis = Vector2.Distance(pos, target.GetTruePosition());
             if (dis < 1f) continue;
-            Utils.TP(target.NetTransform, pos);
+            target.RpcTeleport(pos);
             Utils.NotifyRoles(SpecifySeer: target);
         }
     }

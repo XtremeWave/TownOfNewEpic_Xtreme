@@ -3,6 +3,13 @@ using TONEX.Attributes;
 using TONEX.Roles.Core;
 using TONEX.Roles.Impostor;
 using static UnityEngine.GraphicsBuffer;
+using Hazel;
+using System.Collections.Generic;
+using TONEX.Attributes;
+using TONEX.Roles.Core;
+using UnityEngine;
+using UnityEngine.UIElements.UIR;
+using static TONEX.Options;
 
 namespace TONEX;
 
@@ -63,7 +70,12 @@ public static class Camouflage
                 // The code is intended to remove pets at dead players to combat a vanilla bug
                 if (!IsCamouflage && !pc.IsAlive())
                 {
-                    pc.RpcSetPet("");
+
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)RpcCalls.SetPet, SendOption.Reliable, -1);
+                    writer.Write("");
+                    writer.Write(pc);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+
                 }
             }
             Utils.NotifyRoles(NoCache: true);

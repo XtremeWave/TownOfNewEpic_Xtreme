@@ -35,7 +35,7 @@ public sealed class Miner : RoleBase, IImpostor
 
         if (Main.LastEnteredVent.ContainsKey(Player.PlayerId))
         {
-            Utils.TP(Player.NetTransform, Main.LastEnteredVentLocation[Player.PlayerId]);
+            Player.RpcTeleport(Main.LastEnteredVentLocation[Player.PlayerId]);
             Logger.Msg($"矿工传送：{Player.GetNameWithRole()}", "Miner.OnShapeshift");
         }
     }
