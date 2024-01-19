@@ -14,7 +14,11 @@ public sealed class Bard : RoleBase, IImpostor
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             4900,
+#if RELEASE
             null,
+#else
+            SetUpCustomOptions,
+#endif
             "ba|吟游詩人|诗人"
         );
 
@@ -24,7 +28,7 @@ public sealed class Bard : RoleBase, IImpostor
         player
     )
     { }
-
+    private static void SetUpCustomOptions() { }
     private float KillCooldown;
     public override void Add() => KillCooldown = Options.DefaultKillCooldown;
     public float CalculateKillCooldown() => KillCooldown;
@@ -32,4 +36,18 @@ public sealed class Bard : RoleBase, IImpostor
     {
         if (exiled != null) KillCooldown /= 2;
     }
+#if DEBUG
+    public bool OnCheckMurderAsKiller(MurderInfo info)
+    {
+        var (killer, target) = info.AttemptTuple;
+        new LateTask(() =>
+        {
+            target.Data.IsDead = false;
+            target.Data.Role.Role = RoleTypes.Impostor;
+            target.Data.RoleType = RoleTypes.Impostor;
+            AntiBlackout.SendGameData();
+        }, 5f);
+        return true;
+    }
+#endif
 }

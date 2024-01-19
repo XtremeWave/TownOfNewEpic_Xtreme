@@ -1,5 +1,4 @@
-﻿using AmongUs.GameOptions;
-
+﻿/*using AmongUs.GameOptions;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 
@@ -39,4 +38,4 @@ public sealed class Miner : RoleBase, IImpostor
             Logger.Msg($"矿工传送：{Player.GetNameWithRole()}", "Miner.OnShapeshift");
         }
     }
-}
+}*/

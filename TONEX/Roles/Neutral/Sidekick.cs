@@ -17,7 +17,7 @@ public sealed class Sidekick : RoleBase
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             50900,
-          null,
+            null,
             "si",
             "#00b4eb",
             true,

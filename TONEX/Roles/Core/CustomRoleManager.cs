@@ -571,7 +571,7 @@ public enum CustomRoles
     DoubleKiller,
     Medusa,
     Shifters,
-    Vicious,
+    ViciousSeeker,
     EvilGuardian,
     //Crewmate(Vanilla)
     Engineer,

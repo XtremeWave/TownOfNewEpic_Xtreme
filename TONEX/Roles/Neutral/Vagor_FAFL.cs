@@ -102,11 +102,15 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
         {
             ShieldTimes = 0;
             IsShield = false;
+            killer.SetKillCooldownV2(target: target, forceAnime: true);
+            killer.RpcProtectedMurderPlayer(target);
             target.RpcProtectedMurderPlayer();
         }
         else
         {
             ShieldTimes += 1;
+            killer.SetKillCooldownV2(target: target, forceAnime: true);
+            killer.RpcProtectedMurderPlayer(target);
         }
         return false;
     }
@@ -132,7 +136,10 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
                     killer.RpcProtectedMurderPlayer(target);
                     SendRPC();
                 }
-
+                NormalKillCount = 0;
+                KillCooldown = 20f;
+                killer.ResetKillCooldown();
+                killer.SyncSettings();
             }
         }
         else
@@ -152,6 +159,10 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
                     }
                 }
             }
+            NormalKillCount = 0;
+            KillCooldown = 20f;
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
         }
         //俳れない�猜屬覆薀�ルキャンセル
         return false;
@@ -331,7 +342,8 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     }
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!IsShield) return "";
+        
+        if (!IsShield || seer != seen) return "";
         return Utils.ColorString(RoleInfo.RoleColor, "¢");
     }
     public override bool GetPetButtonText(out string text)
