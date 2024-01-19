@@ -4,7 +4,7 @@
 		<LangVersion>latest</LangVersion>
 
 		<Description>An AmongUs mod with learning and love</Description>
-		<Authors>tukasa0001(EmptyBottle), integral0131, KARPED1EM, XtremeWave</Authors>
+		<Authors>tukasa0001(EmptyBottle), integral0131, KARPED1EM, Team-XtremeWave</Authors>
 		
 		<GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
 		<GenerateAssemblyInformationalVersionAttribute>false</GenerateAssemblyInformationalVersionAttribute>
@@ -18,14 +18,7 @@
 	<ItemGroup>
 		<EmbeddedResource Include=".\Resources\**" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <None Remove="Resources\Images\Skills\Ninjaate.png" />
-	</ItemGroup>
-
-	<ItemGroup>
-	  <EmbeddedResource Include="Resources\Images\Skills\Ninjaate.png" />
-	</ItemGroup>
+	
 
 	<ItemGroup>
 		<!-- nuget.bepinex.dev -->

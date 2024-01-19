@@ -377,9 +377,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SignalPosition:
                 Signal.ReceiveRPC(reader, rpcType);
                 break;
-            case CustomRPC.SetMarkedPlayer:
-                Ninja.ReceiveRPC_SyncList(reader);
-                break;
             case CustomRPC.SetYangPlayer:
                 Onmyoji.ReceiveRPC_SyncYangList(reader);
                 break;
