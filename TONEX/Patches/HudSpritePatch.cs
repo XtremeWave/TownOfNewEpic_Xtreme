@@ -84,7 +84,7 @@ class HudSpritePatch
             newRemain.sprite = newSprite;          
 
 
-            Sprite qwqnew = CustomButton.GetSprite("UseNum");
+            /*Sprite qwqnew = CustomButton.GetSprite("UseNum");
                 SpriteRenderer spriteerer = newSetting.GetComponent<SpriteRenderer>();
                 if (spriteerer != null)
                 {
@@ -95,7 +95,7 @@ class HudSpritePatch
                 if (spritemap != null)
                 {
                 spritemap.sprite = newmap;
-                }
+                }*/
         }
 
         if (player.GetRoleClass() is IKiller)

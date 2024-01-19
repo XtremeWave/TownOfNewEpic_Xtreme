@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     "net6.0": {
-      "AmongUs.GameLibs.Steam/2023.11.28": {
+      "AmongUs.GameLibs.Steam/2023.10.24": {
         "type": "package",
         "build": {
           "build/AmongUs.GameLibs.Steam.props": {}
@@ -1896,13 +1896,13 @@
     }
   },
   "libraries": {
-    "AmongUs.GameLibs.Steam/2023.11.28": {
-      "sha512": "EsKrZS4tjTRrY7mtZls3tMy54zije4vleEA9s0UGUr4SF3qm2axR6wMncyIJCk4ACXlN5Bxpsd3/upDe9Gnx6A==",
+    "AmongUs.GameLibs.Steam/2023.10.24": {
+      "sha512": "8N064B27cGIZZk902aCLinazPp5T02KNdAUOLBVc1NIua8vYz4muwNdSI0RDGEY0CWbICK+FVsfGXdzAVTeH9A==",
       "type": "package",
-      "path": "amongus.gamelibs.steam/2023.11.28",
+      "path": "amongus.gamelibs.steam/2023.10.24",
       "files": [
         ".nupkg.metadata",
-        "amongus.gamelibs.steam.2023.11.28.nupkg.sha512",
+        "amongus.gamelibs.steam.2023.10.24.nupkg.sha512",
         "amongus.gamelibs.steam.nuspec",
         "build/AddressablesPlayAssetDelivery.dll",
         "build/AmongUs.GameLibs.Steam.props",
@@ -6274,7 +6274,7 @@
   },
   "projectFileDependencyGroups": {
     "net6.0": [
-      "AmongUs.GameLibs.Steam >= 2023.11.28",
+      "AmongUs.GameLibs.Steam >= 2023.10.24",
       "BepInEx.IL2CPP.MSBuild >= 2.1.0-rc.1",
       "BepInEx.Unity.IL2CPP >= 6.0.0-be.674",
       "Costura.Fody >= 5.8.0-alpha0098",
@@ -6291,11 +6291,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi (1)\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj",
+      "projectUniqueName": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi (1)\\TownOfNewEpic_Xtreme\\TONEX\\TONEX.csproj",
       "projectName": "TONEX",
-      "projectPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi (1)\\TownOfNewEpic_Xi\\TONEX\\TONEX.csproj",
+      "projectPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi (1)\\TownOfNewEpic_Xtreme\\TONEX\\TONEX.csproj",
       "packagesPath": "C:\\Users\\YJNSH\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi (1)\\TownOfNewEpic_Xi\\TONEX\\obj\\",
+      "outputPath": "C:\\Users\\YJNSH\\Documents\\Tencent Files\\639083778\\FileRecv\\TownOfNewEpic_Xi (1)\\TownOfNewEpic_Xtreme\\TONEX\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
@@ -6334,7 +6334,7 @@
           "AmongUs.GameLibs.Steam": {
             "suppressParent": "All",
             "target": "Package",
-            "version": "[2023.11.28, )"
+            "version": "[2023.10.24, )"
           },
           "BepInEx.IL2CPP.MSBuild": {
             "include": "Compile, Build, Native, ContentFiles, Analyzers, BuildTransitive",

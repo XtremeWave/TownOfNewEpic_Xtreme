@@ -570,7 +570,7 @@ public enum CustomRoles
     Gamblers,
     DoubleKiller,
     Medusa,
-    Shifters,
+    Skinwalker,
     ViciousSeeker,
     EvilGuardian,
     //Crewmate(Vanilla)

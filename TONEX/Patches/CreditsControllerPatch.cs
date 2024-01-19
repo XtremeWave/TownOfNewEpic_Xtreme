@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
+using static Il2CppSystem.Net.Http.Headers.Parser;
 using static TONEX.Translator;
 
 namespace TONEX;
@@ -13,88 +14,67 @@ public class CreditsControllerPatch
         var devList = new List<string>()
             {
                 //$"<color=#bd262a><size=150%>{GetString("FromChina")}</size></color>",
-
-                $"喜 - {GetString("Creater")}",
+                //XtremeWave
+                "Team-XtremeWave",
+                $"喜 - {GetString("Collaborators")}",
                 $"Slok7565 - {GetString("Collaborators")}",
+                $"Zwyan - {GetString("Collaborators")}",
                 $"玖咪 - {GetString("PullRequester")}",
-
+                $"杰慕斯 - {GetString("PullRequester")}",
                 $"caaattt - {GetString("Art")}",
-                $"小黄 - {GetString("Art")}",
+                $"小黄117 - {GetString("Art")}",
+                $"QingFeng - {GetString("PullRequester")}",
+                $"中立小黑 - {GetString("PullRequester")}",
 
+                //Others
+                "Others",
+                $"KARPED1EM - {GetString("Creater")}",
                 $"Niko233 - {GetString("Contributor")}",
-                $"天寸梦初 - {GetString("Contributor")}",
-
-                $"Commandf1 - {GetString("Contributor")}",
+                $"Moe - {GetString("Contributor")}",
+                $"ryuk - {GetString("Contributor")}",
+                $"Gurge44 - {GetString("Contributor")}",
                 $"水木年华 - {GetString("Contributor")}",
-                $"Lonnie - {GetString("Translator")}",
-                $"SolarFlare - {GetString("Contributor")}",
-                $"Mousse - {GetString("Contributor")}",
-                 $"Moe - {GetString("Contributor")}",
-               $"CJZEYAN - {GetString("Translator")}",
+                $"Lonnie - {GetString("Contributor")}",
+                $"Night_瓜 - {GetString("Contributor")}",
+                $"天寸梦初(in TONX) - {GetString("Contributor")}",
+                $"Commandf1(in TONX) - {GetString("Contributor")}",
+                $"SolarFlare(in TONX) - {GetString("Contributor")}",
+                $"Mousse(in TONX) - {GetString("Contributor")}",
             };
         var translatorList = new List<string>()
             {
-                $"Gurge44 - {GetString(StringNames.LangEnglish)}",
-                $"SolarFlare - {GetString(StringNames.LangEnglish)}",
-                $"Filipianosol - {GetString(StringNames.LangEnglish)}",
+                $"Gurge44(in TONX) - {GetString(StringNames.LangEnglish)}",
+                $"SolarFlare(in TONX) - {GetString(StringNames.LangEnglish)}",
+                $"Filipianosol(in TONX) - {GetString(StringNames.LangEnglish)}",
 
-                $"Tommy-XL - {GetString(StringNames.LangEnglish)}&{GetString(StringNames.LangRussian)}",
-                $"MogekoNik - {GetString(StringNames.LangEnglish)}&{GetString(StringNames.LangRussian)}",
-                $"Антон (chill_ultimated) - {GetString(StringNames.LangRussian)}",
-                $"Лагутин Виталий (lagutin1991) - {GetString(StringNames.LangRussian)}",
+                $"Tommy-XL(in TONX) - {GetString(StringNames.LangEnglish)}&{GetString(StringNames.LangRussian)}",
+                $"MogekoNik(in TONX) - {GetString(StringNames.LangEnglish)}&{GetString(StringNames.LangRussian)}",
+                $"Антон (chill_ultimated)(in TONX) - {GetString(StringNames.LangRussian)}",
+                $"Лагутин Виталий (lagutin1991)(in TONX) - {GetString(StringNames.LangRussian)}",
 
-                $"阿龍 - {GetString("LangTChinese")}",
-                $"法官 - {GetString("LangTChinese")}",
+                $"阿龍(in TONX) - {GetString("LangTChinese")}",
+                $"法官(in TONX) - {GetString("LangTChinese")}",
 
-                $"DopzyGamer - {GetString(StringNames.LangBrazPort)}",
+                $"DopzyGamer(in TONX) - {GetString(StringNames.LangBrazPort)}",
             };
         var acList = new List<string>()
             {
                 //Mods
                 $"{GetString("TownOfHost")}",
+                $"{GetString("TownOfNext")}",
                 $"{GetString("TownOfHost_Y")}",
                 $"{GetString("TownOfHost-TheOtherRoles")}",
                 $"{GetString("SuperNewRoles")}",
+                $"{GetString("TownOfHostRe-Edited")}",
+                $"{GetString("TownOfHostEnhanced")}",
+                $"{GetString("TownOfHosEdited_PLUS")}",
+                $"{GetString("TownOfHosEdited_Niko")}",
+                $"{GetString("To_Hope")}",
                 $"{GetString("Project-Lotus")}",
 
                 // Sponsor
-                $"罗寄",
-                $"鬼",
-                $"喜",
-                $"小叨院长",
-                $"波奇酱",
-                $"法师",
-                $"沐煊",
-                $"SolarFlare",
-                $"侠客",
-                $"林林林",
-                $"撒币",
-                $"斯卡蒂Skadi",
-                $"ltemten",
-                $"Night_瓜",
-                $"群诱饵",
-                $"Slok",
-                $"辣鸡",
-                $"湛蓝色",
-                $"小黄117",
-                $"chun",
-                $"Z某",
-                $"Shark",
-                $"清风awa",
-                $"1 1 1 1",
 
                 //Discord Server Booster
-                $"bunny",
-                $"Loonie",
-                $"Namra",
-                $"KNIGHT",
-                $"SolarFlare",
-                $"Bluéfôx.",
-                $"shiftyrose",
-                $"M ™",
-                $"yunfi",
-
-                $"...",
             };
 
         var credits = new List<CreditsController.CreditStruct>();

@@ -137,6 +137,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
         }
 
         //最好的请过来
+        if (Non_Villain.ComeAndAwayList != null)
         if (Non_Villain.ComeAndAwayList.Contains(player.PlayerId))
         {
             opt.SetVision(false);

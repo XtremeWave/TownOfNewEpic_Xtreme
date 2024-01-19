@@ -30,7 +30,7 @@ public class ModUpdater
         "file:///C:/Desktop/info.json",
 #else
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
-        //"https://cdn.jsdelivr.net/gh/KARPED1EM/TownOfNext/info.json",
+        "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",
         //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
         "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
 #endif

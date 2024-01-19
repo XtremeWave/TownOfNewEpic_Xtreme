@@ -214,11 +214,21 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
+        if (!seer == PlayerControl.LocalPlayer) return"";
         seen ??= seer;
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
         return $"{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
+
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        if (seer == PlayerControl.LocalPlayer) return"";
+        seen ??= seer;
+        //seeおよびseenが自分である場合以外は関係なし
+        if (seer != seen) return "";
+        return $"\n{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
 
     }
     public override void OnUsePet()

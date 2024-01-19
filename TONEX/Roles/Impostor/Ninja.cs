@@ -15,7 +15,7 @@ public sealed class Ninja : RoleBase, IImpostor
             typeof(Ninja),
             player => new Ninja(player),
             CustomRoles.Ninja,
-            () => RoleTypes.Shapeshifter,
+            () => Options.UsePets.GetBool() ? RoleTypes.Impostor : RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
             1600,
             SetupOptionItem,
