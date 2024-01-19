@@ -29,10 +29,10 @@ public class ModUpdater
         "file:///C:/Desktop/TONEX/info.json",
         "file:///C:/Desktop/info.json",
 #else
-        "https://raw.githubusercontent.com/TEAM-TONEX/TownOfNewEpic_Xi/TONEX/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
         //"https://cdn.jsdelivr.net/gh/KARPED1EM/TownOfNext/info.json",
         //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
-        "https://gitee.com/TEAM-TONEX/TownOfNewEpic_Xi/raw/TONEX/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
 #endif
     };
     private static IReadOnlyList<string> GetInfoFileUrlList()

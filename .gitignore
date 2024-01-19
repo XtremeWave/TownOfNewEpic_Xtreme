@@ -4,11 +4,11 @@
 .vs/
 
 Export/
-TONX/obj/
+TONEX/obj/
 
-TONX/Properties/PublishProfiles/
-TONX/FodyWeavers.xsd
+TONEX/Properties/PublishProfiles/
+TONEX/FodyWeavers.xsd
 
 *Sponsor.xlsx
 /Assets/~$Roles ID.xlsx
-/TONX.sln
+/TONEX.sln

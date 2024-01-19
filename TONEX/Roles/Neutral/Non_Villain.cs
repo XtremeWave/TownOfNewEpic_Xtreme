@@ -221,38 +221,31 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
         var (killer, target) = info.AttemptTuple;
         if (target.Is(CustomRoles.Non_Villain))
         {
-            foreach (var pc in Main.AllAlivePlayerControls)
+            var realkill = target.GetRealKiller();
+            EtiquetteList.Add(realkill.PlayerId);
+            Main.CantUseSkillList.Add(realkill);
+            MoneyCount[realkill.PlayerId] = 0;
+            if (WealthAndBrillianceDictionary.ContainsKey(realkill.PlayerId))
             {
-                if (pc != target)
-                {
-                    var posi = target.transform.position;
-                    var diss = Vector2.Distance(posi, pc.transform.position);
-                    if (diss < 3f)
-                    {
-                        EtiquetteList.Add(pc.PlayerId);
-                        Main.CantUseSkillList.Add(pc);
-                        var realkill = target.GetRealKiller();
-                        MoneyCount[realkill.PlayerId] = 0;
-                        if (WealthAndBrillianceDictionary.ContainsKey(realkill.PlayerId))
-                        {
-                            WealthAndBrillianceDictionary.Remove(realkill.PlayerId);
-                        }
-                        if (ComeAndAwayList.Contains(realkill.PlayerId))
-                        {
-                            ComeAndAwayList.Remove(realkill.PlayerId);
-                        }
-                        if (OvercomeList.Contains(realkill.PlayerId))
-                        {
-                            OvercomeList.Remove(realkill.PlayerId);
-                        }
-                        if (FarAheadList.Contains(realkill.PlayerId))
-                        {
-                            FarAheadList.Remove(realkill.PlayerId);
-                        }
-                        SendRPC_ForBeKilled(realkill.PlayerId);
-                    }
-                }
+                WealthAndBrillianceDictionary.Remove(realkill.PlayerId);
             }
+            if (ComeAndAwayList.Contains(realkill.PlayerId))
+            {
+                ComeAndAwayList.Remove(realkill.PlayerId);
+            }
+            if (OvercomeList.Contains(realkill.PlayerId))
+            {
+                OvercomeList.Remove(realkill.PlayerId);
+            }
+            if (FarAheadList.Contains(realkill.PlayerId))
+            {
+                FarAheadList.Remove(realkill.PlayerId);
+            }
+            if (DigitalLifeList.Contains(realkill.PlayerId))
+            {
+                DigitalLifeList.Remove(realkill.PlayerId);
+            }
+            SendRPC_ForBeKilled(realkill.PlayerId);
         }
         else if (OvercomeList.Contains(target.PlayerId))
         {
@@ -337,7 +330,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
             SendRPC_MoneyCount(target.PlayerId, money);
             Utils.NotifyRoles(target);
 
-        }, 2f);
+        }, 2f, "RedPackageAndBlessing");
         return false;
     }
     public override void OnSecondsUpdate(PlayerControl player, long now)
@@ -386,6 +379,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
         int money;
         int blessingcount = 0;
         string blessings;
+        var isdf = "";
         if (seen.Is(CustomRoles.Non_Villain)) return "";
         if (!WealthAndBrillianceDictionary.ContainsKey(seen.PlayerId)&& !OvercomeList.Contains(seen.PlayerId)&&!ComeAndAwayList.Contains(seen.PlayerId) && !FarAheadList.Contains(seen.PlayerId) && !EtiquetteList.Contains(seen.PlayerId) &&  !DigitalLifeList.Contains(seen.PlayerId))
         {
@@ -393,10 +387,11 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
         }
         else
         {
+            
             blessings = "";
             if (DigitalLifeList.Contains(seen.PlayerId))
             {
-                blessings += "<color=#00D6BC>¡ø</color>";
+                isdf = "<color=#00D6BC>¡ø</color>";
             }
             blessings += $"{GetString("Blessing")}";
             if (WealthAndBrillianceDictionary.ContainsKey(seen.PlayerId))
@@ -425,7 +420,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
             }
             if (EtiquetteList.Contains(seen.PlayerId))
             {
-                blessings += $"\n{GetString("Etiquette")}";
+                blessings = $"{GetString("Etiquette")}";
             }
         }
         if (!MoneyCount.ContainsKey(seen.PlayerId))
@@ -436,7 +431,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
         {
             money = MoneyCount[seen.PlayerId];
         }
-        return (seer == seen || seer.Is(CustomRoles.Non_Villain)) ? $"(<color=#ffff00>{GetString("MoneyCount")}: {money}</color>, {blessings})" : "";
+        return (seer == seen || seer.Is(CustomRoles.Non_Villain)) ? $"({isdf}<color=#ffff00>{GetString("MoneyCount")}: {money}</color>, {blessings})" : "";
     }
     public bool OverrideKillButtonText(out string text)
     {

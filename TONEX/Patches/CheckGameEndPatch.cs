@@ -135,9 +135,9 @@ class GameEndChecker
                     if (!nv.Is(CustomRoles.Non_Villain) || Non_Villain.DigitalLifeList.Count <=0) continue;
                     foreach (var pc in Non_Villain.DigitalLifeList)
                     {
-                        if (CustomWinnerHolder.WinnerIds.Contains(nv.PlayerId) && Non_Villain.BlessingCode[pc].ContainsKey((Non_Villain.Blessing)5))
+                        if (CustomWinnerHolder.WinnerIds.Contains(nv.PlayerId))
                         {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                            CustomWinnerHolder.WinnerIds.Add(pc);
                         }
                     }
                 }

@@ -11,7 +11,7 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("tukasa0001(EmptyBottle), integral0131, KARPED1EM, TEAM-TONEX")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("tukasa0001(EmptyBottle), integral0131, KARPED1EM, XtremeWave")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("An AmongUs mod with learning and love")]
 [assembly: System.Reflection.AssemblyProductAttribute("TONEX")]

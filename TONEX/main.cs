@@ -49,7 +49,7 @@ public class Main : BasePlugin
     public static readonly bool ShowDiscordButton = false;
     public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
     public static readonly bool ShowGithubUrl = true;
-    public static readonly string GithubRepoUrl = "https://github.com/TEAM-TONEX/TownOfNewEpic_Xi";
+    public static readonly string GithubRepoUrl = "https://github.com/XtremeWave/TownOfNewEpic_Xtreme";
     // ==========
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);

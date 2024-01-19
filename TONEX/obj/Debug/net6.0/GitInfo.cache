@@ -1,8 +1,8 @@
 GitRepositoryUrl=;
 GitBranch=_develop_v1.0;
-GitCommit=fb614bd;
-GitSha=fb614bd1efc48be8c1945867dfff2ba82f85e1cb;
-GitCommitDate=2024-01-18T15:04:04+08:00;
+GitCommit=8f645cf;
+GitSha=8f645cfead1585dbedbc22dd1d87ad066a674e3d;
+GitCommitDate=2024-01-19T15:38:16+08:00;
 GitBaseVersion=_develop_v1.0;
 GitBaseVersionSource=GitBranch;
 GitBaseVersionMajor=1;
