@@ -64,9 +64,9 @@ public sealed class Lawyer : RoleBase, IOverrideWinner
         OptionCanTargetJeater = BooleanOptionItem.Create(RoleInfo, 12, OptionName.ExecutionerCanTargetNeutralKiller, false, false);
         OptionKnowTargetRole = BooleanOptionItem.Create(RoleInfo, 11, OptionName.ExecutionerChangeRolesAfterTargetKilled,false, false);
         OptionTargetKnowsLawyer = BooleanOptionItem.Create(RoleInfo, 14, OptionName.ExecutionerCanTargetNeutralKiller, false, false);
-        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.ProsecutorsSkillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
+        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 15, OptionName.ProsecutorsSkillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionSkillLimit = IntegerOptionItem.Create(RoleInfo, 10, OptionName.ProsecutorsSkillLimit, new(1, 999, 1), 3, false);
+        OptionSkillLimit = IntegerOptionItem.Create(RoleInfo, 16, OptionName.ProsecutorsSkillLimit, new(1, 999, 1), 3, false);
     }
     public bool CanUseKillButton() => false;
         public bool IsKiller { get; private set; } = false;

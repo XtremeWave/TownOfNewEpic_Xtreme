@@ -128,3 +128,33 @@ C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xi (1)\T
 C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xi (1)\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\refint\TONEX.dll
 C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xi (1)\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.pdb
 C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xi (1)\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\ref\TONEX.dll
+D:\桌面\TownOfNewEpic_Xtreme\Export\Debug\net6.0\TONEX.deps.json
+D:\桌面\TownOfNewEpic_Xtreme\Export\Debug\net6.0\TONEX.dll
+D:\桌面\TownOfNewEpic_Xtreme\Export\Debug\net6.0\TONEX.pdb
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\GitInfo.cache
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.csproj.AssemblyReference.cache
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.GeneratedMSBuildEditorConfig.editorconfig
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.AssemblyInfoInputs.cache
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.AssemblyInfo.cs
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.csproj.CoreCompileInputs.cache
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.sourcelink.json
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.csproj.Fody.CopyLocal.cache
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.dll
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\refint\TONEX.dll
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.pdb
+D:\桌面\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\ref\TONEX.dll
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\GitInfo.cache
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.dll
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\refint\TONEX.dll
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.pdb
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\Export\Debug\net6.0\TONEX.deps.json
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\Export\Debug\net6.0\TONEX.dll
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\Export\Debug\net6.0\TONEX.pdb
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.csproj.AssemblyReference.cache
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.AssemblyInfoInputs.cache
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.AssemblyInfo.cs
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.csproj.CoreCompileInputs.cache
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.sourcelink.json
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\TONEX.csproj.Fody.CopyLocal.cache
+C:\Users\YJNSH\Documents\Tencent Files\639083778\FileRecv\TownOfNewEpic_Xtreme\TownOfNewEpic_Xtreme\TONEX\obj\Debug\net6.0\ref\TONEX.dll

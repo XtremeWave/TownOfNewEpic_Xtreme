@@ -36,18 +36,4 @@ public sealed class Bard : RoleBase, IImpostor
     {
         if (exiled != null) KillCooldown /= 2;
     }
-#if DEBUG
-    public bool OnCheckMurderAsKiller(MurderInfo info)
-    {
-        var (killer, target) = info.AttemptTuple;
-        new LateTask(() =>
-        {
-            target.Data.IsDead = false;
-            target.Data.Role.Role = RoleTypes.Impostor;
-            target.Data.RoleType = RoleTypes.Impostor;
-            AntiBlackout.SendGameData();
-        }, 5f);
-        return true;
-    }
-#endif
 }

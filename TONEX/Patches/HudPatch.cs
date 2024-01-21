@@ -146,13 +146,16 @@ class HudManagerPatch
                 __instance.ReportButton.Hide();
                 __instance.ImpostorVentButton.Hide();
                 __instance.KillButton.Hide();
-                __instance.AbilityButton.Show();
                 if (player.Is(CustomRoles.EvilGuardian))
                 {
                    __instance.AbilityButton.OverrideText(GetString("KillButtonText"));
+                    __instance.AbilityButton.Show();
                 }
                 else
+                {
+                    __instance.AbilityButton.Hide();
                     __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
+                }
                 __instance.PetButton.Hide();
                 if (LowerInfoText != null) LowerInfoText.enabled = false;
             }

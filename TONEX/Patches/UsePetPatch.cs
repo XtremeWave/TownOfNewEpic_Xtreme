@@ -27,80 +27,53 @@ using Il2CppInterop.Generator.Extensions;
 
 namespace TONEX;
 
-/*
- * HUGE THANKS TO
- * ImaMapleTree / 단풍잎 / Tealeaf
- * FOR THE CODE
- */
-
-
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.TryPet))]
-class LocalPetPatch
+class TryPetPatch
 {
-    private static readonly Dictionary<byte, long> LastProcess = new();
-
-    public static bool Prefix(PlayerControl __instance)
+    public static void Prefix(PlayerControl __instance)
     {
-        if (!Options.UsePets.GetBool() || !(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return true;
-        if (GameStates.IsLobby) return true;
-
-        if (__instance.petting) return true;
-        __instance.petting = true;
-
-        if (!LastProcess.ContainsKey(__instance.PlayerId)) LastProcess.TryAdd(__instance.PlayerId, Utils.GetTimeStamp() - 2);
-        if (LastProcess[__instance.PlayerId] + 1 >= Utils.GetTimeStamp()) return true;
-
-        ExternalRpcPetPatch.Prefix(__instance.MyPhysics, (byte)RpcCalls.Pet);
-        LastProcess[__instance.PlayerId] = Utils.GetTimeStamp();
-        return !__instance.CanPet();
+        if (!(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
+        var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
+        if (cancel)
+            __instance.petting = true;
+        ExternalRpcPetPatch.Prefix(__instance.MyPhysics, 51, new MessageReader());
     }
+
     public static void Postfix(PlayerControl __instance)
     {
-        if (!Options.UsePets.GetBool() || !(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
-        __instance.petting = false;
+        if (!AmongUsClient.Instance.AmHost) return;
+        var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
+        if (cancel)
+        {
+            __instance.petting = false;
+            if (__instance.AmOwner)
+                __instance.MyPhysics.RpcCancelPet();
+        }
     }
 }
 
 [HarmonyPatch(typeof(PlayerPhysics), nameof(PlayerPhysics.HandleRpc))]
 class ExternalRpcPetPatch
 {
-    private static readonly Dictionary<byte, long> LastProcess = new();
-    public static bool Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callID)
+    public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        if (!Options.UsePets.GetBool() || !AmongUsClient.Instance.AmHost || (RpcCalls)callID != RpcCalls.Pet) return true;
+        if (!AmongUsClient.Instance.AmHost) return;
+        var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
+        var rpcType = callId == 51 ? RpcCalls.Pet : (RpcCalls)callId;
+        if (rpcType != RpcCalls.Pet) return;
 
-        var pc = __instance.myPlayer;
-        var physics = __instance;
+        PlayerControl pc = __instance.myPlayer;
 
-        if (pc == null || physics == null) return true;
-
-        if (pc != null
-            && !pc.inVent
-            && !pc.inMovingPlat
-            && !pc.walkingToVent
-            && !pc.onLadder
-            && !physics.Animations.IsPlayingEnterVentAnimation()
-            && !physics.Animations.IsPlayingClimbAnimation()
-            && !physics.Animations.IsPlayingAnyLadderAnimation()
-            && !Pelican.IsEaten(pc.PlayerId)
-            && GameStates.IsInTask)
-            physics.CancelPet();
-
-        if (!LastProcess.ContainsKey(pc.PlayerId)) LastProcess.TryAdd(pc.PlayerId, Utils.GetTimeStamp() - 2);
-        if (LastProcess[pc.PlayerId] + 1 >= Utils.GetTimeStamp()) return true;
-        LastProcess[pc.PlayerId] = Utils.GetTimeStamp();
-        Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} petted their pet", "PetActionTrigger");
-        var user = __instance.myPlayer;
-        if (!user.CanUseSkill()) return false;
-        physics.RpcCancelPet();
-            bool canpet = user.CanPet();
-            if(canpet)        Logger.Info($"Player {pc.GetNameWithRole().RemoveHtmlTags()} cancel petting{canpet}", "PetActionTrigger");
-        user.GetRoleClass()?.OnUsePet();     
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(user.NetId, (byte)RpcCalls.CancelPet, SendOption.Reliable, -1);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-        physics.RpcCancelPet();
-        return true;
-
+        if (callId == 51 && cancel)
+            __instance.CancelPet();
+        if (callId != 51 && cancel)
+        {
+            __instance.CancelPet();
+            foreach (PlayerControl player in PlayerControl.AllPlayerControls)
+                AmongUsClient.Instance.FinishRpcImmediately(AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 50, SendOption.None, player.GetClientId()));
+        }
+        if (!pc.CanUseSkill()) return;
+        pc.GetRoleClass()?.OnUsePet();
     }
 }
 

@@ -1073,6 +1073,7 @@ AdventurerLimit: "破坏惩罚次数"
 ProsecutorsSkillCooldown: "空包弹冷却"
 ProsecutorsSkillLimit: "空包弹数量"
 DieTime: "延迟死亡时间"
+KillProbability: "击杀成功概率"
 
 # 随机出生点 / Random Spawn Locations
 Junction: "三岔路"

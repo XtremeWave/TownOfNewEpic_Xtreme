@@ -67,7 +67,7 @@ class HudSpritePatch
             else if (player.GetRoleClass()?.GetPetButtonSprite(out var newPetButtonNameV2) == false && Options.UsePets.GetBool() && newPetButtonNameV2 != null)
             {
                 var PetButton = newPetButtonNameV2;
-                if(PetButton != null)
+                if(PetButton != default)
                 {
                  newPetButton = CustomButton.GetSprite(PetButton);
                     __instance.PetButton?.graphic?.material?.SetFloat("_Desat", 1f);
@@ -89,14 +89,46 @@ class HudSpritePatch
                 if (spriteerer != null)
                 {
                     spriteerer.sprite = qwqnew;
-                }
-            Sprite newmap = CustomButton.GetSprite("UseNum");
-                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
-                if (spritemap != null)
-                {
-                spritemap.sprite = newmap;
                 }*/
-        }
+
+
+           
+                if (Main.NormalOptions.MapId == 0)
+                {
+
+                Sprite newmap = CustomButton.GetSprite("mapJourne");
+                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+                spritemap.sprite = newmap;
+            }
+                else if (Main.NormalOptions.MapId == 1)
+                {
+
+                Sprite newmap = CustomButton.GetSprite("mapMIRA");
+                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+                spritemap.sprite = newmap;
+            }
+                else if (Main.NormalOptions.MapId == 2)
+                {
+
+                Sprite newmap = CustomButton.GetSprite("mapPolus");
+                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+                spritemap.sprite = newmap;
+            }
+                else if (Main.NormalOptions.MapId == 3)
+                {
+
+                Sprite newmap = CustomButton.GetSprite("mapAirship");
+                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+                spritemap.sprite = newmap;
+            }
+                else if (Main.NormalOptions.MapId == 4)
+                {
+
+                Sprite newmap = CustomButton.GetSprite("theFungle");
+                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+                spritemap.sprite = newmap;
+                }
+           }
 
         if (player.GetRoleClass() is IKiller)
         {
@@ -144,7 +176,6 @@ class HudSpritePatch
         {
             __instance.AdminButton.graphic.sprite = newAdminButton;
         }
-        __instance.PetButton?.graphic?.material?.SetFloat("_Desat", player.GetRoleClass()?.GetPetButtonSprite(out var AWA) == false && Options.UsePets.GetBool() ? 1f : 0f);
         __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat", __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
     }
 }
