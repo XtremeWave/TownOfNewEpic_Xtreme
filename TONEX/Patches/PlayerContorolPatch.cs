@@ -793,7 +793,7 @@ public static class PlayerControlDiePatch
                 if (Vector2.Distance(li.transform.position, __instance.transform.position) <= Libertarian.OptionRadius.GetFloat())li?.NoCheckStartMeeting(__instance?.Data);
             }
             // 死者の最終位置にペットが残るバグ対応
-            __instance.RpcSetPet("");
+            __instance.SetOutFitStatic(petId:"");
         }
     }
 }

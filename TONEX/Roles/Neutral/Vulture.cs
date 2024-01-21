@@ -44,7 +44,7 @@ public sealed class Vulture : RoleBase
     {
         OptionEatLimitPerMeeting = IntegerOptionItem.Create(RoleInfo, 10, OptionName.VultureNeedEatLimit, new(1, 99, 1), 4, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionEatTime = FloatOptionItem.Create(RoleInfo, 10, OptionName.VultureEatTime, new(2.5f, 180f, 2.5f), 10f, false)
+        OptionEatTime = FloatOptionItem.Create(RoleInfo, 11, OptionName.VultureEatTime, new(2.5f, 180f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void ApplyGameOptions(IGameOptions opt)

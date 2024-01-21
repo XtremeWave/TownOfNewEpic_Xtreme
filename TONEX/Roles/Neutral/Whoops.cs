@@ -15,7 +15,7 @@ public sealed class Whoops : RoleBase
             CustomRoles.Whoops,
             () => RoleTypes.Engineer,
             CustomRoleTypes.Neutral,
-            50900,
+            94_4_1_0,
             null,
             "wh|狈",
             "#00b4eb",

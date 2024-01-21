@@ -240,14 +240,14 @@ class Penguin : RoleBase, IImpostor
                 var position = Player.transform.position;
                 if (Player.PlayerId != 0)
                 {
-                    RandomSpawn.TP(AbductVictim.NetTransform, position);
+                    AbductVictim.RpcTeleport( position);
                 }
                 else
                 {
                     _ = new LateTask(() =>
                     {
                         if (AbductVictim != null)
-                            RandomSpawn.TP(AbductVictim.NetTransform, position);
+                            AbductVictim.RpcTeleport(position);
                     }
                     , 0.25f, "");
                 }

@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+﻿/*using AmongUs.GameOptions;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
@@ -15,7 +15,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
             CustomRoles.Blackmailer,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            15384319,
+            94_7_1_1,
             SetupOptionItem,
             "bl|勒索",
             experimental: true
@@ -108,4 +108,4 @@ public sealed class Blackmailer : RoleBase, IImpostor
         seen ??= seer;
         return (ForBlackmailer.Contains(seen.PlayerId) && isForMeeting == true) ? Utils.ColorString(RoleInfo.RoleColor, "‼") : "";
     }
-}
+*/

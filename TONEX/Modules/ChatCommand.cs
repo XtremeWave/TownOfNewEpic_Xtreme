@@ -196,7 +196,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     var color = Utils.MsgToColor(mc.Args, mc.IsFromSelf);
                     if (color != byte.MaxValue)
                     {
-                        mc.Player.RpcSetColor(color);
+                        mc.Player.SetOutFitStatic(color);
                         text = string.Format(GetString("Message.SetColor"), mc.Args);
                     }
                 }
