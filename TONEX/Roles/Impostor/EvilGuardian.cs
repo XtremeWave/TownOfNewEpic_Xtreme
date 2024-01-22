@@ -1,4 +1,4 @@
-﻿using AmongUs.GameOptions;
+﻿/*using AmongUs.GameOptions;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
 using MS.Internal.Xml.XPath;
@@ -78,3 +78,4 @@ public sealed class EvilGuardian : RoleBase, IImpostor
         }
     }
 }
+*/

@@ -140,7 +140,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, ISchrodingerCatOwner, II
         NameColorManager.Add(Player.PlayerId, target.PlayerId, "#00b4eb");
         NameColorManager.Add(target.PlayerId, Player.PlayerId, "#00b4eb");
         if (JackalCanSaveSidekick.GetBool())   
-            target.RpcSetCustomRole(CustomRoles.Attendant);
+            target.RpcSetCustomRole(CustomRoles.Wolfmate);
         else
         {
             if (target.CanUseKillButton())
@@ -169,7 +169,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, ISchrodingerCatOwner, II
         seen ??= seer;
         if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$$");
         else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$");
-        else if (seen.Is(CustomRoles.Attendant)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "??");
+        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "??");
         else
         return "";
     }

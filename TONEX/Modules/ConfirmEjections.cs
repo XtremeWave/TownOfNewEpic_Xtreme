@@ -25,13 +25,13 @@ public static class ConfirmEjections
         var roleName = GetRoleString(role.ToString());
         var coloredRoleName = Utils.GetTrueRoleName(exileId, false);
         var roleType = player.Is(CustomRoles.Madmate) ? CustomRoleTypes.Impostor
-            : player.Is(CustomRoles.Charmed) || player.Is(CustomRoles.Attendant) ? CustomRoleTypes.Neutral
+            : player.Is(CustomRoles.Charmed) || player.Is(CustomRoles.Wolfmate) ? CustomRoleTypes.Neutral
             : role.GetCustomRoleTypes();
         var coloredTeamName = GetString($"Team{roleType}").Color(Utils.GetCustomRoleTypeColor(roleType));
 
         string text = string.Empty;
         int impNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor) || p.Is(CustomRoles.Madmate));
-        int neutralNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral) || p.Is(CustomRoles.Charmed) || p.Is(CustomRoles.Attendant)) ;
+        int neutralNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral) || p.Is(CustomRoles.Charmed) || p.Is(CustomRoles.Wolfmate)) ;
 
         if (CustomRoles.Bard.IsExist()) // 吟游诗人创作
         {

@@ -27,9 +27,11 @@ public class Snitch : RoleBase
     {
         EnableTargetArrow = OptionEnableTargetArrow.GetBool();
         CanGetColoredArrow = OptionCanGetColoredArrow.GetBool();
+        CanFindNeutralEvil = OptionCanFindNeutralEvil.GetBool();
         CanFindNeutralKiller = OptionCanFindNeutralKiller.GetBool();
         CanFindMadmate = OptionCanFindMadmate.GetBool();
         CanFindCharmed = OptionCanFindCharmed.GetBool();
+        CanFindWolfmate = OptionCanFindWolfmate.GetBool();
         RemainingTasksToBeFound = OptionRemainingTasks.GetInt();
 
         //他視点用のMarkメソッド登録
@@ -45,24 +47,30 @@ public class Snitch : RoleBase
     private static OptionItem OptionEnableTargetArrow;
     private static OptionItem OptionCanGetColoredArrow;
     private static OptionItem OptionCanFindNeutralKiller;
+    private static OptionItem OptionCanFindNeutralEvil;
     private static OptionItem OptionCanFindMadmate;
     private static OptionItem OptionCanFindCharmed;
+    private static OptionItem OptionCanFindWolfmate;
     private static OptionItem OptionRemainingTasks;
     enum OptionName
     {
         SnitchEnableTargetArrow,
         SnitchCanGetArrowColor,
         SnitchCanFindNeutralKiller,
+        SnitchCanFindNeutralEvil,
         SnitchCanFindMadmate,
         SnitchCanFindCharmed,
+        SnitchCanFindWolfmate,
         SnitchRemainingTaskFound,
     }
 
     private static bool EnableTargetArrow;
     private static bool CanGetColoredArrow;
     private static bool CanFindNeutralKiller;
+    private static bool CanFindNeutralEvil;
     private static bool CanFindMadmate;
     private static bool CanFindCharmed;
+    private static bool CanFindWolfmate;
     private static int RemainingTasksToBeFound;
 
     private bool IsExposed = false;
@@ -75,11 +83,12 @@ public class Snitch : RoleBase
 
     private static void SetupOptionItem()
     {
-        OptionEnableTargetArrow = BooleanOptionItem.Create(RoleInfo, 10, OptionName.SnitchEnableTargetArrow, false, false);
-        OptionCanGetColoredArrow = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SnitchCanGetArrowColor, false, false);
-        OptionCanFindNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralKiller, false, false);
+        OptionEnableTargetArrow = BooleanOptionItem.Create(RoleInfo, 10, OptionName.SnitchEnableTargetArrow, true, false);
+        OptionCanGetColoredArrow = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SnitchCanGetArrowColor, true, false);
+        OptionCanFindNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralKiller, true, false);
         OptionCanFindMadmate = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SnitchCanFindMadmate, false, false);
         OptionCanFindCharmed = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SnitchCanFindCharmed, false, false);
+        OptionCanFindWolfmate = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SnitchCanFindWolfmate, false, false);
         OptionRemainingTasks = IntegerOptionItem.Create(RoleInfo, 13, OptionName.SnitchRemainingTaskFound, new(0, 10, 1), 1, false);
         Options.OverrideTasksData.Create(RoleInfo, 20);
     }
@@ -93,8 +102,10 @@ public class Snitch : RoleBase
     {
         return target.Is(CustomRoleTypes.Impostor)
             || (CanFindNeutralKiller && target.IsNeutralKiller())
+            || (CanFindNeutralEvil && target.IsNeutralEvil())
             || (CanFindMadmate && target.Is(CustomRoles.Madmate))
-            || (CanFindCharmed && target.Is(CustomRoles.Charmed));
+            || (CanFindCharmed && target.Is(CustomRoles.Charmed))
+            || (CanFindWolfmate && (target.Is(CustomRoles.Wolfmate)|| target.Is(CustomRoles.Sidekick)|| target.Is(CustomRoles.Whoops)));
     }
 
     /// <summary>

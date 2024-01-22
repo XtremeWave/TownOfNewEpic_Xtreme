@@ -255,7 +255,7 @@ public class Main : BasePlugin
                 {CustomRoles.Charmed, "#ff00ff"},
                 {CustomRoles.Bait, "#00f7ff"},
                 {CustomRoles.Beartrap, "#5a8fd0"},
-                {CustomRoles.Attendant,"#00b4eb" },
+                {CustomRoles.Wolfmate,"#00b4eb" },
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
                 {CustomRoles.Mini,"ffffff" },

@@ -679,7 +679,7 @@ public enum CustomRoles
     Charmed,
     Bait,
     Beartrap,
-    Attendant,
+    Wolfmate,
     Rambler,
     Chameleon,
     Mini,

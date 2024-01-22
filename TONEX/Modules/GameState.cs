@@ -92,7 +92,7 @@ public class PlayerState
                 _ => throw new NotImplementedException()
             };
             SubRoles.Remove(CustomRoles.Charmed);
-            SubRoles.Remove(CustomRoles.Attendant);
+            SubRoles.Remove(CustomRoles.Wolfmate);
         }
         if (role == CustomRoles.Charmed)
         {
@@ -104,9 +104,9 @@ public class PlayerState
                 _ => throw new NotImplementedException()
             };
             SubRoles.Remove(CustomRoles.Madmate);
-            SubRoles.Remove(CustomRoles.Attendant);
+            SubRoles.Remove(CustomRoles.Wolfmate);
         }
-        if (role == CustomRoles.Attendant)
+        if (role == CustomRoles.Wolfmate)
         {
             CountType = CountTypes.Jackal;
             SubRoles.Remove(CustomRoles.Madmate);

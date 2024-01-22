@@ -383,7 +383,7 @@ public static class Utils
 
                     || (seer.Is(CustomRoles.Charmed) && seen.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool())
 
-               || (seer.Is(CustomRoles.Attendant) && seen.Is(CustomRoles.Attendant))
+               || (seer.Is(CustomRoles.Wolfmate) && seen.Is(CustomRoles.Wolfmate))
           || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Sidekick))
           || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Whoops))
             || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Sidekick))
@@ -434,9 +434,9 @@ public static class Utils
                         roleText = GetRoleString("Charmed-") + roleText;
                         roleColor = GetRoleColor(CustomRoles.Charmed);
                         break;
-                    case CustomRoles.Attendant:
-                        roleText = GetRoleString("Attendant-") + roleText;
-                        roleColor = GetRoleColor(CustomRoles.Attendant);
+                    case CustomRoles.Wolfmate:
+                        roleText = GetRoleString("Wolfmate-") + roleText;
+                        roleColor = GetRoleColor(CustomRoles.Wolfmate);
                         break;
                 }
             }
@@ -453,7 +453,7 @@ public static class Utils
         {
             foreach (var subRole in subRolesList)
             {
-                if (subRole <= CustomRoles.NotAssigned || subRole is CustomRoles.LastImpostor or CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Lovers or CustomRoles.Attendant) continue;
+                if (subRole <= CustomRoles.NotAssigned || subRole is CustomRoles.LastImpostor or CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Lovers or CustomRoles.Wolfmate) continue;
                 sb.Append(ColorString(GetRoleColor(subRole), GetString("Prefix." + subRole.ToString())));
             }
         }
@@ -609,7 +609,7 @@ public static class Utils
             {
                 case CustomRoles.Madmate:
                 case CustomRoles.Charmed:
-                case CustomRoles.Attendant:
+                case CustomRoles.Wolfmate:
                 case CustomRoles.Lovers:
                     //ラバーズはタスクを勝利用にカウントしない
                     hasTasks &= !ForRecompute;
@@ -871,7 +871,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Attendant) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Wolfmate) continue;
 
             var RoleText = disableColor ? GetRoleName(role) : ColorString(GetRoleColor(role), GetRoleName(role));
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
