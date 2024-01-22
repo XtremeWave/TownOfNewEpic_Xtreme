@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
+using Hazel;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,12 @@ public static class NameTagManager
             };
 
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
-            player.RpcSetName(name);
+        //player.RpcSetName(name);
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
+            writer.Write(name);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+        }
     }
     public static void ReloadTag(string? friendCode)
     {

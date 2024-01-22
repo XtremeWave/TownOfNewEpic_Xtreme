@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Hazel;
+using Il2CppInterop.Generator.Extensions;
+using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
 using static TONEX.Translator;
@@ -79,13 +81,21 @@ public static class ConfirmEjections
         _ = new LateTask(() =>
         {
             Main.DoBlockNameChange = true;
-            if (GameStates.IsInGame) player.RpcSetName(text);
+            if (GameStates.IsInGame)
+            {
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
+            writer.Write(text);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);//player.RpcSetName(text);
+            }
         }, 3.0f, "Change Exiled Player Name");
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame && !player.Data.Disconnected)
             {
-                player.RpcSetName(playerName);
+                //player.RpcSetName(playerName);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
+                writer.Write(playerName);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
                 Main.DoBlockNameChange = false;
             }
         }, 11.5f, "Change Exiled Player Name Back");

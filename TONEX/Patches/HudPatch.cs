@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using TMPro;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Crewmate;
 using UnityEngine;
 using static TONEX.Translator;

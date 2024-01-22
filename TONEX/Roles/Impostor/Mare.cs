@@ -1,7 +1,7 @@
 using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Options;
 
 namespace TONEX.Roles.Impostor;

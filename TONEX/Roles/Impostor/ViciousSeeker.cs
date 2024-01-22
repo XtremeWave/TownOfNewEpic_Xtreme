@@ -1,6 +1,5 @@
 ﻿using AmongUs.GameOptions;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
 using TONEX.Modules;
 using static TONEX.Translator;
@@ -8,6 +7,7 @@ using Hazel;
 using Epic.OnlineServices.Presence;
 using System.Linq;
 using TONEX.Roles.Crewmate;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class ViciousSeeker : RoleBase, IImpostor

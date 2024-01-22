@@ -2,8 +2,8 @@
 using System.Linq;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using YamlDotNet.Core;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Concealer : RoleBase, IImpostor

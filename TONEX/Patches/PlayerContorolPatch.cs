@@ -11,7 +11,7 @@ using TONEX.Modules;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Impostor;
 using TONEX.Roles.Vanilla;
 using UnityEngine;

@@ -2,9 +2,9 @@
 using UnityEngine;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
 using System.Text;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.GameModeRoles;
 public sealed class ColdPotato : RoleBase, IKiller

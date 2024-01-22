@@ -24,12 +24,12 @@ public class Main : BasePlugin
 {
     // == 程序基本设定 / Program Config ==
     public static readonly string ModName = "TONEX";
-    public static readonly string ModColor = "#fffcbe";
-    public static readonly Color32 ModColor32 = new(255, 252, 190, 255);
+    public static readonly string ModColor = "#cdfffd";
+    public static readonly Color32 ModColor32 = new(205, 255, 253, 255);
     public static readonly bool AllowPublicRoom = true;
     public static readonly string ForkId = "TONEX";
     public const string OriginalForkId = "OriginalTOH";
-    public const string PluginGuid = "cn.tonex.tonex";
+    public const string PluginGuid = "cn.tonex.xtremewave";
     // == 认证设定 / Authentication Config ==
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";

@@ -5,10 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
+using UnityEngine.Rendering;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Lawyer : RoleBase, IOverrideWinner
+public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -33,22 +36,32 @@ public sealed class Lawyer : RoleBase, IOverrideWinner
 
         Lawyers.Add(this);
         CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
-
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
         TargetExiled = false;
     }
     public static byte WinnerID;
 
     private static OptionItem OptionCanTargetCrewmate;
-    private static OptionItem OptionCanTargetJeater;
+    private static OptionItem OptionCanTargetJester;
+    private static OptionItem OptionCanTargetNeutralKiller;
     public static OptionItem OptionKnowTargetRole;
     public static OptionItem OptionTargetKnowsLawyer;
     public static OptionItem OptionSkillCooldown;
     public static OptionItem OptionSkillLimit;
+
+
+    public bool IsKiller { get; private set; } = false;
+    public bool CanUseKillButton() => false;
+    public bool CanUseSabotageButton() => false;
+    public bool CanUseImpostorVentButton() => false;
+    public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     enum OptionName
     {
-        ExecutionerCanTargetImpostor,
-        ExecutionerCanTargetNeutralKiller,
-        ExecutionerChangeRolesAfterTargetKilled,
+        CanTargetCrewmate,
+        CanTargetJester,
+        CanTargetNeutralKiller,
+        OptionKnowTargetRole,
+        OptionTargetKnowsLawyer,
         ProsecutorsSkillCooldown,
         ProsecutorsSkillLimit,
     }
@@ -60,16 +73,15 @@ public sealed class Lawyer : RoleBase, IOverrideWinner
 
     private static void SetupOptionItem()
     {
-        OptionCanTargetCrewmate = BooleanOptionItem.Create(RoleInfo, 10, OptionName.ExecutionerCanTargetImpostor, false, false);
-        OptionCanTargetJeater = BooleanOptionItem.Create(RoleInfo, 12, OptionName.ExecutionerCanTargetNeutralKiller, false, false);
-        OptionKnowTargetRole = BooleanOptionItem.Create(RoleInfo, 11, OptionName.ExecutionerChangeRolesAfterTargetKilled,false, false);
-        OptionTargetKnowsLawyer = BooleanOptionItem.Create(RoleInfo, 14, OptionName.ExecutionerCanTargetNeutralKiller, false, false);
+        OptionCanTargetCrewmate = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanTargetCrewmate, false, false);
+        OptionCanTargetJester = BooleanOptionItem.Create(RoleInfo, 12, OptionName.CanTargetJester, false, true);
+        OptionCanTargetNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.CanTargetNeutralKiller, false, true);
+        OptionKnowTargetRole = BooleanOptionItem.Create(RoleInfo, 11, OptionName.OptionKnowTargetRole, false, false);
+        OptionTargetKnowsLawyer = BooleanOptionItem.Create(RoleInfo, 14, OptionName.OptionTargetKnowsLawyer, false, false);
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 15, OptionName.ProsecutorsSkillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionSkillLimit = IntegerOptionItem.Create(RoleInfo, 16, OptionName.ProsecutorsSkillLimit, new(1, 999, 1), 3, false);
     }
-    public bool CanUseKillButton() => false;
-        public bool IsKiller { get; private set; } = false;
     public override void Add()
     {
         //ターゲット割り当て
@@ -82,13 +94,15 @@ public sealed class Lawyer : RoleBase, IOverrideWinner
         {
             if (playerId == target.PlayerId) continue;
             else if (!OptionCanTargetCrewmate.GetBool() && target.GetCustomRole().IsCrewmate()) continue;
-            else if (!OptionCanTargetJeater.GetBool() && target.Is(CustomRoles.Jester)) continue;
+            else if (!OptionCanTargetJester.GetBool() && target.Is(CustomRoles.Jester)) continue;
+            else if (!OptionCanTargetNeutralKiller.GetBool() && target.IsNeutralKiller()) continue;
             if (target.Is(CustomRoles.GM)) continue;
 
             targetList.Add(target);
         }
         var SelectedTarget = targetList[rand.Next(targetList.Count)];
         TargetId = SelectedTarget.PlayerId;
+        
         NameColorManager.Add(Player.PlayerId, SelectedTarget.PlayerId, "#788514");
         SendRPC();
     }
@@ -113,27 +127,9 @@ public sealed class Lawyer : RoleBase, IOverrideWinner
         byte targetId = reader.ReadByte();
         TargetId = targetId;
     }
-    public void CheckWin(ref CustomWinner WinnerTeam, ref HashSet<byte> WinnerIds)
-    {
-        if (Player.IsAlive() && WinnerIds.Contains(TargetId))
-        {
-            CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lawyer);
-            CustomWinnerHolder.WinnerIds.Add(TargetId);
-            CustomWinnerHolder.WinnerIds.Add(Player.PlayerId);
-        }
-    }
-    public override void OnMurderPlayerAsTarget(MurderInfo _)
-    {
-        TargetId = byte.MaxValue;
-        SendRPC();
-    }
     public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
     {
         if (OptionKnowTargetRole.GetBool() && seen.PlayerId == TargetId) enabled = true;
-    }
-    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
-    {
-        if (seer.Is(CustomRoles.Lawyer) && OptionTargetKnowsLawyer.GetBool()) enabled = true;
     }
     public static void OnMurderPlayerOthers(MurderInfo info)
     {
@@ -155,24 +151,39 @@ public sealed class Lawyer : RoleBase, IOverrideWinner
 
         return TargetId == seen.PlayerId ? Utils.ColorString(RoleInfo.RoleColor, "§") : "";
     }
+    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+        var can = false;
+        foreach (var executioner in Lawyers.ToArray())
+        {
+            if (executioner.TargetId == seer.PlayerId && seer == seen)
+            {
+                can = true;
+            }
+        }
+        return  OptionTargetKnowsLawyer.GetBool() && can? Utils.ColorString(RoleInfo.RoleColor, "§") : "";
+    }
     public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)
     {
-        return TargetExiled && CustomWinnerHolder.WinnerTeam != CustomWinner.Default;
+        if (!Player.IsAlive())
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                if (pc.PlayerId == TargetId && pc.GetCountTypes() == winnerCountType)
+                    return true;
+            }
+        else
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                if (pc.PlayerId == TargetId && pc.GetCountTypes() == winnerCountType)
+                { CustomWinnerHolder.WinnerIds.Remove(TargetId); return true; }
+
+            }
+        return false;
     }
     public void ChangeRole()
     {
         Player.RpcSetCustomRole(CustomRoles.Prosecutors);
         Utils.NotifyRoles();
-    }
-
-    public static void ChangeRoleByTarget(byte targetId)
-    {
-        foreach (var executioner in Lawyers)
-        {
-            if (executioner.TargetId != targetId) continue;
-
-            executioner.ChangeRole();
-            break;
-        }
     }
 }

@@ -15,6 +15,7 @@ TypeAddon: "附加职业"
 # 阵营 / Teams
 TeamImpostor: "伪装者阵营"
 TeamNeutral: "中立阵营"
+TeamIndependent: "独立阵营"
 TeamCrewmate: "船员阵营"
 ImpostorNum: "我们之中有{0}个伪装者"
 

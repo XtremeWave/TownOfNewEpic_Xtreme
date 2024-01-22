@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
 
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Hangman : RoleBase, IImpostor

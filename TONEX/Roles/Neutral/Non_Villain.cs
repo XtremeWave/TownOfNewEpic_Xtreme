@@ -6,6 +6,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Hazel;
 using System.Linq;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
@@ -36,7 +37,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     )
     {
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        CustomRoleManager.OnCheckMurderPlayerOthers_Before.Add(OnCheckMurderPlayerOthers_Before);
+        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
         DigitalLifeList = new();
         MoneyCount = new();
         WealthAndBrillianceDictionary = new();
@@ -216,7 +217,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     private static void SetupOptionItem()
     {
     }
-    private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
+    private static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (target.Is(CustomRoles.Non_Villain))

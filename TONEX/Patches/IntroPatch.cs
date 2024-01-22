@@ -11,6 +11,7 @@ using Hazel;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX;
 
@@ -150,11 +151,22 @@ class IntroCutscenePatch
                     break;
             case CustomRoleTypes.Crewmate:
                 __instance.TeamTitle.text = $"{GetString("TeamCrewmate")}\n{string.Format(GetString("ImpostorNum"),Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors))}";
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                __instance.TeamTitle.color = new Color32(140, 255, 255, byte.MaxValue);
+                __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
                 break;
             case CustomRoleTypes.Neutral:
-                __instance.TeamTitle.text = GetString("TeamNeutral");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                if (PlayerControl.LocalPlayer.GetRoleClass() is not IIndependent independent)
+                {
+                    __instance.TeamTitle.text = GetString("TeamNeutral");
+                    __instance.TeamTitle.color  = new Color32(255, 171, 27, byte.MaxValue);
+                    __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                }
+                else
+                {
+                    __instance.TeamTitle.text = GetString("TeamIndependent");
+                    __instance.TeamTitle.color = new Color32(187, 187, 187, byte.MaxValue);
+                    __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                }
                 break;
         }
         if (PlayerControl.LocalPlayer.GetRoleClass()?.GetGameStartSound(out var newsound) ?? false)

@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using TONEX.Roles.Core;
 using static TONEX.Translator;
 using UnityEngine;
+using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vulture : RoleBase
+public sealed class Vulture : RoleBase, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
                SimpleRoleInfo.Create(

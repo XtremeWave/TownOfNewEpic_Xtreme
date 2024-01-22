@@ -1,11 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using System.Collections.Generic;
 using static TONEX.Translator;
 using Hazel;
 using UnityEngine;
 using MS.Internal.Xml.XPath;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class DoubleKiller : RoleBase, IImpostor
