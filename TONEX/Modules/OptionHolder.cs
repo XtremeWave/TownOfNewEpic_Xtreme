@@ -516,11 +516,11 @@ public static class Options
         NeutralRolesMaxPlayer = IntegerOptionItem.Create(1_003_002, "NeutralRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
-        NeutralKillingRolesMinPlayer = IntegerOptionItem.Create(1_003_001, "NeutralKillingRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
+        NeutralKillingRolesMinPlayer = IntegerOptionItem.Create(1_003_006, "NeutralKillingRolesMinPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetValueFormat(OptionFormat.Players);
-        NeutralKillingRolesMaxPlayer = IntegerOptionItem.Create(1_003_002, "NeutralKillingRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
+        NeutralKillingRolesMaxPlayer = IntegerOptionItem.Create(1_003_007, "NeutralKillingRolesMaxPlayer", new(0, 15, 1), 0, TabGroup.NeutralRoles, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetValueFormat(OptionFormat.Players);
         NeutralRoleWinTogether = BooleanOptionItem.Create(1_003_003, "NeutralRoleWinTogether", false, TabGroup.NeutralRoles, false)

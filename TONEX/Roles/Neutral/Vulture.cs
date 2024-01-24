@@ -57,7 +57,11 @@ public sealed class Vulture : RoleBase, IIndependent
     public override void Add()
     {
         EatLimit = OptionEatLimitPerMeeting.GetInt();
-        EatTime = 0;
+        EatTime = Utils.GetTimeStamp();
+    }
+    public override void OnGameStart()
+    {
+        EatTime = Utils.GetTimeStamp();
     }
     public override string GetReportButtonText() => GetString("VultureReportButtonText");
         public override bool GetReportButtonSprite(out string buttonName)
@@ -128,6 +132,14 @@ public sealed class Vulture : RoleBase, IIndependent
             return false;
         }
         if (!Is(reporter) || target == null) return true;
+        if( reporter.PlayerId ==  Player.PlayerId )
+        {
+            if (EatTime != -1)
+            {
+                var cooldown = EatTime + (long)OptionEatTime.GetFloat() - Utils.GetTimeStamp();
+               Player.Notify(string.Format(GetString("ShowEatCooldown"), cooldown, 1f));
+                return false;
+            }
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         ForVulture.Add(target.PlayerId);
         EatLimit -= 1;
@@ -135,6 +147,8 @@ public sealed class Vulture : RoleBase, IIndependent
        Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
         SendRPCLimit();
         if (EatLimit >= OptionEatLimitPerMeeting.GetInt()) Win();
+        }
+
             return false;
     }
     public void Win()
@@ -145,10 +159,10 @@ public sealed class Vulture : RoleBase, IIndependent
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (EatTime == 0) return;
-        if (EatTime + OptionEatTime.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (EatTime + (long)OptionEatTime.GetFloat() < now && EatTime != -1)
         {
-            EatTime = 0;
+            EatTime = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("EatTimeReady")));
         }

@@ -23,6 +23,7 @@ null,
             "恭喜发财|刘德华|商场|Non_Villain|不演反派",
              "#FF0000",
             true,
+            true,
             countType: CountTypes.None
 #if RELEASE
 ,

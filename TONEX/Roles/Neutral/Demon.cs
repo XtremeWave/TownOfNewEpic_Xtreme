@@ -23,6 +23,7 @@ public sealed class Demon : RoleBase, INeutralKilling, ISchrodingerCatOwner, IIn
             "dm",
             "#68bc71",
             true,
+            true,
             countType: CountTypes.Demon
         );
     public Demon(PlayerControl player)

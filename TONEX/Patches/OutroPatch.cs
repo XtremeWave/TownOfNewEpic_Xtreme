@@ -101,16 +101,23 @@ class SetEverythingUpPatch
         var WinnerText = WinnerTextObject.GetComponent<TMPro.TextMeshPro>(); //WinTextと同じ型のコンポーネントを取得
         WinnerText.fontSizeMin = 3f;
         WinnerText.text = "";
+        var InEndWinnerText = "";
+
 
         string CustomWinnerText = "";
+        string EndWinnerText = "";
         var AdditionalWinnerText = new StringBuilder(32);
+        var EndAdditionalWinnerText = new StringBuilder(32);
         string CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
+        string EndWinnerColor = Utils.GetRoleColorCode(CustomRoles.Crewmate);
 
         var winnerRole = (CustomRoles)CustomWinnerHolder.WinnerTeam;
         if (winnerRole >= 0)
         {
-            CustomWinnerText = GetWinnerRoleName(winnerRole);
+            CustomWinnerText = GetWinnerRoleName(winnerRole, 0);
+            EndWinnerText = GetWinnerRoleName(winnerRole, 1);
             CustomWinnerColor = Utils.GetRoleColorCode(winnerRole);
+            EndWinnerColor = Utils.GetRoleColorCode(winnerRole);
             if (winnerRole.IsNeutral())
             {
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(winnerRole);
@@ -127,6 +134,7 @@ class SetEverythingUpPatch
             //通常勝利
             case CustomWinner.Crewmate:
                 CustomWinnerColor = Utils.GetRoleColorCode(CustomRoles.Engineer);
+                EndWinnerColor = Utils.GetRoleColorCode(CustomRoles.Engineer);
                 break;
             //特殊勝利
             case CustomWinner.Terrorist:
@@ -163,22 +171,36 @@ class SetEverythingUpPatch
         foreach (var role in CustomWinnerHolder.AdditionalWinnerRoles)
         {
             var addWinnerRole = (CustomRoles)role;
-            AdditionalWinnerText.Append('＆').Append(Utils.ColorString(Utils.GetRoleColor(role), GetWinnerRoleName(addWinnerRole)+ GetString("Win")));
+            AdditionalWinnerText.Append('＆').Append(Utils.ColorString(Utils.GetRoleColor(role), GetWinnerRoleName(addWinnerRole, 0) + GetString("Win")));
+            EndAdditionalWinnerText.Append('＆').Append(Utils.ColorString(Utils.GetRoleColor(role), GetWinnerRoleName(addWinnerRole, 1) + GetString("Win")));
         }
         if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
         {
             if (AdditionalWinnerText.Length < 1) WinnerText.text = $"<color={CustomWinnerColor}>{CustomWinnerText}{GetString("Win")}</color>";
             else WinnerText.text = $"<color={CustomWinnerColor}>{CustomWinnerText}</color>{AdditionalWinnerText}{GetString("Win")}";
+            if (EndAdditionalWinnerText.Length < 1) InEndWinnerText = $"<color={EndWinnerColor}>{EndWinnerText}{GetString("Win")}</color>";
         }
 
-        static string GetWinnerRoleName(CustomRoles role)
+        static string GetWinnerRoleName(CustomRoles role, int a)
         {
-            var name = GetString($"WinnerRoleText.{Enum.GetName(typeof(CustomRoles), role)}");
-            if (name == "" || name.StartsWith("*") || name.StartsWith("<INVALID")) name = Utils.GetRoleName(role);
-            return name;
+            if (a == 0
+                )
+            {
+                var name = GetString($"WinnerRoleText.{Enum.GetName(typeof(CustomRoles), role)}");
+                if (name == "" || name.StartsWith("*") || name.StartsWith("<INVALID")) name = Utils.GetRoleName(role);
+                return name;
+            }
+            else
+            {
+                var name = GetString($"WinnerRoleText.InEnd.{Enum.GetName(typeof(CustomRoles), role)}");
+                if (name == "" || name.StartsWith("*") || name.StartsWith("<INVALID")) name = Utils.GetRoleName(role);
+                return name;
+            }
+
         }
 
-        LastWinsText = WinnerText.text.RemoveHtmlTags();
+        LastWinsText = InEndWinnerText;
+
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

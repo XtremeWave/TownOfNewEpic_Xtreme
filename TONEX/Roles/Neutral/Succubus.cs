@@ -20,6 +20,7 @@ public sealed class Succubus : RoleBase, INeutralKilling, IIndependent
             "su",
             "#ff00ff",
             true,
+            true,
             countType: CountTypes.Succubus
         );
     public Succubus(PlayerControl player)

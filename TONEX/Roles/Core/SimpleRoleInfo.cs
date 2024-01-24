@@ -15,6 +15,7 @@ public class SimpleRoleInfo
     public Func<RoleTypes> BaseRoleType;
     public CustomRoleTypes CustomRoleType;
     public CountTypes CountType;
+    public bool IsNK;
     public Color RoleColor;
     public string RoleColorCode;
     public int ConfigId;
@@ -56,6 +57,7 @@ public class SimpleRoleInfo
         OptionCreatorDelegate optionCreator,
         string chatCommand,
         string colorCode,
+        bool isNK,
         bool isDesyncImpostor,
         TabGroup tab,
         Func<AudioClip> introSound,
@@ -73,6 +75,8 @@ public class SimpleRoleInfo
         CountType = countType;
         ConfigId = configId;
         OptionCreator = optionCreator;
+        if (CustomRoleType == CustomRoleTypes.Neutral)
+            IsNK = isNK;
         IsDesyncImpostor = isDesyncImpostor;
         this.introSound = introSound;
         ChatCommand = chatCommand;
@@ -116,6 +120,7 @@ public class SimpleRoleInfo
         OptionCreatorDelegate optionCreator,
         string chatCommand,
         string colorCode = "",
+        bool isNK = false,
         bool isDesyncImpostor = false,
         TabGroup tab = TabGroup.GameSettings,
         Func<AudioClip> introSound = null,
@@ -144,6 +149,7 @@ public class SimpleRoleInfo
                 optionCreator,
                 chatCommand,
                 colorCode,
+                isNK,
                 isDesyncImpostor,
                 tab,
                 introSound,
@@ -151,7 +157,7 @@ public class SimpleRoleInfo
                 broken,
                 assignCountRule,
                 assignUnitRoles
-            );
+            ) ;
         roleInfo.Description = new SingleRoleDescription(roleInfo);
         return roleInfo;
     }
@@ -206,6 +212,7 @@ public class SimpleRoleInfo
                 null,
                 null,
                 colorCode,
+                false,
                 false,
                 TabGroup.GameSettings,
                 null,

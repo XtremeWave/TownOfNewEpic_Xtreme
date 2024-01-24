@@ -23,6 +23,7 @@ public sealed class Pelican : RoleBase, INeutralKilling, ISchrodingerCatOwner, I
             "pe|鵜鶘",
             "#34c84b",
             true,
+            true,
             countType: CountTypes.Pelican
         );
     public Pelican(PlayerControl player)

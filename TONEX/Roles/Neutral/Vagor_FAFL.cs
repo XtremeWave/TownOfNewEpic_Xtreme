@@ -225,11 +225,10 @@ assignCountRule: new(1, 1, 1)
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
-        if (seer == PlayerControl.LocalPlayer) return"";
         seen ??= seer;
         //seeおよびseenが自分である場合以外は関係なし
-        if (seer != seen) return "";
-        return $"\n{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
+        if (seer != seen || seer == PlayerControl.LocalPlayer) return "";
+        return $"\n<color=#e6adoa>{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}</color>";
 
     }
     public override void OnUsePet()

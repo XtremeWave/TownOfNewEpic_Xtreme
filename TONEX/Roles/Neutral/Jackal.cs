@@ -24,6 +24,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, ISchrodingerCatOwner, II
             "jac|≤Ú¿«",
             "#00b4eb",
             true,
+            true,
             countType: CountTypes.Jackal,
             assignCountRule: new(1, 1, 1)
         );

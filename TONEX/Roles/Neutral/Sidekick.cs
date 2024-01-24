@@ -8,7 +8,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent
+public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -22,6 +22,7 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent
             "si",
             "#00b4eb",
             true,
+            true,
             countType: CountTypes.Jackal,
             assignCountRule: new(1, 1, 1)
         );
@@ -33,6 +34,7 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent
     )
     { }
     public bool CanUseSabotageButton() => false;
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting)
     {
         var target = player;
@@ -43,7 +45,7 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent
             Player.RpcSetCustomRole(CustomRoles.Jackal);
             Player.ResetKillCooldown();
             Player.SetKillCooldown();
-
+              
         }
         }
         else

@@ -206,7 +206,14 @@ class MurderPlayerPatch
             Main.FirstDied = target.PlayerId;
     }
 }
-
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.UseClosest))]
+class UsePatch
+{
+    public static void Prefix(PlayerControl __instance)
+    {
+        __instance.GetRoleClass()?.OnUse();
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
 class ShapeshiftPatch
 {

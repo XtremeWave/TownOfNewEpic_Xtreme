@@ -46,7 +46,7 @@ public sealed class TimeMaster : RoleBase
     public static Dictionary<byte, Vector2> TimeMasterbacktrack = new();
     private long ProtectStartTime;
     private float Cooldown;
-    private int UsePetCooldown;
+    private long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 14, OptionName.TimeMasterSkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
@@ -61,13 +61,14 @@ public sealed class TimeMaster : RoleBase
     public override void Add()
     {
         Marked = false;
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
         Cooldown = OptionSkillCooldown.GetFloat();
         TimeMasterbacktrack = new();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnGameStart()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -82,7 +83,7 @@ public sealed class TimeMaster : RoleBase
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("TimeMasterVetnButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     private void SendRPC()
     {
@@ -127,21 +128,16 @@ public sealed class TimeMaster : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ProtectStartTime == 0) return;
-        if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
         {
-            ProtectStartTime = 0;
+            ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("TimeMasterOffGuard")));
+            player.Notify(string.Format(GetString("TimeStopsOffGuard")));
         }
-    }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        if (UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
+            UsePetCooldown = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
@@ -149,13 +145,16 @@ public sealed class TimeMaster : RoleBase
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
+            return;
         }
         ReduceNowCooldown();
         Player.SyncSettings();
         ProtectStartTime = Utils.GetTimeStamp();
+        UsePetCooldown =  Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
         Player.Notify(GetString("TimeMasterOnGuard"));
         foreach (var player in Main.AllPlayerControls)
@@ -183,7 +182,7 @@ public sealed class TimeMaster : RoleBase
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         if (info.IsSuicide) return true;
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp() && Marked)
+        if (ProtectStartTime != -1 && ProtectStartTime + OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp() && Marked)
         {
             var (killer, target) = info.AttemptTuple;
             foreach (var player in Main.AllPlayerControls)
@@ -201,10 +200,10 @@ public sealed class TimeMaster : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnStartMeeting()
     {
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
     }
 }

@@ -9,7 +9,6 @@ namespace TONEX;
 
 public static class AntiBlackout
 {
-    private static CustomRoles role = new();
     ///<summary>
     ///追放処理を上書きするかどうか
     ///</summary>

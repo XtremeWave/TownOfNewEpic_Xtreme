@@ -85,6 +85,11 @@ public sealed class Prophet : RoleBase, IKiller
         text = GetString("ProphetButtonText");
         return true;
     }
+    public bool OverrideKillButtonSprite(out string buttonName)
+    {
+        buttonName = "SeeBadorGood";
+        return false;
+    }
     public float CalculateKillCooldown() => CanUseKillButton() ? ProphetCooldown.GetFloat() : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && ProphetLimit >= 1;
     public bool CanUseSabotageButton() => false;

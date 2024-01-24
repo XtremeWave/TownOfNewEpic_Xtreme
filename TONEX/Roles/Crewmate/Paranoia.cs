@@ -38,7 +38,7 @@ public sealed class Paranoia : RoleBase
     }
 
     private int SkillLimit;
-    private int UsePetCooldown;
+    private long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.ParanoiaNumOfUseButton, new(1, 99, 1), 3, false)
@@ -49,8 +49,12 @@ public sealed class Paranoia : RoleBase
         public override void Add()
     {
         SkillLimit = OptionSkillNums.GetInt();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
-    public override void OnGameStart() => UsePetCooldown = OptionSkillCooldown.GetInt();
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
@@ -72,12 +76,12 @@ public sealed class Paranoia : RoleBase
     public override bool GetPetButtonText(out string text)
     {
         text = Translator.GetString("ParanoiaVetnButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "Paranoid";
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -97,9 +101,10 @@ public sealed class Paranoia : RoleBase
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         if (SkillLimit >= 1)
@@ -114,15 +119,15 @@ public sealed class Paranoia : RoleBase
         }
         return;
     }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        var now = Utils.GetTimeStamp();
+        if (UsePetCooldown + (long)OptionSkillCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
+            UsePetCooldown = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
     public override bool CanUseAbilityButton() => SkillLimit > 0;
@@ -132,7 +137,7 @@ public sealed class Paranoia : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
         Player.RpcResetAbilityCooldown();
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner) => Player.RpcResetAbilityCooldown();

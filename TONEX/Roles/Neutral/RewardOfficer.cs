@@ -70,7 +70,9 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
         {
             ForRewardOfficer.Add(SelectedTarget.PlayerId);
         }
+        SendRPC();
         SendRPC_SyncList();
+        Utils.NotifyRoles(Player);
     }
 
     private static void SendRPC_SyncList()
@@ -89,6 +91,16 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
             ForRewardOfficer.Add(reader.ReadByte());
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
+    private void SendRPC()
+    {
+        using var sender = CreateSender(CustomRPC.SetRewardOfficerName);
+        sender.Writer.Write(Name);
+    }
+    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    {
+        if (rpcType != CustomRPC.SetRewardOfficerName) return;
+        Name = reader.ReadString();
+    }
     public override string GetProgressText(bool comms = false)
     {
         if (RewardOfficerCanSeeRoles.GetBool())
@@ -130,11 +142,11 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
                 Name = SelectedTarget.GetAllRoleName();
                 RolesColor = Utils.GetRoleColor(SelectedTarget.GetCustomRole());
             }
-            else
-            {
-                ForRewardOfficer.Add(SelectedTarget.PlayerId);
-            }
+            else    ForRewardOfficer.Add(SelectedTarget.PlayerId);
+            Player.Notify("TargetIsDead");
+            SendRPC();
             SendRPC_SyncList();
+            Utils.NotifyRoles(Player);
         }
     }
 }

@@ -181,6 +181,14 @@ public abstract class RoleBase : IDisposable
     { }
 
     /// <summary>
+    /// 使用任何设施时调用的函数（打开任务界面，打开按钮界面等等都有，只要是使用）
+    /// 不需要验证您的身份，因为调用前已经验证
+    /// 请注意：全部模组端都会调用
+    /// </summary>
+    public virtual void OnUse()
+    { }
+
+    /// <summary>
     /// 保护别人时调用的函数
     /// 不需要验证您的身份，因为调用前已经验证
     /// 请注意：全部模组端都会调用
@@ -496,7 +504,7 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     public virtual bool GetPetButtonText(out string text)
     {
-        text = default;
+        text = GetString(StringNames.PetAction);
         return false;
     }
     /// <summary>

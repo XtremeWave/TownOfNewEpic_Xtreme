@@ -39,15 +39,9 @@ static class CustomRolesHelper
     }
     public static bool IsNeutralKilling(this CustomRoles role)
     {
-        if (
-            role == CustomRoles.Jackal
-            || role == CustomRoles.Demon
-            || role == CustomRoles.BloodKnight
-            || role == CustomRoles.Sidekick
-            || role == CustomRoles.Vagor_FAFL
-            || role == CustomRoles.Pelican
-            || role == CustomRoles.Succubus
-            ) return true;
+        var roleInfo = role.GetRoleInfo();
+        if (roleInfo != null)
+            return roleInfo.CustomRoleType == CustomRoleTypes.Neutral && roleInfo.IsNK;
         return false;
     }
     public static bool IsCrewmate(this CustomRoles role)

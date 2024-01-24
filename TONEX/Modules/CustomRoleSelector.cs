@@ -25,7 +25,7 @@ internal static class CustomRoleSelector
             optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
         int optNKNum = 0;
         if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 0 && Options.NeutralKillingRolesMaxPlayer.GetInt() >= Options.NeutralKillingRolesMinPlayer.GetInt())
-            optNKNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralKillingRolesMaxPlayer.GetInt() + 1);
+            optNKNum = rd.Next(Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NeutralKillingRolesMaxPlayer.GetInt() + 1);
 
         int readyRoleNum = 0;
         int readyNeutralNum = 0;
@@ -140,7 +140,7 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum)
+            /*if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePet.GetBool())
             {
                 var shouldExecute = true;
                 if (NKRateList.Count > 0)
@@ -165,9 +165,9 @@ internal static class CustomRoleSelector
                 }
                 sp = UnityEngine.Random.Range(0, 100);
             }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
+            if (readyRoleNum >= playerCount) goto EndOfAssign;*/
 
-            if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
+            /*if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
             {
                 var shouldExecute = true;
                 if (NeutralRateList.Count > 0)
@@ -192,7 +192,7 @@ internal static class CustomRoleSelector
                 }
                 sp = UnityEngine.Random.Range(0, 100);
             }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
+            if (readyRoleNum >= playerCount) goto EndOfAssign;*/
         }
 #endif
 #endregion

@@ -147,7 +147,7 @@ public sealed class Veteran : RoleBase
     public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "Veteran";
-        return !(UsePetCooldown != -1);
+        return !(UsePetCooldown != -1) || SkillLimit >=1;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
@@ -169,7 +169,7 @@ public sealed class Veteran : RoleBase
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         if (info.IsSuicide) return true;
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp())
+        if (ProtectStartTime != -1 && ProtectStartTime + OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp())
         {
             var (killer, target) = info.AttemptTuple;
             target.RpcMurderPlayerV2(killer);
@@ -177,6 +177,10 @@ public sealed class Veteran : RoleBase
             return false;
         }
         return true;
+    }
+    public override void OnStartMeeting()
+    {
+        ProtectStartTime = -1;
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {

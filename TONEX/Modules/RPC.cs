@@ -137,6 +137,8 @@ public enum CustomRPC
     ForNVOvercomeList,
     ForNVFarAheadList,
     ForNVDFList,
+     ////////////
+    SetRewardOfficerName,
 }
 public enum Sounds
 {

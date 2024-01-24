@@ -193,6 +193,8 @@ public class Main : BasePlugin
             //TONEX.Logger.Disable("CheckMurder");
             TONEX.Logger.Disable("PlayerControl.RpcSetRole");
             TONEX.Logger.Disable("SyncCustomSettings");
+            TONEX.Logger.Disable("CancelPet");
+            TONEX.Logger.Disable("Pet");
         }
         //TONEX.Logger.isDetail = true;
 
