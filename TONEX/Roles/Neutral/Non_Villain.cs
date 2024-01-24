@@ -19,15 +19,15 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             7565_2_1_0,
-#if DEBUG
-            SetupOptionItem,
-#else
-            null,
-#endif
+null,
             "恭喜发财|刘德华|商场|Non_Villain|不演反派",
              "#FF0000",
             true,
             countType: CountTypes.None
+#if RELEASE
+,
+assignCountRule: new(1, 1, 1)
+#endif
         );
     public Non_Villain(PlayerControl player)
     : base(

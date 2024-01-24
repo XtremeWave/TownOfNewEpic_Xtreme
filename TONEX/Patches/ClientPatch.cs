@@ -24,7 +24,7 @@ internal class MakePublicPatch
         if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)
         {
             var message = "";
-            if (!Main.IsPublicAvailableOnThisVersion) message = GetString("PublicNotAvailableOnThisVersion");
+            message = GetString("PublicNotAvailableOnThisVersion");
             if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
             if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
             Logger.Info(message, "MakePublicPatch");

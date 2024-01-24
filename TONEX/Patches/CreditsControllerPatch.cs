@@ -15,7 +15,8 @@ public class CreditsControllerPatch
             {
                 //$"<color=#bd262a><size=150%>{GetString("FromChina")}</size></color>",
                 //XtremeWave
-                "Team-XtremeWave",
+                "Town Of New Epic",
+                "By ——XtremeWave",
                 $"喜 - {GetString("Collaborators")}",
                 $"Slok7565 - {GetString("Collaborators")}",
                 $"Zwyan - {GetString("Collaborators")}",
@@ -27,7 +28,7 @@ public class CreditsControllerPatch
                 $"中立小黑 - {GetString("PullRequester")}",
 
                 //Others
-                "Others",
+                "Contributors",
                 $"KARPED1EM - {GetString("Creater")}",
                 $"Niko233 - {GetString("Contributor")}",
                 $"Moe - {GetString("Contributor")}",

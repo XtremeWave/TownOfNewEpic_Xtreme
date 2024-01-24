@@ -73,12 +73,7 @@ public static class NameTagManager
             };
 
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
-        //player.RpcSetName(name);
-        {
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
-            writer.Write(name);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-        }
+        player.RpcSetName(name);
     }
     public static void ReloadTag(string? friendCode)
     {

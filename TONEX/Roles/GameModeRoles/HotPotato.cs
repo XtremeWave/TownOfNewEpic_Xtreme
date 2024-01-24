@@ -23,6 +23,10 @@ public sealed class HotPotato : RoleBase, IKiller
             "#ff9900",
             true,
            introSound: () => GetIntroSound(RoleTypes.Impostor)
+#if RELEASE
+,
+assignCountRule: new(1, 1, 1)
+#endif
         );
     public HotPotato(PlayerControl player)
     : base(

@@ -24,15 +24,15 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IIndependent
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             7565_1_1_1,
-#if DEBUG
-            SetupOptionItem,
-#else
             null,
-#endif
             "Zhongli|Vagor|µÛ¾ý|ÏÐÓÎ",
              "#E6AD0A",
             true,
             countType: CountTypes.FAFL
+#if RELEASE
+,
+assignCountRule: new(1, 1, 1)
+#endif
         );
     public Vagor_FAFL(PlayerControl player)
     : base(

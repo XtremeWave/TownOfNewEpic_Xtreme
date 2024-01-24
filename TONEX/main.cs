@@ -66,7 +66,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> ShowResults { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
-    public static ConfigEntry<bool> CanPublic { get; private set; }
+    //public static ConfigEntry<bool> CanPublic { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> AutoStartGame { get; private set; }
     public static ConfigEntry<bool> AutoEndGame { get; private set; }
@@ -157,7 +157,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
-        CanPublic = Config.Bind("Client Options", "CanPublic", true);
+        //CanPublic = Config.Bind("Client Options", "CanPublic", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);

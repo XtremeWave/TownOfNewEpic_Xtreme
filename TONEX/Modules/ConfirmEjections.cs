@@ -83,19 +83,14 @@ public static class ConfirmEjections
             Main.DoBlockNameChange = true;
             if (GameStates.IsInGame)
             {
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
-            writer.Write(text);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);//player.RpcSetName(text);
+        player.RpcSetName(text);
             }
         }, 3.0f, "Change Exiled Player Name");
         _ = new LateTask(() =>
         {
             if (GameStates.IsInGame && !player.Data.Disconnected)
             {
-                //player.RpcSetName(playerName);
-                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
-                writer.Write(playerName);
-                AmongUsClient.Instance.FinishRpcImmediately(writer);
+                player.RpcSetName(playerName);
                 Main.DoBlockNameChange = false;
             }
         }, 11.5f, "Change Exiled Player Name Back");

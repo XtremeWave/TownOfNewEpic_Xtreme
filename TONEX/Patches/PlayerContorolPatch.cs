@@ -131,8 +131,6 @@ class MurderPlayerPatch
     private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.MurderPlayer));
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] MurderResultFlags resultFlags, ref bool __state /* 成功したキルかどうか */ )
     {
-        if (!Main.CanPublic.Value)
-        {
             logger.Info($"{__instance.GetNameWithRole()} => {target.GetNameWithRole()}({resultFlags})");
             var isProtectedByClient = resultFlags.HasFlag(MurderResultFlags.DecisionByHost) && target.IsProtected();
             var isProtectedByHost = resultFlags.HasFlag(MurderResultFlags.FailedProtected);
@@ -179,27 +177,8 @@ class MurderPlayerPatch
             }
 
             return true;
-        }
-        else
-        {
-            Logger.Info($"{__instance.GetNameWithRole().RemoveHtmlTags()} => {target.GetNameWithRole().RemoveHtmlTags()}{(target.IsProtected() ? "(Protected)" : "")}, flags : {resultFlags}", "MurderPlayer");
-            if (AmongUsClient.Instance.AmHost)
-            {
-                if (resultFlags == MurderResultFlags.Succeeded)
-                {
-                    Logger.SendInGame($"玩家{target.GetRealName()}被绕过公开保护直接击杀。");
-                    return true;
-                }
-                if (resultFlags == MurderResultFlags.FailedProtected)
-                {
-                    target.RemoveProtection();
-                    __instance.CheckMurder(target);
-                    target.SendKeepProtect();
-                    return false;
-                }
-            }
-            return true;
-        }
+        
+        
     }
     public static void Postfix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, bool __state)
     {
