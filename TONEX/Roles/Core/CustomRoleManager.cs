@@ -526,7 +526,7 @@ public enum CustomRoles
     SerialKiller,
     ShapeMaster,
     EvilGuesser,
-    EvilSwapper,
+    EvilSwapper,//TODO
     KillingMachine,
     Zombie,
     Sniper,
@@ -566,13 +566,13 @@ public enum CustomRoles
     Messenger,
     Insider,
     Onmyoji,
-    Blackmailer,
+    Blackmailer,//TODO
     Gamblers,
     DoubleKiller,
     Medusa,
     Skinwalker,
     ViciousSeeker,
-    EvilGuardian,
+    EvilGuardian,//TODO
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -593,7 +593,7 @@ public enum CustomRoles
     Doctor,
     Vigilante,
     NiceGuesser,
-    NiceSwapper,
+    NiceSwapper,//TODO
     Transporter,
     TimeManager,
     Veteran,
@@ -648,6 +648,7 @@ public enum CustomRoles
     Non_Villain,
     Lawyer,
     Prosecutors,
+    PVPboss,
     //GameMode
     HotPotato,
     ColdPotato,

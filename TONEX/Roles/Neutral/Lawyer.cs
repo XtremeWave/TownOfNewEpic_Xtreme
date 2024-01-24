@@ -37,7 +37,6 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
         Lawyers.Add(this);
         CustomRoleManager.OnMurderPlayerOthers.Add(OnMurderPlayerOthers);
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        TargetExiled = false;
     }
     public static byte WinnerID;
 
@@ -69,7 +68,6 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
 
     public static HashSet<Lawyer> Lawyers = new(15);
     public byte TargetId;
-    private bool TargetExiled;
 
     private static void SetupOptionItem()
     {

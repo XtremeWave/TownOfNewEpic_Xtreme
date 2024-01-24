@@ -138,13 +138,13 @@ public sealed class TimeStops : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
         var now = Utils.GetTimeStamp();
-        if (ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
+        if (Player.IsAlive() && ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
         {
             ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("TimeStopsOffGuard")));
         }
-        if (UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
+        if (Player.IsAlive() && UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
             UsePetCooldown = -1;
             player.RpcProtectedMurderPlayer();
@@ -156,7 +156,7 @@ public sealed class TimeStops : RoleBase
         if (!Options.UsePets.GetBool()) return;
         if (UsePetCooldown != -1)
         {
-            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            var cooldown = UsePetCooldown + (long)Cooldown - Utils.GetTimeStamp();
             Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }

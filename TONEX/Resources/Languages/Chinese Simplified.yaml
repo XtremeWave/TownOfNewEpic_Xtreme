@@ -218,7 +218,7 @@ Prefix.Rambler: "漫步"
 Prefix.Mini: "迷你"
 Prefix.Libertarian: "广播"
 
-## 胜利界面职业名 / Role Name for End Screen
+## 胜利界面简介
 WinnerRoleText.Impostor: "邪恶接管！"
 WinnerRoleText.Crewmate: "和蔼，任何邪恶终将绳之以法"
 WinnerRoleText.Jester: "心 脏 骤 停"
@@ -250,6 +250,10 @@ WinnerRoleText.RewardOfficer: "拿下了目标，该换取赏金了"
 WinnerRoleText.Despair: "我好失落"
 WinnerRoleText.Vagor_FAFL: "力量似乎渐渐回来了。不多，但有用"
 WinnerRoleText.Non_Villain: "'恭喜发财！'"
+
+
+
+## 胜利界面职业名 / Role Name for End Screen
 WinnerRoleText.InEnd.Impostor: "伪装者阵营"
 WinnerRoleText.InEnd.Crewmate: "船员阵营"
 WinnerRoleText.InEnd.Jester: "小丑"
@@ -281,6 +285,8 @@ WinnerRoleText.InEnd.RewardOfficer: "悬赏官"
 WinnerRoleText.InEnd.Despair: "绝望先生"
 WinnerRoleText.InEnd.Vagor_FAFL: "异世闲游者"
 WinnerRoleText.InEnd.Non_Villain: "'不演反派'"
+
+
 # 以下是职业简介（显示在开局以及任务栏的文本）/ Shows at Impostor/Crewmate Screen
 
 ## 内鬼阵营 / Impostor Blurbs

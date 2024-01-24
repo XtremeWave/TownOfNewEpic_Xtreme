@@ -153,13 +153,13 @@ public sealed class Veteran : RoleBase
     {
         if (!AmongUsClient.Instance.AmHost) return;
         var now = Utils.GetTimeStamp();
-        if (ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
+        if (Player.IsAlive() && ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
         {
             ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("VeteranOffGuard"), SkillLimit));
         }
-        if (UsePetCooldown + (long)OptionSkillCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
+        if (Player.IsAlive() && UsePetCooldown + (long)OptionSkillCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
             UsePetCooldown = -1;
             player.RpcProtectedMurderPlayer();

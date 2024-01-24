@@ -83,7 +83,6 @@ class HudSpritePatch
             Sprite newSprite = CustomButton.GetSprite("UseNum");
             newRemain.sprite = newSprite;
 
-
             /*Sprite qwqnew = CustomButton.GetSprite("UseNum");
                 SpriteRenderer spriteerer = newSetting.GetComponent<SpriteRenderer>();
                 if (spriteerer != null)

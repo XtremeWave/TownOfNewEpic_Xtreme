@@ -29,7 +29,7 @@ public sealed class Bomber : RoleBase, IImpostor
 
     static OptionItem OptionRadius;
     bool Shapeshifting;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
     enum OptionName
     {
         BomberRadius
@@ -41,7 +41,14 @@ public sealed class Bomber : RoleBase, IImpostor
     }
     public bool CanKill { get; private set; } = false;
     public float CalculateKillCooldown() => 255f;
-            public override void OnGameStart() => UsePetCooldown = (int)Options.DefaultKillCooldown;
+    public override void Add()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("BomberShapeshiftText");
@@ -55,12 +62,12 @@ public sealed class Bomber : RoleBase, IImpostor
             public override bool GetPetButtonText(out string text)
     {
                        text = GetString("BomberShapeshiftText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool GetPetButtonSprite(out string buttonName)
     {
                  buttonName = "Bomb";
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool GetGameStartSound(out string sound)
     {
@@ -106,12 +113,13 @@ public sealed class Bomber : RoleBase, IImpostor
         }, 1.5f, "Bomber Suiscide");
 
     }
-        public override void OnUsePet()
+    public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)Options.DefaultKillCooldown - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
                 Logger.Info("炸弹爆炸了", "Boom");
@@ -144,19 +152,20 @@ public sealed class Bomber : RoleBase, IImpostor
             Utils.NotifyRoles();
         }, 1.5f, "Bomber Suiscide");
     }
-            public override void OnSecondsUpdate(PlayerControl player, long now)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        var now = Utils.GetTimeStamp();
+        if (Player.IsAlive() &&  UsePetCooldown + (long)Options.DefaultKillCooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
       public override void AfterMeetingTasks()
     {
-        UsePetCooldown = (int)Options.DefaultKillCooldown;
+        UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner) => Player.RpcResetAbilityCooldown();
 }
