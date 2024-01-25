@@ -36,7 +36,7 @@
     <p>代码参考： 确认驱逐</p>
     <p>代码参考：分割RPC包</p>
   <h3>:ribbon: <a href="https://github.com/ykundesu/SuperNewRoles">SuperNewRoles</a> :ribbon:</h3>
-    <p>代码参考： Credentials Menu</p>
+    <p>代码参考： 感谢菜单</p>
     <p>代码参考: 马模式更改</p>
     <p>代码参考: Mod分类选择</p>
     <p>代码参考: 自定义按钮</p>
