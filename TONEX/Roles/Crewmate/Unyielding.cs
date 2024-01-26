@@ -33,8 +33,8 @@ public sealed class Unyielding : RoleBase, IKiller
     }
 
     static OptionItem OptionDieTime;
+    static OptionItem OptionKillCooldown;
     public bool CanKill;
-    public long KillTime;
     enum OptionName
     {
         DieTime
@@ -43,13 +43,14 @@ public sealed class Unyielding : RoleBase, IKiller
     {
         OptionDieTime = FloatOptionItem.Create(RoleInfo, 11, OptionName.DieTime, new(12f, 180f, 2.5f), 12f, false)
             .SetValueFormat(OptionFormat.Seconds);
+        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 12, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 10f, false)
+            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Add()
     {
         CanKill = false;
-        KillTime = -1;
     }
-    public float CalculateKillCooldown() => CanUseKillButton() ? 10f : 255f;
+    public float CalculateKillCooldown() => CanUseKillButton() ? OptionKillCooldown.GetFloat() : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && CanKill;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
@@ -58,28 +59,20 @@ public sealed class Unyielding : RoleBase, IKiller
     {
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
-        if (Player.IsAlive())
+        if (Player.IsAlive() && Player.PlayerId != target.PlayerId)
         {
-            Player.RpcProtectedMurderPlayer(Player);
-            KillTime = Utils.GetTimeStamp();
-                CanKill = true;
+            killer.RpcTeleport(target.GetTruePosition());
+            target.RpcProtectedMurderPlayer(target);
+            CanKill = true;
+            Player.SetKillCooldownV2();
             Player.Notify(string.Format(GetString("KillUnyielding")));
             new LateTask(() =>
             {
+                Player.RpcMurderPlayerV2(Player);
                 target.SetRealKiller(killer);
-            }, OptionDieTime.GetFloat()+1.1f, "DieTime");
+            }, OptionDieTime.GetFloat(), "DieTime");
             return false;
         }
         return true;
     }
-    public override void OnFixedUpdate(PlayerControl player)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        var now = Utils.GetTimeStamp();
-        if (KillTime + (long)OptionDieTime.GetFloat()+1f < now && KillTime != -1 && CanKill)
-        {
-            KillTime = -1;
-            Player.RpcMurderPlayerV2(Player);
-        }
-    }
-    }
+}

@@ -64,7 +64,7 @@ public sealed class Jackal : RoleBase, IKiller,INeutralKilling, ISchrodingerCatO
     }
     public enum SwitchTrigger
     {
-        Kill,
+        TriggerKill,
         TriggerDouble,
     };
     private static float KillCooldown;
@@ -115,11 +115,6 @@ public sealed class Jackal : RoleBase, IKiller,INeutralKilling, ISchrodingerCatO
         else
         return "";
     }
-    public override bool GetAdminButtonSprite(out string buttonName)
-    {
-        buttonName = "Sidekick";
-        return SidekickLimit >= 1;
-    }
     public bool OverrideKillButtonText(out string text)
     {
         text = GetString("GangsterButtonText");
@@ -145,11 +140,11 @@ public sealed class Jackal : RoleBase, IKiller,INeutralKilling, ISchrodingerCatO
             target.RpcSetCustomRole(CustomRoles.Wolfmate);
         else
         {
-            /* if (target.CanUseKillButton())
+            if (target.CanUseKillButton())
                  target.RpcSetCustomRole(CustomRoles.Sidekick);
              else
-                 target.RpcSetCustomRole(CustomRoles.Whoops);*/
-            Player.RpcMurderPlayerV2(target);
+                 target.RpcSetCustomRole(CustomRoles.Whoops);
+             /*Player.RpcMurderPlayerV2(target);
             target.Revive();
             
             target.Data.IsDead = false;
@@ -174,7 +169,7 @@ public sealed class Jackal : RoleBase, IKiller,INeutralKilling, ISchrodingerCatO
             target.Data.Role.CanUseKillButton = true;
             target.Data.Role.CanVent = true;
             target.Data.Role.CanBeKilled = true;
-            AntiBlackout.SendGameData("SetSidekick");
+            AntiBlackout.SendGameData("SetSidekick");*/
         }
 
         Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));

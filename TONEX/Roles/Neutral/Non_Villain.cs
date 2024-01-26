@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using Hazel;
 using System.Linq;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using Il2CppSystem.Runtime.Remoting.Messaging;
 
 namespace TONEX.Roles.Neutral;
 public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
@@ -481,5 +482,10 @@ assignCountRule: new(1, 1, 1)
         }
 
         return refe.Contains(winnerCountType);
+    }
+    public static float CountDown(float timer)
+    {
+        timer -= Time.deltaTime;
+        return timer;
     }
 }

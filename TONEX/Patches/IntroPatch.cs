@@ -191,20 +191,13 @@ class IntroCutscenePatch
                 }
                 else if(PlayerControl.LocalPlayer.Is(CustomRoles.Bard))
                 {
-                    new LateTask(() =>
-                    {
-                        RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
-                    }, 4f, "Sound");
-                    break;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.KillSfx;
+                        break;
                 }
                 else
                 {
-
-                    new LateTask(() =>
-                    {
-                        RPC.PlaySoundRPC(PlayerControl.LocalPlayer.PlayerId, Sounds.KillSound);
-                    }, 4f, "Sound");
-                    break;
+                        PlayerControl.LocalPlayer.Data.Role.IntroSound = PlayerControl.LocalPlayer.KillSfx;
+                        break;
                 }
             case CustomRoleTypes.Crewmate:
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);

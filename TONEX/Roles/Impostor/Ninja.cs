@@ -138,7 +138,7 @@ public sealed class Ninja : RoleBase, IImpostor
         if (!Options.UsePets.GetBool()) return;
         if (UsePetCooldown != -1)
         {
-            var cooldown = UsePetCooldown + (long)Options.DefaultKillCooldown - Utils.GetTimeStamp();
+            var cooldown = UsePetCooldown + (long)NinjaateCooldown.GetFloat() - Utils.GetTimeStamp();
             Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }

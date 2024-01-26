@@ -1117,6 +1117,12 @@ ProsecutorsSkillCooldown: "空包弹冷却"
 ProsecutorsSkillLimit: "空包弹数量"
 DieTime: "延迟死亡时间"
 KillProbability: "击杀成功概率"
+RecruitModeSwitchAction: "招募模式"
+CanTargetCrewmate: "船员可以作为客户"
+CanTargetJester: "小丑可以作为客户"
+CanTargetNeutralKiller: "中立杀手可以作为客户"
+OptionKnowTargetRole: "可以知道客户职业"
+OptionTargetKnowsLawyer: "客户知道拥有律师"
 
 # 随机出生点 / Random Spawn Locations
 Junction: "三岔路"
@@ -1375,6 +1381,7 @@ Blessing3: "乐天替你消灾"
 Blessing4: "遥遥领先"
 Etiquette: "<color=#AAAAAA>负面效果</color>：礼多人不怪"
 TargetIsDead: "目标已死亡"
+KillUnyielding: "进入濒死状态"
 
 
 # 信息 / Messages
@@ -1566,6 +1573,7 @@ TimeMasterVetnButtonText: "回溯&记录"
 StarFromHeaven: "元素爆发·天星"
 CoreOfTheLand: "元素战技·地心"
 LiuDeHuaKillButtonText: "发红包"
+DoubleKillerKillButton: "第二把刀冷却"
 
 
 # 作弊 / EAC

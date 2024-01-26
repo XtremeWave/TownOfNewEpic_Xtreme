@@ -73,7 +73,7 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
     {
         OptionCanTargetCrewmate = BooleanOptionItem.Create(RoleInfo, 10, OptionName.CanTargetCrewmate, false, false);
         OptionCanTargetJester = BooleanOptionItem.Create(RoleInfo, 12, OptionName.CanTargetJester, false, true);
-        OptionCanTargetNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.CanTargetNeutralKiller, false, true);
+        OptionCanTargetNeutralKiller = BooleanOptionItem.Create(RoleInfo, 13, OptionName.CanTargetNeutralKiller, false, true);
         OptionKnowTargetRole = BooleanOptionItem.Create(RoleInfo, 11, OptionName.OptionKnowTargetRole, false, false);
         OptionTargetKnowsLawyer = BooleanOptionItem.Create(RoleInfo, 14, OptionName.OptionTargetKnowsLawyer, false, false);
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 15, OptionName.ProsecutorsSkillCooldown, new(2.5f, 180f, 2.5f), 30f, false)

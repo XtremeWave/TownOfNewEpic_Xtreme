@@ -1302,7 +1302,7 @@ public static class Utils
 
         string oldRoleName = GetOldRoleName(pc);
         var newRoleName = GetTrueRoleName(id, false);
-        if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
+        if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
         {
             builder.AppendFormat("<pos={0}em>", pos);
             builder.Append(isForChat ? $"  {oldRoleName}{GetSubRolesText(id)} => " + GetTrueRoleName(id, false).RemoveColorTags() : $" {oldRoleName}{GetSubRolesText(id)} =>" + GetTrueRoleName(id, false));
