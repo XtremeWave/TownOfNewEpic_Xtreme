@@ -57,7 +57,7 @@ class ExternalRpcPetPatch
 {
     public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        if (!AmongUsClient.Instance.AmHost || !GameStates.InGame || Options.CurrentGameMode != CustomGameMode.Standard) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
         var rpcType = callId == 51 ? RpcCalls.Pet : (RpcCalls)callId;
         if (rpcType != RpcCalls.Pet) return;
 

@@ -49,6 +49,7 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
             killer.RpcMurderPlayer(killer);
             PlayerState.GetByPlayerId(killer.PlayerId).DeathReason = CustomDeathReason.Sacrifice;
             Logger.Info($"{killer.GetRealName()} 击杀了非目标玩家，壮烈牺牲了（bushi）", "FFF");
+            return;
         }
     }
     public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)

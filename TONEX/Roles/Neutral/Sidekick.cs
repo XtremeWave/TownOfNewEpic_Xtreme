@@ -38,25 +38,16 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent, ISchrodi
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting)
     {
         var target = player;
-        if(isOnMeeting) 
-        {  
-            if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick))
-        {
-            Player.RpcSetCustomRole(CustomRoles.Jackal);
-            Player.ResetKillCooldown();
-            Player.SetKillCooldown();
-              
-        }
-        }
-        else
-        {
+        
             if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick))
             {
                 Player.RpcSetCustomRole(CustomRoles.Jackal);
                 Player.ResetKillCooldown();
                 Player.SetKillCooldown();
+                Player.Notify("BeJackal");
+
             }
-        }
+       
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {

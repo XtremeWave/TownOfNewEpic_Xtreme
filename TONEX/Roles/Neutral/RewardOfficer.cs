@@ -143,7 +143,7 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
                 RolesColor = Utils.GetRoleColor(SelectedTarget.GetCustomRole());
             }
             else    ForRewardOfficer.Add(SelectedTarget.PlayerId);
-            Player.Notify("TargetIsDead");
+            Player.Notify(GetString("TargetIsDead"));
             SendRPC();
             SendRPC_SyncList();
             Utils.NotifyRoles(Player);

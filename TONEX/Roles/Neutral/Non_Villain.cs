@@ -447,19 +447,26 @@ assignCountRule: new(1, 1, 1)
     }
     public bool CheckWin(ref CustomRoles winnerRole, ref CountTypes winnerCountType)
     {
-        List<CountTypes> refe = new();
+        List<CountTypes> refe = new List<CountTypes>();
         if (Player.IsAlive())
         {
-            
-            Dictionary<CountTypes, int> countTypeMapping = new();
+            Dictionary<CountTypes, int> countTypeMapping = new Dictionary<CountTypes, int>();
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!countTypeMapping.ContainsKey(pc.GetCountTypes()))
-                countTypeMapping.Add(pc.GetCountTypes(), MoneyCount[pc.PlayerId]);
-                else countTypeMapping[pc.GetCountTypes()]+= MoneyCount[pc.PlayerId];
-                
+                CountTypes countType = pc.GetCountTypes();
+                int moneyCount = MoneyCount.ContainsKey(pc.PlayerId) ? MoneyCount[pc.PlayerId] : 0;
+
+                if (!countTypeMapping.ContainsKey(countType))
+                    countTypeMapping.Add(countType, moneyCount);
+                else
+                    countTypeMapping[countType] += moneyCount;
             }
-            refe.Add(countTypeMapping.OrderByDescending(kvp => kvp.Value).First().Key);
+
+            if (countTypeMapping.Count > 0)
+            {
+                CountTypes highestCountType = countTypeMapping.OrderByDescending(kvp => kvp.Value).First().Key;
+                refe.Add(highestCountType);
+            }
         }
         else
         {
@@ -467,12 +474,12 @@ assignCountRule: new(1, 1, 1)
             {
                 foreach (var player in Main.AllPlayerControls)
                 {
-                    if (player.PlayerId == pc)
-                        if (!refe.Contains(player.GetCountTypes()))
-                            refe.Add(player.GetCountTypes());
+                    if (player.PlayerId == pc && !refe.Contains(player.GetCountTypes()))
+                        refe.Add(player.GetCountTypes());
                 }
             }
         }
+
         return refe.Contains(winnerCountType);
     }
 }

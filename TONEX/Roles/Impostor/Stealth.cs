@@ -25,8 +25,7 @@ public sealed class Stealth : RoleBase, IImpostor
         CustomRoleTypes.Impostor,
         5400,
         SetupOptionItems,
-        "st",
-        introSound: () => GetIntroSound(RoleTypes.Shapeshifter));
+        "st");
     private static LogHandler logger = Logger.Handler(nameof(Stealth));
 
     #region カスタムオプション

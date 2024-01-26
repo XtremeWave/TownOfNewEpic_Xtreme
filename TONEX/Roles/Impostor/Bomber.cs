@@ -29,7 +29,7 @@ public sealed class Bomber : RoleBase, IImpostor
 
     static OptionItem OptionRadius;
     bool Shapeshifting;
-    public long UsePetCooldown;
+    public long UsePetCooldown = 100;
     enum OptionName
     {
         BomberRadius
@@ -124,6 +124,7 @@ public sealed class Bomber : RoleBase, IImpostor
         }
                 Logger.Info("炸弹爆炸了", "Boom");
         CustomSoundsManager.RPCPlayCustomSoundAll("Boom");
+        UsePetCooldown = Utils.GetTimeStamp();
         foreach (var tg in Main.AllPlayerControls)
         {
             if (!tg.IsModClient()) tg.KillFlash();

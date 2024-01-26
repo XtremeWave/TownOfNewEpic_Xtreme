@@ -86,6 +86,7 @@ public class Snitch : RoleBase
         OptionEnableTargetArrow = BooleanOptionItem.Create(RoleInfo, 10, OptionName.SnitchEnableTargetArrow, true, false);
         OptionCanGetColoredArrow = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SnitchCanGetArrowColor, true, false);
         OptionCanFindNeutralKiller = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralKiller, true, false);
+        OptionCanFindNeutralEvil = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SnitchCanFindNeutralEvil, true, false);
         OptionCanFindMadmate = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SnitchCanFindMadmate, false, false);
         OptionCanFindCharmed = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SnitchCanFindCharmed, false, false);
         OptionCanFindWolfmate = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SnitchCanFindWolfmate, false, false);

@@ -48,7 +48,7 @@ internal class ChangeRoleSettings
             Main.FirstDied = byte.MaxValue;
 
             ReportDeadBodyPatch.CanReport = new();
-
+            AURoleOptions.ProtectionDurationSeconds = 0f;
             Options.UsedButtonCount = 0;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);

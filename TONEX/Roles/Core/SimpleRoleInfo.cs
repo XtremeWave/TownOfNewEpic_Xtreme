@@ -57,8 +57,8 @@ public class SimpleRoleInfo
         OptionCreatorDelegate optionCreator,
         string chatCommand,
         string colorCode,
-        bool isNK,
         bool isDesyncImpostor,
+        bool isNK,
         TabGroup tab,
         Func<AudioClip> introSound,
         bool experimental,
@@ -75,9 +75,9 @@ public class SimpleRoleInfo
         CountType = countType;
         ConfigId = configId;
         OptionCreator = optionCreator;
+        IsDesyncImpostor = isDesyncImpostor;
         if (CustomRoleType == CustomRoleTypes.Neutral)
             IsNK = isNK;
-        IsDesyncImpostor = isDesyncImpostor;
         this.introSound = introSound;
         ChatCommand = chatCommand;
         Experimental = experimental;
@@ -149,8 +149,8 @@ public class SimpleRoleInfo
                 optionCreator,
                 chatCommand,
                 colorCode,
-                isNK,
                 isDesyncImpostor,
+                isNK,
                 tab,
                 introSound,
                 experimental,
