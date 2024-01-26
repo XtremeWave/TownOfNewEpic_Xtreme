@@ -96,7 +96,7 @@ public sealed class DoubleKiller : RoleBase, IImpostor
     }
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
-        buttonName = "KillButton"
+        buttonName = "KillButton";
         return true;
     }
     public override bool GetAbilityButtonText(out string text)
