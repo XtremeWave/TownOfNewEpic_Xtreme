@@ -55,7 +55,7 @@ public static class Options
 
     public static readonly string[] gameModes =
     {
-        "Standard","HotPotato"
+        "Standard","HotPotatoMode"
     };
 
     // 地图启用
@@ -224,6 +224,8 @@ public static class Options
     public static OptionItem ResetDoorsEveryTurns;
     public static OptionItem DoorsResetMode;
     public static OptionItem DisableFungleSporeTrigger;
+    public static OptionItem FungleReactorTimeLimit;
+    public static OptionItem FungleMushroomMixupDuration;
 
     // 随机出生相关设定
     public static OptionItem EnableRandomSpawn;
@@ -483,7 +485,7 @@ public static class Options
         CustomRoleCounts = new();
         CustomRoleSpawnChances = new();
 
-        var sortedRoleInfo = CustomRoleManager.AllRolesInfo.Values.OrderBy(role => role.ConfigId);
+        var sortedRoleInfo = CustomRoleManager.AllRolesInfo.Values.Where(role => !role.RoleName.IsHidden() && !role.RoleName.IsCanNotOpen()).OrderBy(role => role.ConfigId);
 
         // 各职业的总体设定
         ImpKnowAlliesRole = BooleanOptionItem.Create(1_000_001, "ImpKnowAlliesRole", true, TabGroup.ImpostorRoles, false)
@@ -957,6 +959,12 @@ public static class Options
         AirshipReactorTimeLimit = FloatOptionItem.Create(3_021_003, "AirshipReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
+        FungleReactorTimeLimit = FloatOptionItem.Create(100803, "FungleReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
+               .SetValueFormat(OptionFormat.Seconds)
+               .SetGameMode(CustomGameMode.Standard);
+        FungleMushroomMixupDuration = FloatOptionItem.Create(100804, "FungleMushroomMixupDuration", new(1f, 20f, 1f), 10f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
+            .SetValueFormat(OptionFormat.Seconds)
+            .SetGameMode(CustomGameMode.Standard);
 
         // 停电特殊设定（飞艇）
         LightsOutSpecialSettings = BooleanOptionItem.Create(3_022_001, "LightsOutSpecialSettings", false, TabGroup.GameSettings, false)
@@ -1092,7 +1100,7 @@ public static class Options
         SetupRoleOptions(info.ConfigId, info.Tab, info.RoleName);
     public static void SetupRoleOptions(int id, TabGroup tab, CustomRoles role, IntegerValueRule assignCountRule = null, CustomGameMode customGameMode = CustomGameMode.Standard)
     {
-        if (role.IsVanilla()) return;
+        if (role.IsVanilla() || role.IsHidden() || role.IsCanNotOpen()) return;
         assignCountRule ??= new(1, 15, 1);
 
         bool broken = role.GetRoleInfo()?.Broken ?? false;

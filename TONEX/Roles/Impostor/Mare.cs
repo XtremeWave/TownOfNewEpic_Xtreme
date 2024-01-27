@@ -1,5 +1,6 @@
 using AmongUs.GameOptions;
 using Hazel;
+using InnerNet;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Options;
@@ -50,7 +51,6 @@ public sealed class Mare : RoleBase, IImpostor
         OptionKillCooldownInLightsOut = FloatOptionItem.Create(RoleInfo, 11, OptionName.MareKillCooldownInLightsOut, new(2.5f, 180f, 2.5f), 12f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public bool CanUseKillButton() => IsActivateKill;
     public float CalculateKillCooldown() => IsActivateKill ? KillCooldownInLightsOut : DefaultKillCooldown;
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -86,7 +86,20 @@ public sealed class Mare : RoleBase, IImpostor
 
         IsActivateKill = reader.ReadBoolean();
     }
-
+    public bool OnCheckMurderAsKiller(MurderInfo info)
+    {
+        var (killer, target) = info.AttemptTuple;
+        if (IsActivateKill) return true;
+        if (killer == null) return false;
+                   killer.ResetKillCooldown();
+        killer.SetKillCooldown();
+        killer.RpcProtectedMurderPlayer(target);
+        MessageWriter SabotageFixWriter = AmongUsClient.Instance.StartRpcImmediately(ShipStatus.Instance.NetId, (byte)RpcCalls.UpdateSystem, SendOption.Reliable, target.GetClientId());
+        SabotageFixWriter.Write((byte)SystemTypes.Electrical);
+        MessageExtensions.WriteNetObject(SabotageFixWriter, target);
+        AmongUsClient.Instance.FinishRpcImmediately(SabotageFixWriter);
+        return false;
+    }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (GameStates.IsInTask && IsActivateKill)

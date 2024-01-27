@@ -1,5 +1,6 @@
 using HarmonyLib;
 using Newtonsoft.Json.Linq;
+using Sentry.Unity.NativeUtils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,9 +26,8 @@ public class ModUpdater
     {
 #if DEBUG
         "file:///D:/Desktop/TONEX/info.json",
+        "file:///C:/Users/YJNSH/Desktop/info.json",
         "file:///D:/Desktop/info.json",
-        "file:///C:/Desktop/TONEX/info.json",
-        "file:///C:/Desktop/info.json",
 #else
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
         "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",

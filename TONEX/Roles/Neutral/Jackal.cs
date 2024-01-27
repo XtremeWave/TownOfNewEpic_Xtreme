@@ -11,7 +11,7 @@ using UnityEngine.UIElements.UIR;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Jackal : RoleBase, IKiller,INeutralKilling, ISchrodingerCatOwner, IIndependent
+public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

@@ -22,7 +22,8 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
             null,
             "pro",
             "#788514",
-            true
+            true,
+            ctop: true
         );
     public Prosecutors(PlayerControl player)
     : base(

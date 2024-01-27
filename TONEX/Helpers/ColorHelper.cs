@@ -13,6 +13,7 @@ public static class ColorHelper
         return markingColor;
     }
     /// <summary>白背景での可読性を保てる色に変換する</summary>
+    /// <summary>白背景での可読性を保てる色に変換する</summary>
     public static Color ToReadableColor(this Color color)
     {
         Color.RGBToHSV(color, out var h, out var s, out var v);

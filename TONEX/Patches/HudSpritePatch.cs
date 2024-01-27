@@ -25,6 +25,7 @@ class HudSpritePatch
     private static SpriteRenderer? Defalt_Remain => DestroyableSingleton<HudManager>.Instance.AbilityButton?.usesRemainingSprite;
     private static GameObject? Defalt_Set => DestroyableSingleton<HudManager>.Instance.SettingsButton;
     private static PassiveButton? Defalt_Map => DestroyableSingleton<HudManager>.Instance.MapButton;
+    private static GameObject? Defalt_Chat => DestroyableSingleton<HudManager>.Instance.Chat.chatButton;
     public static void Postfix(HudManager __instance)
     {
         var player = PlayerControl.LocalPlayer;
@@ -41,7 +42,7 @@ class HudSpritePatch
         Sprite newAdminButton = Defalt_Admin ?? __instance.AdminButton.graphic.sprite;
         GameObject newSetting = Defalt_Set ?? __instance.SettingsButton;
         PassiveButton newMap = Defalt_Map ?? __instance.MapButton;
-
+        GameObject newChat = Defalt_Chat ?? __instance.Chat.chatButton;
 
         if (Main.EnableCustomButton.Value)
         {
@@ -80,15 +81,17 @@ class HudSpritePatch
                 newAdminButton = CustomButton.GetSprite(newAdminButtonName);
 
 
-            Sprite newSprite = CustomButton.GetSprite("UseNum");
-            newRemain.sprite = newSprite;
+            Sprite newUseNumSprite = CustomButton.GetSprite("UseNum");
+            newRemain.sprite = newUseNumSprite;
 
-            /*Sprite qwqnew = CustomButton.GetSprite("UseNum");
-                SpriteRenderer spriteerer = newSetting.GetComponent<SpriteRenderer>();
-                if (spriteerer != null)
-                {
-                    spriteerer.sprite = qwqnew;
-                }*/
+            Sprite newSettingButton = CustomButton.GetSprite("SettingButton");
+            SpriteRenderer spritesetting = newSetting.GetComponent<SpriteRenderer>();
+            spritesetting.sprite = newSettingButton;
+
+            //Sprite newChatButton = CustomButton.GetSprite("ChatButton");
+            //SpriteRenderer spritechat = newChat.GetComponent<SpriteRenderer>();
+            //spritechat.sprite = newChatButton;
+
             #region 地图
             Sprite newmap = CustomButton.GetSprite("mapJourne");
             switch (Main.NormalOptions.MapId)
@@ -146,6 +149,10 @@ class HudSpritePatch
             if (__instance.SettingsButton != newSetting && newSetting != null)
             {
                 __instance.SettingsButton = newSetting;
+            }
+            if (__instance.Chat.chatButton != newChat && newChat != null)
+            {
+                __instance.Chat.chatButton = newChat;
             }
             if (__instance.MapButton != newMap && newMap != null)
             {

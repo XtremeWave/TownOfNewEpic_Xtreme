@@ -14,12 +14,12 @@ public sealed class Bard : RoleBase, IImpostor
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             4900,
-#if RELEASE
             null,
-#else
-            SetUpCustomOptions,
-#endif
             "ba|吟游詩人|诗人"
+#if RELEASE
+,
+            Hidden: true
+#endif
         );
 
     public Bard(PlayerControl player)
@@ -28,7 +28,6 @@ public sealed class Bard : RoleBase, IImpostor
         player
     )
     { }
-    private static void SetUpCustomOptions() { }
     private float KillCooldown;
     public override void Add() => KillCooldown = Options.DefaultKillCooldown;
     public float CalculateKillCooldown() => KillCooldown;

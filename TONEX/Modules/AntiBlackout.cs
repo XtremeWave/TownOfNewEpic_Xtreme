@@ -10,7 +10,7 @@ namespace TONEX;
 public static class AntiBlackout
 {
     ///<summary>
-    ///追放処理を上書きするかどうか
+    ///是否覆盖放逐处理
     ///</summary>
     public static bool OverrideExiledPlayer => Options.NoGameEnd.GetBool()
         || CustomRoles.Jackal.IsExist(true)

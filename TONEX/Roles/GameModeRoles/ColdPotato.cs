@@ -21,11 +21,9 @@ public sealed class ColdPotato : RoleBase, IKiller
             "cold|冷土豆",
             "#66ffff",
             true,
-           introSound: () => GetIntroSound(RoleTypes.Crewmate)
-#if RELEASE
-,
-assignCountRule: new(1, 1, 1)
-#endif
+           introSound: () => GetIntroSound(RoleTypes.Crewmate),
+           ctop: true
+
         );
     public ColdPotato(PlayerControl player)
     : base(

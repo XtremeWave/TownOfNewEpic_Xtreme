@@ -14,7 +14,7 @@ using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IIndependent
+public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -31,7 +31,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IIndependent
             countType: CountTypes.FAFL
 #if RELEASE
 ,
-assignCountRule: new(1, 1, 1)
+            Hidden: true
 #endif
         );
     public Vagor_FAFL(PlayerControl player)
@@ -62,10 +62,6 @@ assignCountRule: new(1, 1, 1)
     private float KillCooldown;
     public int UsePetCooldown;
     #endregion
-    private static void SetupOptionItem()
-    {
-
-    }
     public override bool GetGameStartSound(out string sound)
     {
         var soundId = Random.Range(1, 3);

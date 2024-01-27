@@ -43,14 +43,8 @@ public static class RegistryManager
 
         if (LastVersion < new Version(1, 0, 0))
         {
-            Logger.Warn("v3.0.0 New Version Operation Needed", "Registry Manager");
+            Logger.Warn("v1.0 New Version Operation Needed", "Registry Manager");
             FoldersNFileToDel.Add(@"./BepInEx/config");
-        }
-
-        if (LastVersion <= new Version(1, 0, 0))
-        {
-            Logger.Warn("v3.0.1 New Version Operation Needed", "Registry Manager");
-            FoldersNFileToDel.Add(@"./TONEX/Data/template.txt");
         }
 
         FoldersNFileToDel.DoIf(Directory.Exists, p =>

@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class BloodKnight : RoleBase, INeutralKilling, ISchrodingerCatOwner, IIndependent
+public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(

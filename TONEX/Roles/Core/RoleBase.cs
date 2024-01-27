@@ -248,9 +248,9 @@ public abstract class RoleBase : IDisposable
     /// <para>可以取消</para>
     /// </summary>
     /// <param name="physics"></param>
-    /// <param name="id">通风管 ID</param>
+    /// <param name="ventId">通风管 ID</param>
     /// <returns>false：将玩家被踢出通风管，其他人将看不到动画。</returns>
-    public virtual bool OnEnterVent(PlayerPhysics physics, int ventId) => true;
+    public virtual bool OnEnterVent(PlayerPhysics physics, int ventId) =>  true;
 
     public virtual void CheckNotWin(PlayerControl player)
     {  }

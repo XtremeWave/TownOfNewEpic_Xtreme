@@ -1,6 +1,7 @@
-﻿/*using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using System;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 using System.Collections.Generic;
 using TONEX.Modules;
@@ -19,6 +20,10 @@ public sealed class Blackmailer : RoleBase, IImpostor
             SetupOptionItem,
             "bl|勒索",
             experimental: true
+#if RELEASE
+,
+            ctop: true
+#endif
         );
     public Blackmailer(PlayerControl player)
     : base(
@@ -28,6 +33,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
     {
         ForBlackmailer = new();
         CustomRoleManager.MarkOthers.Add(MarkOthers);
+        CustomRoleManager.ReceiveMessage.Add(OnReceiveMessage);
         BlackmailerLimit = new();
     }
 
@@ -79,18 +85,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
         ForBlackmailer.Clear();
     }
     string Name = "";
-    public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting = false)
-    {
-        if (!ForBlackmailer.Contains(player.PlayerId)) return;
-        Name = player.GetRealName();
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            if (isOnMeeting)
-            {
-                Utils.SendMessage(string.Format(Translator.GetString("ForBlackmailerDead"), Name), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("BlackmailerNewsTitle"))); 
-            }
-        }
-    }
+    
     public override void OnStartMeeting()
     {
         foreach (var target in ForBlackmailer)
@@ -108,4 +103,9 @@ public sealed class Blackmailer : RoleBase, IImpostor
         seen ??= seer;
         return (ForBlackmailer.Contains(seen.PlayerId) && isForMeeting == true) ? Utils.ColorString(RoleInfo.RoleColor, "‼") : "";
     }
-*/
+    public static void OnReceiveMessage(MessageControl msgControl)
+    {
+        msgControl.IsCommand = ForBlackmailer.Contains(msgControl.Player.PlayerId) ? true : false;
+        msgControl.RecallMode = ForBlackmailer.Contains(msgControl.Player.PlayerId) ? MsgRecallMode.Spam : MsgRecallMode.None;
+    }
+}

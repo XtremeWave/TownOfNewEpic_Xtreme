@@ -8,7 +8,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent, ISchrodingerCatOwner
+public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -24,7 +24,8 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IIndependent, ISchrodi
             true,
             true,
             countType: CountTypes.Jackal,
-            assignCountRule: new(1, 1, 1)
+            ctop: true
+
         );
     public Sidekick(PlayerControl player)
     : base(

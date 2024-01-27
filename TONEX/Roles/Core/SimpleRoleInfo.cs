@@ -28,7 +28,10 @@ public class SimpleRoleInfo
     public bool IsDesyncImpostor;
     private Func<AudioClip> introSound;
     public AudioClip IntroSound => introSound?.Invoke();
+    
     public bool Experimental;
+    public bool IsHidden;
+    public bool CantOpen;
     public bool Broken;
     /// <summary>
     /// 人数设定上的最小人数/最大人数/一单位数
@@ -61,7 +64,10 @@ public class SimpleRoleInfo
         bool isNK,
         TabGroup tab,
         Func<AudioClip> introSound,
+        
         bool experimental,
+        bool Hidden,
+        bool ctop,
         bool broken,
         IntegerValueRule assignCountRule,
         CustomRoles[] assignUnitRoles
@@ -76,11 +82,12 @@ public class SimpleRoleInfo
         ConfigId = configId;
         OptionCreator = optionCreator;
         IsDesyncImpostor = isDesyncImpostor;
-        if (CustomRoleType == CustomRoleTypes.Neutral)
-            IsNK = isNK;
+        IsNK = isNK;
         this.introSound = introSound;
         ChatCommand = chatCommand;
         Experimental = experimental;
+        IsHidden = Hidden;
+        CantOpen = ctop;
         Broken = broken;
         AssignCountRule = assignCountRule;
         AssignUnitRoles = assignUnitRoles;
@@ -126,6 +133,8 @@ public class SimpleRoleInfo
         Func<AudioClip> introSound = null,
         CountTypes? countType = null,
         bool experimental = false,
+        bool Hidden = false,
+        bool ctop = false,
         bool broken = false,
         IntegerValueRule assignCountRule = null,
         CustomRoles[] assignUnitRoles = null
@@ -154,6 +163,8 @@ public class SimpleRoleInfo
                 tab,
                 introSound,
                 experimental,
+                Hidden,
+                ctop,
                 broken,
                 assignCountRule,
                 assignUnitRoles
@@ -216,6 +227,8 @@ public class SimpleRoleInfo
                 false,
                 TabGroup.GameSettings,
                 null,
+                false,
+                false,
                 false,
                 false,
                 new(1, 15, 1),

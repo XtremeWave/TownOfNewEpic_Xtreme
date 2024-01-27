@@ -944,6 +944,7 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
+             + $"\n  ○ /ss {GetString("Command.setscanner")}"
             + "\n\n" + "<color=#f14d57>" + GetString("CommandHostList")
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
@@ -1049,7 +1050,7 @@ public static class Utils
                 SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
 
                 //ハートマークを付ける(自分に)
-                if (seer.Is(CustomRoles.Lovers) || CustomRoles.Neptune.IsExist(true)) SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
+                if (seer.Is(CustomRoles.Lovers) || CustomRoles.Neptune.IsExist()) SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
 
                 //Markとは違い、改行してから追記されます。
                 SelfSuffix.Clear();
@@ -1121,11 +1122,11 @@ public static class Utils
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                     }
-                    else if (target.Is(CustomRoles.Neptune) || seer.Is(CustomRoles.Neptune))
+                    if (target.Is(CustomRoles.Neptune) || seer.Is(CustomRoles.Neptune))
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                     }
-                    else if (target.Is(CustomRoles.Mini))
+                    if (target.Is(CustomRoles.Mini))
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>{Mini.Age}</color>");
                     }

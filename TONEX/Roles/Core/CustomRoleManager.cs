@@ -11,6 +11,7 @@ using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.AddOns.Impostor;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Core;
 
@@ -58,10 +59,11 @@ public static class CustomRoleManager
 
         var killerRole = attemptKiller.GetRoleClass();
         var targetRole = attemptTarget.GetRoleClass();
-        if (!attemptKiller.CanUseSkill()) return false;
+        
         // 首先凶手确实是击杀类型的职业
         if (killerRole is IKiller killer)
         {
+            if (!attemptKiller.CanUseSkill()) return false;
             // 其他职业类对击杀事件的事先检查
             if (killer.IsKiller)
             {
@@ -223,7 +225,6 @@ public static class CustomRoleManager
             player.GetRoleClass()?.OnFixedUpdate(player);
             
             Bait.OnFixedUpdate(player);
-            Signal.OnFixedUpdate(player);
             //その他視点処理があれば実行
             foreach (var onFixedUpdate in OnFixedUpdateOthers)
             {
@@ -447,6 +448,13 @@ public static class CustomRoleManager
     /// <returns>true: 阻塞该消息并停止向下判断</returns>
     public static bool OnReceiveMessage(MessageControl msgControl, out MsgRecallMode recallMode)
     {
+        foreach (var msg in ReceiveMessage)
+        {
+             msg(msgControl);
+             recallMode = msgControl.RecallMode;
+            if (recallMode != MsgRecallMode.None)
+                return true;
+        }
         recallMode = MsgRecallMode.None;
         return false;
     }
@@ -648,7 +656,7 @@ public enum CustomRoles
     Non_Villain,
     Lawyer,
     Prosecutors,
-    PVPboss,
+    PVPboss,//TODO
     //GameMode
     HotPotato,
     ColdPotato,

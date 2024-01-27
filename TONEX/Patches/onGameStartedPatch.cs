@@ -88,6 +88,10 @@ internal class ChangeRoleSettings
                     var pair = (target.PlayerId, seer.PlayerId);
                     Main.LastNotifyNames[pair] = target.name;
                 }
+               target.RpcSetScanner(false);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
+                writer.Write(false);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
             foreach (var pc in Main.AllPlayerControls)
             {

@@ -1,4 +1,5 @@
 using AmongUs.GameOptions;
+using Epic.OnlineServices;
 using HarmonyLib;
 using Hazel;
 using InnerNet;
@@ -13,6 +14,7 @@ using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Impostor;
+using TONEX.Roles.Neutral;
 using TONEX.Roles.Vanilla;
 using UnityEngine;
 using static TONEX.Translator;
@@ -233,7 +235,7 @@ class ShapeshiftPatch
         Main.CheckShapeshift[shapeshifter.PlayerId] = shapeshifting;
         Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
 
-        if (!shapeshifter.IsEaten())
+        if (!shapeshifter.IsEaten() && shapeshifter.CanUseSkill())
             shapeshifter.GetRoleClass()?.OnShapeshift(target);
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -320,7 +322,8 @@ class ReportDeadBodyPatch
         Utils.NotifyRoles(isForMeeting: true, NoCache: true);
 
         Utils.SyncAllSettings();
-
+        foreach (var pc in Main.AllAlivePlayerControls)
+            Signal.AddPosi(pc);
         return true;
     }
     public static async void ChangeLocalNameAndRevert(string name, int time)
@@ -456,7 +459,7 @@ class FixedUpdatePatch
                     RoleText.enabled = false; //ゲームが始まっておらずフリープレイでなければロールを非表示
                     if (!__instance.AmOwner) __instance.cosmetics.nameText.text = __instance?.Data?.PlayerName;
                 }
-
+                
                 //変数定義
                 var seer = PlayerControl.LocalPlayer;
                 var seerRole = seer.GetRoleClass();
@@ -485,7 +488,7 @@ class FixedUpdatePatch
                 Mark.Append(seerRole?.GetMark(seer, target, false));
                 //seerに関わらず発動するMark
                 Mark.Append(CustomRoleManager.GetMarkOthers(seer, target, false));
-
+                
                 //ハートマークを付ける(会議中MOD視点)
                 if (__instance.Is(CustomRoles.Lovers) && PlayerControl.LocalPlayer.Is(CustomRoles.Lovers))
                 {
@@ -495,13 +498,17 @@ class FixedUpdatePatch
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
-                else if (__instance.Is(CustomRoles.Neptune) || PlayerControl.LocalPlayer.Is(CustomRoles.Neptune))
+                else if ((__instance.Is(CustomRoles.Neptune) || PlayerControl.LocalPlayer.Is(CustomRoles.Neptune)) && CustomRoles.Neptune.IsExist())
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
                 else if (__instance == PlayerControl.LocalPlayer && CustomRoles.Neptune.IsExist())
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
+                }
+                if (__instance.Is(CustomRoles.Mini))
+                {
+                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Judge)}>{Mini.Age}</color>");
                 }
                 Suffix.Append(seerRole?.GetLowerText(seer, target));
                 //seerに関わらず発動するLowerText
@@ -628,7 +635,20 @@ class CoEnterVentPatch
         Logger.Info($"{__instance.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
         var user = __instance.myPlayer;
-        if (!user.CanUseSkill()) return false;
+        if (!user.CanUseSkill() && user.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.TimeStops or CustomRoles.TimeMaster or CustomRoles.RubePeople or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
+        {
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
+            writer.WritePacked(127);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
+            _ = new LateTask(() =>
+            {
+                int clientId = user.GetClientId();
+                MessageWriter writer2 = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, clientId);
+                writer2.Write(id);
+                AmongUsClient.Instance.FinishRpcImmediately(writer2);
+            }, 0.5f, "Fix DesyncImpostor Stuck");
+            return false;
+        }
         if ((!user.GetRoleClass()?.OnEnterVent(__instance, id) ?? false) ||
                     (user.Data.Role.Role != RoleTypes.Engineer && //エンジニアでなく
                 !user.CanUseImpostorVentButton()) //インポスターベントも使えない
@@ -771,6 +791,10 @@ public static class PlayerControlDiePatch
     {
         if (AmongUsClient.Instance.AmHost)
         {
+           __instance.RpcSetScanner(false);
+            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
+            writer.Write(false);
+            AmongUsClient.Instance.FinishRpcImmediately(writer);
             CustomRoleManager.AllActiveRoles.Values.Do(role => role.OnPlayerDeath(__instance, PlayerState.GetByPlayerId(__instance.PlayerId).DeathReason, GameStates.IsMeeting));
            // Libertarian
             foreach (var player in Libertarian.playerIdList)

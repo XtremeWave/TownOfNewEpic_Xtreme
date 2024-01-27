@@ -6,7 +6,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Whoops : RoleBase, IIndependent
+public sealed class Whoops : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -21,7 +21,7 @@ public sealed class Whoops : RoleBase, IIndependent
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,
-            assignCountRule: new(1, 1, 1)
+            ctop: true
         );
     public Whoops(PlayerControl player)
     : base(

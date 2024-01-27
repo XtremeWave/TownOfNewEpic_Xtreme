@@ -1,5 +1,4 @@
 ﻿using AmongUs.GameOptions;
-using System;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
