@@ -142,7 +142,7 @@ class GameEndChecker
                     }
                 }
 
-                // 中立共同胜利
+                // 第三方共同胜利
                 if (Options.NeutralWinTogether.GetBool() && Main.AllPlayerControls.Any(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.IsNeutral()))
                 {
                     Main.AllPlayerControls.Where(p => p.IsNeutral())

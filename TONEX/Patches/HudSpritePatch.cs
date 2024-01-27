@@ -102,13 +102,12 @@ class HudSpritePatch
                 case 2:
                     newmap = CustomButton.GetSprite("mapPolus");
                     break;
-                case 3:
+                case 4:
                     newmap = CustomButton.GetSprite("mapAirship");
                     break;
-                case 4:
+                case 5:
                     newmap = CustomButton.GetSprite("theFungle");
                     break;
-
 
             }
             SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
