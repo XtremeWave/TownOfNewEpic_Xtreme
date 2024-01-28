@@ -157,8 +157,8 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"屑Slok（没信誉的鸽子）",
-                    TextColor = new Color32(19, 121, 191, 255),
+                    Text = $"Slok",
+                    TextColor = new Color32(0, 255, 255, 255),
                     SizePercentage = 80
                 }
             }

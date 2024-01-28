@@ -2,7 +2,7 @@
 using Hazel;
 
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y

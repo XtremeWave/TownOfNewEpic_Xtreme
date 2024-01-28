@@ -1,10 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Despair : RoleBase
+public sealed class Despair : RoleBase, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

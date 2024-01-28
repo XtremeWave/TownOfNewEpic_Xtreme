@@ -1,10 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using System.Linq;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Workaholic : RoleBase
+public sealed class Workaholic : RoleBase, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

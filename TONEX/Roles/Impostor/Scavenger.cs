@@ -1,6 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Scavenger : RoleBase, IImpostor
@@ -35,9 +35,9 @@ public sealed class Scavenger : RoleBase, IImpostor
     {
         var (killer, target) = info.AttemptTuple;
 
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        killer.RpcTeleport(target.GetTruePosition());
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
-        Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
+        target.RpcTeleport(Utils.GetBlackRoomPS());
         target.SetRealKiller(killer);
         target.RpcMurderPlayerV2(target);
         killer.SetKillCooldownV2();

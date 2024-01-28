@@ -6,12 +6,13 @@ using System.Linq;
 using System.Text;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class PlagueDoctor : RoleBase, IKiller
+public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

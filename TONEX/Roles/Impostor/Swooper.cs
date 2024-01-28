@@ -2,7 +2,7 @@
 using Hazel;
 using System.Text;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Impostor;
@@ -157,7 +157,7 @@ public sealed class Swooper : RoleBase, IImpostor
         if (!IsInvis()) return;
         var (killer, target) = info.AttemptTuple;
 
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        target.RpcTeleport(target.GetTruePosition());
         RPC.PlaySoundRPC(killer.PlayerId, Sounds.KillSound);
         killer.SetKillCooldownV2();
 

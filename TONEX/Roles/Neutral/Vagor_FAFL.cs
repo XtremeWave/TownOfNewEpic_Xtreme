@@ -1,7 +1,6 @@
 using AmongUs.GameOptions;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
 using MS.Internal.Xml.XPath;
 using static UnityEngine.GraphicsBuffer;
@@ -10,10 +9,12 @@ using System.Collections.Generic;
 using Hazel;
 using static Il2CppSystem.Net.Http.Headers.Parser;
 using TONEX.Modules;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vagor_FAFL : RoleBase, IKiller
+public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -23,15 +24,15 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             7565_1_1_1,
-#if DEBUG
-            SetupOptionItem,
-#else
             null,
-#endif
             "Zhongli|Vagor|帝君|闲游",
              "#E6AD0A",
             true,
             countType: CountTypes.FAFL
+#if RELEASE
+,
+            Hidden: true
+#endif
         );
     public Vagor_FAFL(PlayerControl player)
     : base(
@@ -41,7 +42,7 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     )
     {
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        CustomRoleManager.OnCheckMurderPlayerOthers_Before.Add(OnCheckMurderPlayerOthers_Before);
+        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_Before);
         IsFallen = false;
         IsShield = false;
         ElementPowerCount = 0;
@@ -61,10 +62,6 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     private float KillCooldown;
     public int UsePetCooldown;
     #endregion
-    private static void SetupOptionItem()
-    {
-
-    }
     public override bool GetGameStartSound(out string sound)
     {
         var soundId = Random.Range(1, 3);
@@ -102,11 +99,15 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
         {
             ShieldTimes = 0;
             IsShield = false;
+            killer.SetKillCooldownV2(target: target, forceAnime: true);
+            killer.RpcProtectedMurderPlayer(target);
             target.RpcProtectedMurderPlayer();
         }
         else
         {
             ShieldTimes += 1;
+            killer.SetKillCooldownV2(target: target, forceAnime: true);
+            killer.RpcProtectedMurderPlayer(target);
         }
         return false;
     }
@@ -132,7 +133,10 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
                     killer.RpcProtectedMurderPlayer(target);
                     SendRPC();
                 }
-
+                NormalKillCount = 0;
+                KillCooldown = 20f;
+                killer.ResetKillCooldown();
+                killer.SyncSettings();
             }
         }
         else
@@ -152,6 +156,10 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
                     }
                 }
             }
+            NormalKillCount = 0;
+            KillCooldown = 20f;
+            killer.ResetKillCooldown();
+            killer.SyncSettings();
         }
         //切れない相手ならキルキャンセル
         return false;
@@ -203,11 +211,20 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
+        if (!seer == PlayerControl.LocalPlayer) return"";
         seen ??= seer;
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
         return $"{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
+
+    }
+    public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
+    {
+        seen ??= seer;
+        //seeおよびseenが自分である場合以外は関係なし
+        if (seer != seen || seer == PlayerControl.LocalPlayer) return "";
+        return $"\n<color=#e6adoa>{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}</color>";
 
     }
     public override void OnUsePet()
@@ -331,7 +348,8 @@ public sealed class Vagor_FAFL : RoleBase, IKiller
     }
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        if (!IsShield) return "";
+        
+        if (!IsShield || seer != seen) return "";
         return Utils.ColorString(RoleInfo.RoleColor, "●");
     }
     public override bool GetPetButtonText(out string text)

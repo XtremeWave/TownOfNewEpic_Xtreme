@@ -48,7 +48,7 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
    public static List<byte> ForRubePeople;
     private long ProtectStartTime;
     private float Cooldown;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.SkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
@@ -62,20 +62,22 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
     }
     public override void Add()
     {
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
         Cooldown = OptionSkillCooldown.GetFloat();
         ForRubePeople = new();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown = Cooldown;
         AURoleOptions.EngineerInVentMaxTime = 1f;
     }
-    public override void OnGameStart()
-    {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
-    }
-    public override bool GetAbilityButtonText(out string text)
+    
+public override void OnGameStart()
+{
+    if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+}
+public override bool GetAbilityButtonText(out string text)
     {
         text = GetString("RubePeopleVetnButtonText");
         return true;
@@ -83,7 +85,7 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("RubePeopleVetnButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public void CheckWin(ref CustomWinner WinnerTeam, ref HashSet<byte> WinnerIds)
     {
@@ -112,9 +114,10 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         ReduceNowCooldown();
@@ -122,24 +125,30 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
         ProtectStartTime = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
         Player.Notify(GetString("RubePeopleOnGuard"), 2f);
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
 
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ProtectStartTime == 0) return;
-        if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
         {
-            ProtectStartTime = 0;
+            ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("RubePeopleOffGuard")));
+            player.Notify(string.Format(GetString("TimeStopsOffGuard")));
+        }
+        if (UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
+        {
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         if (info.IsSuicide) return true;
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp())
+        if (ProtectStartTime != -1 && ProtectStartTime + (long)OptionSkillDuration.GetFloat() >= Utils.GetTimeStamp())
         {
             var (killer, target) = info.AttemptTuple;
             target.RpcMurderPlayerV2(killer);
@@ -149,27 +158,16 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
         }
         return true;
     }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
-        {
-            player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("PetSkillCanUse")));
-        }
-    }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {
         Player.RpcResetAbilityCooldown();
     }
     public override void AfterMeetingTasks()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnStartMeeting()
     {
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
     }
 }

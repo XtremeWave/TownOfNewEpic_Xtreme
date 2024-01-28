@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Modules;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
 using static Il2CppSystem.Net.Http.Headers.Parser;
 using static UnityEngine.GraphicsBuffer;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Onmyoji : RoleBase, IImpostor

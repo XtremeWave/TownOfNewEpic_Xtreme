@@ -2,8 +2,8 @@
 using System.Linq;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using YamlDotNet.Core;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Concealer : RoleBase, IImpostor
@@ -37,8 +37,15 @@ public sealed class Concealer : RoleBase, IImpostor
         OptionShapeshiftDuration = FloatOptionItem.Create(RoleInfo, 11, GeneralOption.ShapeshiftDuration, new(2.5f, 180f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
-    public int UsePetCooldown;
-    public override void OnGameStart() => UsePetCooldown = (int)OptionShapeshiftCooldown.GetInt();
+    public long UsePetCooldown;
+    public override void Add()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.ShapeshifterCooldown = OptionShapeshiftCooldown.GetFloat();
@@ -61,32 +68,34 @@ public sealed class Concealer : RoleBase, IImpostor
     public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "Camo";
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
-    public override void OnUsePet()
+   public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)OptionShapeshiftCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         Camouflage.CheckCamouflage();
         return;
     }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        var now = Utils.GetTimeStamp();
+        if (Player.IsAlive() &&  UsePetCooldown + (long)OptionShapeshiftCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
     public override void AfterMeetingTasks()
     {
-        UsePetCooldown = (int)OptionShapeshiftCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
     }
     public static bool IsHidding
         => Main.AllAlivePlayerControls.Any(x => (x.GetRoleClass() is Concealer roleClass) && roleClass.Shapeshifting) && GameStates.IsInTask;

@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
 
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 // 来源：https://github.com/Yumenopai/TownOfHost_Y
 namespace TONEX.Roles.Impostor;

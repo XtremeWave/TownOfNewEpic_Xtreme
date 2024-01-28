@@ -78,11 +78,13 @@ public class GameStartManagerPatch
             if (!AmongUsClient.Instance.AmHost) return;
 
             // Make Public Button
-            if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !Main.AllowPublicRoom || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)
+#if RELEASE
+if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !Main.AllowPublicRoom || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)
             {
                 __instance.MakePublicButton.color = Palette.DisabledClear;
                 __instance.privatePublicText.color = Palette.DisabledClear;
             }
+            #endif
 
             if (Main.NormalOptions.KillCooldown == 0f)
                 Main.NormalOptions.KillCooldown = Main.LastKillCooldown.Value;
@@ -250,9 +252,8 @@ public static class GameStartManagerBeginGamePatch
             /*TheSkeld   = 0
             MIRAHQ     = 1
             Polus      = 2
-            Dleks      = 3
-            TheAirShip = 4
-            TheFungle  = 5*/
+            TheAirShip = 3
+            TheFungle  = 4*/
             if (Options.AddedTheSkeld.GetBool()) randomMaps.Add(0);
             if (Options.AddedMiraHQ.GetBool()) randomMaps.Add(1);
             if (Options.AddedPolus.GetBool()) randomMaps.Add(2);

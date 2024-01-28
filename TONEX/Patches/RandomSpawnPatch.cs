@@ -140,7 +140,7 @@ class RandomSpawn
     }
     public static void TP(CustomNetworkTransform nt, Vector2 location)
     {
-        nt.RpcSnapTo(location);
+       // nt.(location);
     }
 
     public static void SetupCustomOption(int startId)
@@ -250,7 +250,7 @@ class RandomSpawn
         {
             var location = GetLocation();
             Logger.Info($"{player.Data.PlayerName}:{location}", "RandomSpawn");
-            TP(player.NetTransform, location);
+            player.RpcTeleport( location);
         }
         public Vector2 GetLocation()
         {

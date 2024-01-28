@@ -77,9 +77,57 @@ public static class Utils
     public static void TPAll(Vector2 location)
     {
         foreach (PlayerControl pc in Main.AllAlivePlayerControls)
-            TP(pc.NetTransform, location);
+            pc.RpcTeleport(location);
     }
+    public static void RpcTeleport(this PlayerControl player, Vector2 location)
+    {
+        Logger.Info($" {player.GetNameWithRole().RemoveHtmlTags()} => {location}", "RpcTeleport");
+        Logger.Info($" Player Id: {player.PlayerId}", "RpcTeleport");
+        if (player.inVent
+            || player.MyPhysics.Animations.IsPlayingEnterVentAnimation())
+        {
+            Logger.Info($"Target: ({player.GetNameWithRole().RemoveHtmlTags()}) in vent", "RpcTeleport");
+            player.MyPhysics.RpcBootFromVent(0);
+        }
+        if (player.onLadder
+            || player.MyPhysics.Animations.IsPlayingAnyLadderAnimation())
+        {
+            Logger.Warn($"Teleporting canceled - Target: ({player.GetNameWithRole().RemoveHtmlTags()}) is in on Ladder", "RpcTeleport");
+            return;
+        }
 
+        var net = player.NetTransform;
+        var numHost = (ushort)(net.lastSequenceId + 2);
+        var numClient = (ushort)(net.lastSequenceId + 48);
+
+        // Host side
+        if (AmongUsClient.Instance.AmHost)
+        {
+            var playerlastSequenceId = (int)player.NetTransform.lastSequenceId;
+            playerlastSequenceId += 10;
+            player.NetTransform.SnapTo(location, (ushort)playerlastSequenceId);
+            player.NetTransform.SnapTo(location, numHost);
+        }
+        else
+        {
+            // Local Teleport For Client
+            MessageWriter localMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None, player.GetClientId());
+            NetHelpers.WriteVector2(location, localMessageWriter);
+            localMessageWriter.Write(numClient);
+            AmongUsClient.Instance.FinishRpcImmediately(localMessageWriter);
+        }
+
+        // For Client side
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetTransform.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, messageWriter);
+        messageWriter.Write(player.NetTransform.lastSequenceId + 100U);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+        // Global Teleport
+        MessageWriter globalMessageWriter = AmongUsClient.Instance.StartRpcImmediately(net.NetId, (byte)RpcCalls.SnapTo, SendOption.None);
+        NetHelpers.WriteVector2(location, globalMessageWriter);
+        globalMessageWriter.Write(numClient);
+        AmongUsClient.Instance.FinishRpcImmediately(globalMessageWriter);
+    }
     public static void TP(CustomNetworkTransform nt, Vector2 location)
     {
         location += new Vector2(0, 0.3636f);
@@ -219,7 +267,7 @@ public static class Utils
     {
         PlayerControl killer = info.AppearanceKiller, target = info.AttemptTarget;
 
-        if (seer.Is(CustomRoles.GM) || seer.Is(CustomRoles.Seer) || seer.Is(CustomRoles.Vicious) && Vicious.Limit>=4) return true;
+        if (seer.Is(CustomRoles.GM) || seer.Is(CustomRoles.Seer) || seer.Is(CustomRoles.ViciousSeeker) && ViciousSeeker.Limit>=4) return true;
         if (seer.Data.IsDead || killer == seer || target == seer) return false;
 
         if (seer.GetRoleClass() is IKillFlashSeeable killFlashSeeable)
@@ -335,7 +383,7 @@ public static class Utils
 
                     || (seer.Is(CustomRoles.Charmed) && seen.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool())
 
-               || (seer.Is(CustomRoles.Attendant) && seen.Is(CustomRoles.Attendant))
+               || (seer.Is(CustomRoles.Wolfmate) && seen.Is(CustomRoles.Wolfmate))
           || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Sidekick))
           || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Whoops))
             || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Sidekick))
@@ -386,9 +434,9 @@ public static class Utils
                         roleText = GetRoleString("Charmed-") + roleText;
                         roleColor = GetRoleColor(CustomRoles.Charmed);
                         break;
-                    case CustomRoles.Attendant:
-                        roleText = GetRoleString("Attendant-") + roleText;
-                        roleColor = GetRoleColor(CustomRoles.Attendant);
+                    case CustomRoles.Wolfmate:
+                        roleText = GetRoleString("Wolfmate-") + roleText;
+                        roleColor = GetRoleColor(CustomRoles.Wolfmate);
                         break;
                 }
             }
@@ -405,7 +453,7 @@ public static class Utils
         {
             foreach (var subRole in subRolesList)
             {
-                if (subRole <= CustomRoles.NotAssigned || subRole is CustomRoles.LastImpostor or CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Lovers or CustomRoles.Attendant) continue;
+                if (subRole <= CustomRoles.NotAssigned || subRole is CustomRoles.LastImpostor or CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Lovers or CustomRoles.Wolfmate) continue;
                 sb.Append(ColorString(GetRoleColor(subRole), GetString("Prefix." + subRole.ToString())));
             }
         }
@@ -561,7 +609,7 @@ public static class Utils
             {
                 case CustomRoles.Madmate:
                 case CustomRoles.Charmed:
-                case CustomRoles.Attendant:
+                case CustomRoles.Wolfmate:
                 case CustomRoles.Lovers:
                     //ラバーズはタスクを勝利用にカウントしない
                     hasTasks &= !ForRecompute;
@@ -823,7 +871,7 @@ public static class Utils
         {
             if (role is CustomRoles.NotAssigned or
                         CustomRoles.LastImpostor) continue;
-            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Attendant) continue;
+            if (summary && role is CustomRoles.Madmate or CustomRoles.Charmed or CustomRoles.Wolfmate) continue;
 
             var RoleText = disableColor ? GetRoleName(role) : ColorString(GetRoleColor(role), GetRoleName(role));
             sb.Append($"{ColorString(Color.white, " + ")}{RoleText}");
@@ -896,6 +944,7 @@ public static class Utils
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /qt {GetString("Command.quit")}"
+             + $"\n  ○ /ss {GetString("Command.setscanner")}"
             + "\n\n" + "<color=#f14d57>" + GetString("CommandHostList")
             + $"\n  ○ /rn {GetString("Command.rename")}"
             + $"\n  ○ /mw {GetString("Command.mw")}"
@@ -1001,7 +1050,7 @@ public static class Utils
                 SelfMark.Append(CustomRoleManager.GetMarkOthers(seer, isForMeeting: isForMeeting));
 
                 //ハートマークを付ける(自分に)
-                if (seer.Is(CustomRoles.Lovers) || CustomRoles.Neptune.IsExist(true)) SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
+                if (seer.Is(CustomRoles.Lovers) || CustomRoles.Neptune.IsExist()) SelfMark.Append(ColorString(GetRoleColor(CustomRoles.Lovers), "♡"));
 
                 //Markとは違い、改行してから追記されます。
                 SelfSuffix.Clear();
@@ -1073,11 +1122,11 @@ public static class Utils
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                     }
-                    else if (target.Is(CustomRoles.Neptune) || seer.Is(CustomRoles.Neptune))
+                    if (target.Is(CustomRoles.Neptune) || seer.Is(CustomRoles.Neptune))
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                     }
-                    else if (target.Is(CustomRoles.Mini))
+                    if (target.Is(CustomRoles.Mini))
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>{Mini.Age}</color>");
                     }
@@ -1254,7 +1303,7 @@ public static class Utils
 
         string oldRoleName = GetOldRoleName(pc);
         var newRoleName = GetTrueRoleName(id, false);
-        if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
+        if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
         {
             builder.AppendFormat("<pos={0}em>", pos);
             builder.Append(isForChat ? $"  {oldRoleName}{GetSubRolesText(id)} => " + GetTrueRoleName(id, false).RemoveColorTags() : $" {oldRoleName}{GetSubRolesText(id)} =>" + GetTrueRoleName(id, false));

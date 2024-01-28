@@ -24,12 +24,12 @@ public class Main : BasePlugin
 {
     // == 程序基本设定 / Program Config ==
     public static readonly string ModName = "TONEX";
-    public static readonly string ModColor = "#fffcbe";
-    public static readonly Color32 ModColor32 = new(255, 252, 190, 255);
+    public static readonly string ModColor = "#cdfffd";
+    public static readonly Color32 ModColor32 = new(205, 255, 253, 255);
     public static readonly bool AllowPublicRoom = true;
     public static readonly string ForkId = "TONEX";
     public const string OriginalForkId = "OriginalTOH";
-    public const string PluginGuid = "cn.tonex.tonex";
+    public const string PluginGuid = "cn.tonex.xtremewave";
     // == 认证设定 / Authentication Config ==
     public static HashAuth DebugKeyAuth { get; private set; }
     public const string DebugKeyHash = "c0fd562955ba56af3ae20d7ec9e64c664f0facecef4b3e366e109306adeae29d";
@@ -38,8 +38,8 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.0";
-    public const string PluginShowVersion = "1.0_20240201_dev_1";
+    public const string PluginVersion = "0.9.2";
+    public const string PluginShowVersion = "1.0_20240128_dev_5";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -49,7 +49,7 @@ public class Main : BasePlugin
     public static readonly bool ShowDiscordButton = false;
     public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
     public static readonly bool ShowGithubUrl = true;
-    public static readonly string GithubRepoUrl = "https://github.com/TEAM-TONEX/TownOfNewEpic_Xi";
+    public static readonly string GithubRepoUrl = "https://github.com/XtremeWave/TownOfNewEpic_Xtreme";
     // ==========
 
     public Harmony Harmony { get; } = new Harmony(PluginGuid);
@@ -66,7 +66,7 @@ public class Main : BasePlugin
     public static ConfigEntry<int> MessageWait { get; private set; }
     public static ConfigEntry<bool> ShowResults { get; private set; }
     public static ConfigEntry<bool> UnlockFPS { get; private set; }
-    public static ConfigEntry<bool> CanPublic { get; private set; }
+    //public static ConfigEntry<bool> CanPublic { get; private set; }
     public static ConfigEntry<bool> HorseMode { get; private set; }
     public static ConfigEntry<bool> AutoStartGame { get; private set; }
     public static ConfigEntry<bool> AutoEndGame { get; private set; }
@@ -157,7 +157,7 @@ public class Main : BasePlugin
         DebugKeyInput = Config.Bind("Authentication", "Debug Key", "");
         ShowResults = Config.Bind("Result", "Show Results", true);
         UnlockFPS = Config.Bind("Client Options", "UnlockFPS", false);
-        CanPublic = Config.Bind("Client Options", "HorseMode", false);
+        //CanPublic = Config.Bind("Client Options", "CanPublic", true);
         HorseMode = Config.Bind("Client Options", "HorseMode", false);
         AutoStartGame = Config.Bind("Client Options", "AutoStartGame", false);
         AutoEndGame = Config.Bind("Client Options", "AutoEndGame", false);
@@ -193,6 +193,9 @@ public class Main : BasePlugin
             //TONEX.Logger.Disable("CheckMurder");
             TONEX.Logger.Disable("PlayerControl.RpcSetRole");
             TONEX.Logger.Disable("SyncCustomSettings");
+            TONEX.Logger.Disable("CancelPet");
+            TONEX.Logger.Disable("Pet");
+            TONEX.Logger.Disable("SetScanner");
         }
         //TONEX.Logger.isDetail = true;
 
@@ -255,7 +258,7 @@ public class Main : BasePlugin
                 {CustomRoles.Charmed, "#ff00ff"},
                 {CustomRoles.Bait, "#00f7ff"},
                 {CustomRoles.Beartrap, "#5a8fd0"},
-                {CustomRoles.Attendant,"#00b4eb" },
+                {CustomRoles.Wolfmate,"#00b4eb" },
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
                 {CustomRoles.Mini,"ffffff" },

@@ -12,8 +12,7 @@ public static class Signal
     private static readonly int Id = 7565_3_1_0;
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Signal);
     private static List<byte> playerIdList = new();
-    public static Vector2 Signalbacktrack = new();
-    private static bool hasSended = false;
+    public static Dictionary<byte, Vector2> Signalbacktrack = new();
     public static void SetupCustomOption()
     {
         SetupAddonOptions(Id, TabGroup.Addons, CustomRoles.Signal);
@@ -24,29 +23,18 @@ public static class Signal
     {
         playerIdList = new();
         Signalbacktrack = new();
-        hasSended = false;
     }
     public static void Add(byte playerId)
     {
         playerIdList.Add(playerId);
-        hasSended = false;
     }
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);
-    public static void OnFixedUpdate(PlayerControl player)
+    public static void AddPosi(PlayerControl player)
     {
-        if (!AmongUsClient.Instance.AmHost || !player.IsAlive()) return;
-        
-        if (player.Is(CustomRoles.Signal))
-        {
-            if(!GameStates.IsInTask)
-                Signalbacktrack = player.GetTruePosition();
-            else if (!hasSended)
-            {
-                SendRPC();
-                hasSended = false;
-            }
-        }
+        if (!AmongUsClient.Instance.AmHost || !player.IsAlive() || !player.Is(CustomRoles.Signal) || !GameStates.IsInTask) return;
+        Signalbacktrack.Add(player.PlayerId, player.GetTruePosition());
+        SendRPC();
     }
     public static void AfterMeet()
     {
@@ -54,23 +42,31 @@ public static class Signal
         {
             if (pc.Is(CustomRoles.Signal))
             {
-                Utils.TP(pc.NetTransform, Signalbacktrack);
+                pc.RpcTeleport(Signalbacktrack[pc.PlayerId]);
             }
         }
-        hasSended = false;
+        Signalbacktrack = new();
     }
     public static void SendRPC()
     {
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.MiniAge, SendOption.Reliable, -1);
-        writer.Write(Signalbacktrack.x);
-        writer.Write(Signalbacktrack.y);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.SignalPosition, SendOption.Reliable, -1);
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (Signalbacktrack.ContainsKey(pc.PlayerId))
+            {
+                writer.Write(pc.PlayerId);
+                writer.Write(Signalbacktrack[pc.PlayerId].x);
+                writer.Write(Signalbacktrack[pc.PlayerId].y);
+            }
+        }
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType != CustomRPC.MiniAge) return;
+        if (rpcType != CustomRPC.SignalPosition) return;
+        var pc = reader.ReadByte();
         var x = reader.ReadSingle();
         var y = reader.ReadSingle();
-        Signalbacktrack = new(x, y);
+        Signalbacktrack.Add(pc,new(x, y));
     }
 }

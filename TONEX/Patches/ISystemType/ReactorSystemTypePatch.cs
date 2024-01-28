@@ -31,16 +31,25 @@ public static class ReactorSystemTypeUpdateSystemPatch
 [HarmonyPatch(typeof(ReactorSystemType), nameof(ReactorSystemType.Deteriorate))]
 public static class ReactorSystemDetetiorateTypePatch
 {
-    public static void Prefix(ReactorSystemType __instance)
+    public static void Postfix(ReactorSystemType __instance, byte __state /* amount */ )
     {
-        if (!__instance.IsActive || !Options.SabotageTimeControl.GetBool())
-            return;
-        if (ShipStatus.Instance.Type == ShipStatus.MapType.Pb)
+        // サボタージュ発動時
+        if (__state == ReactorSystemType.StartCountdown)
         {
-            if (__instance.Countdown >= Options.PolusReactorTimeLimit.GetFloat())
-                __instance.Countdown = Options.PolusReactorTimeLimit.GetFloat();
-            return;
+            if (!Options.SabotageTimeControl.GetBool())
+            {
+                return;
+            }
+            var duration = (MapNames)Main.NormalOptions.MapId switch
+            {
+                MapNames.Polus => Options.PolusReactorTimeLimit.GetFloat(),
+                MapNames.Fungle => Options.FungleReactorTimeLimit.GetFloat(),
+                _ => float.NaN,
+            };
+            if (!float.IsNaN(duration))
+            {
+                __instance.Countdown = duration;
+            }
         }
-        return;
     }
 }

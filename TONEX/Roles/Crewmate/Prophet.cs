@@ -2,10 +2,10 @@
 using UnityEngine;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 using System.Collections.Generic;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Prophet : RoleBase, IKiller
@@ -84,6 +84,11 @@ public sealed class Prophet : RoleBase, IKiller
     {
         text = GetString("ProphetButtonText");
         return true;
+    }
+    public bool OverrideKillButtonSprite(out string buttonName)
+    {
+        buttonName = "SeeBadorGood";
+        return false;
     }
     public float CalculateKillCooldown() => CanUseKillButton() ? ProphetCooldown.GetFloat() : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && ProphetLimit >= 1;

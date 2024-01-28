@@ -5,13 +5,14 @@ using System.Linq;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using UnityEngine.XR;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class RewardOfficer : RoleBase, IKiller
+public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -69,7 +70,9 @@ public sealed class RewardOfficer : RoleBase, IKiller
         {
             ForRewardOfficer.Add(SelectedTarget.PlayerId);
         }
+        SendRPC();
         SendRPC_SyncList();
+        Utils.NotifyRoles(Player);
     }
 
     private static void SendRPC_SyncList()
@@ -88,6 +91,16 @@ public sealed class RewardOfficer : RoleBase, IKiller
             ForRewardOfficer.Add(reader.ReadByte());
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
+    private void SendRPC()
+    {
+        using var sender = CreateSender(CustomRPC.SetRewardOfficerName);
+        sender.Writer.Write(Name);
+    }
+    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    {
+        if (rpcType != CustomRPC.SetRewardOfficerName) return;
+        Name = reader.ReadString();
+    }
     public override string GetProgressText(bool comms = false)
     {
         if (RewardOfficerCanSeeRoles.GetBool())
@@ -129,11 +142,11 @@ public sealed class RewardOfficer : RoleBase, IKiller
                 Name = SelectedTarget.GetAllRoleName();
                 RolesColor = Utils.GetRoleColor(SelectedTarget.GetCustomRole());
             }
-            else
-            {
-                ForRewardOfficer.Add(SelectedTarget.PlayerId);
-            }
+            else    ForRewardOfficer.Add(SelectedTarget.PlayerId);
+            Player.Notify(GetString("TargetIsDead"));
+            SendRPC();
             SendRPC_SyncList();
+            Utils.NotifyRoles(Player);
         }
     }
 }

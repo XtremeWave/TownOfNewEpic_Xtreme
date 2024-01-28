@@ -3,7 +3,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Neutral;
 using UnityEngine;
 using static TONEX.Translator;
@@ -95,7 +95,7 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     {
         foreach (var neutral in CustomRolesHelper.AllStandardRoles.Where(x => x.IsNeutral()).ToArray())
         {
-            if (neutral is CustomRoles.SchrodingerCat) continue;
+            if (neutral is CustomRoles.SchrodingerCat or CustomRoles.HotPotato or CustomRoles.ColdPotato) continue;
             SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutrals);
             idOffset++;
         }

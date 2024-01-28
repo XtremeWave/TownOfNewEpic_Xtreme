@@ -45,7 +45,7 @@ public sealed class TimeStops : RoleBase
     private List<byte> TimeStopsstop;
     private long ProtectStartTime;
     private float Cooldown;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.TimeStopsSkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
@@ -60,12 +60,13 @@ public sealed class TimeStops : RoleBase
     }
     public override void Add()
     {
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
         Cooldown = OptionSkillCooldown.GetFloat();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnGameStart()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -85,7 +86,7 @@ public sealed class TimeStops : RoleBase
             public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "TheWorld";
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool GetGameStartSound(out string sound)
     {
@@ -95,7 +96,7 @@ public sealed class TimeStops : RoleBase
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("TimeStopsVetnButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public void ReduceNowCooldown()
     {
@@ -136,38 +137,34 @@ public sealed class TimeStops : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (ProtectStartTime == 0) return;
-        if (ProtectStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (Player.IsAlive() && ProtectStartTime + (long)OptionSkillDuration.GetFloat() < now && ProtectStartTime != -1)
         {
-            ProtectStartTime = 0;
+            ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("TimeStopsOffGuard")));
         }
-    }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;     
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting)  UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        if (Player.IsAlive() && UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
-             player.RpcProtectedMurderPlayer();
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)Cooldown - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         ReduceNowCooldown();
         Player.SyncSettings();
         Player.RpcResetAbilityCooldown();
         ProtectStartTime = Utils.GetTimeStamp();
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
         Player.Notify(GetString("TimeStopsOnGuard"));
         foreach (var player in Main.AllAlivePlayerControls)
@@ -193,8 +190,6 @@ public sealed class TimeStops : RoleBase
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
         if (TimeStopsstop.Contains(reporter.PlayerId))    return false;
-                
-        
         return true;
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
@@ -203,10 +198,10 @@ public sealed class TimeStops : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnStartMeeting()
     {
-        ProtectStartTime = 0;
+        ProtectStartTime = -1;
     }
 }

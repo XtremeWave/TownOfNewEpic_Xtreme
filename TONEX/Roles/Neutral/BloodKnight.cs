@@ -2,10 +2,11 @@ using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -18,6 +19,7 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner
            SetupOptionItem,
            "bn|ÊÈÑªòTÊ¿|ÑªÆï|ÆïÊ¿",
            "#630000",
+           true,
            true,
            countType: CountTypes.BloodKnight
        );

@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 
@@ -240,14 +240,14 @@ class Penguin : RoleBase, IImpostor
                 var position = Player.transform.position;
                 if (Player.PlayerId != 0)
                 {
-                    RandomSpawn.TP(AbductVictim.NetTransform, position);
+                    AbductVictim.RpcTeleport( position);
                 }
                 else
                 {
                     _ = new LateTask(() =>
                     {
                         if (AbductVictim != null)
-                            RandomSpawn.TP(AbductVictim.NetTransform, position);
+                            AbductVictim.RpcTeleport(position);
                     }
                     , 0.25f, "");
                 }

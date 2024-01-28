@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Modules;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 

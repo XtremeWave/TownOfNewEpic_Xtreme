@@ -38,7 +38,7 @@ public sealed class DoveOfPeace : RoleBase
     }
 
     private int SkillLimit;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DoveOfPeaceCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -46,8 +46,15 @@ public sealed class DoveOfPeace : RoleBase
         OptionSkillNums = IntegerOptionItem.Create(RoleInfo, 12, OptionName.DoveOfPeaceMaxOfUseage, new(1, 99, 1), 3, false)
             .SetValueFormat(OptionFormat.Times);
     }
-    public override void Add() => SkillLimit = OptionSkillNums.GetInt();
-    public override void OnGameStart() => UsePetCooldown = OptionSkillCooldown.GetInt();
+    public override void Add()
+    { 
+    SkillLimit = OptionSkillNums.GetInt();
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown =
@@ -64,7 +71,7 @@ public sealed class DoveOfPeace : RoleBase
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("DoveOfPeaceVentButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -96,14 +103,15 @@ public sealed class DoveOfPeace : RoleBase
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown,1f));
+            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         if (SkillLimit >= 1)
         {
-            UsePetCooldown = OptionSkillCooldown.GetInt();
+            UsePetCooldown = Utils.GetTimeStamp();
             SkillLimit--;
             Player.RpcProtectedMurderPlayer();
             Main.AllAlivePlayerControls.Where(x =>
@@ -128,17 +136,6 @@ public sealed class DoveOfPeace : RoleBase
         }
     }
     public override bool CanUseAbilityButton() => SkillLimit > 0;
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
-        {
-            player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
-        }
-    }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {
         Player.RpcResetAbilityCooldown();
@@ -146,6 +143,17 @@ public sealed class DoveOfPeace : RoleBase
     public override void AfterMeetingTasks()
     {
         Player.RpcResetAbilityCooldown();
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
+    }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        var now = Utils.GetTimeStamp();
+        if (UsePetCooldown + (long)OptionSkillCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
+        {
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
+        }
     }
 }

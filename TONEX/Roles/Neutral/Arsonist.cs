@@ -3,11 +3,12 @@ using Hazel;
 using System.Collections.Generic;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Arsonist : RoleBase, IKiller
+public sealed class Arsonist : RoleBase, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

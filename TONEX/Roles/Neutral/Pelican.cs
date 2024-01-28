@@ -5,10 +5,11 @@ using System.Linq;
 using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class Pelican : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -21,6 +22,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
             SetupOptionItem,
             "pe|鵜鶘",
             "#34c84b",
+            true,
             true,
             countType: CountTypes.Pelican
         );
@@ -97,7 +99,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
         if (!CanEat(target.PlayerId)) return false;
-        Utils.TP(killer.NetTransform, target.GetTruePosition());
+        target.RpcTeleport(target.GetTruePosition());
         EatPlayer(killer, target);
         killer.SetKillCooldownV2();
         killer.RPCPlayCustomSound("Eat");
@@ -110,7 +112,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
         EatenPlayers.Add(target.PlayerId);
         SendRPC();
 
-        Utils.TP(target.NetTransform, Utils.GetBlackRoomPS());
+        target.RpcTeleport(Utils.GetBlackRoomPS());
         Main.AllPlayerSpeed[target.PlayerId] = 0.5f;
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         target.MarkDirtySettings();
@@ -148,7 +150,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
             var target = Utils.GetPlayerById(id);
             if (target == null) continue;
 
-            Utils.TP(target.NetTransform, MyLastPos);
+            target.RpcTeleport(MyLastPos);
             Main.AllPlayerSpeed[id] = Main.AllPlayerSpeed[id] - 0.5f + OriginalSpeed[id];
             ReportDeadBodyPatch.CanReport[id] = true;
 
@@ -183,7 +185,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner
             var pos = Utils.GetBlackRoomPS();
             var dis = Vector2.Distance(pos, target.GetTruePosition());
             if (dis < 1f) continue;
-            Utils.TP(target.NetTransform, pos);
+            target.RpcTeleport(pos);
             Utils.NotifyRoles(SpecifySeer: target);
         }
     }

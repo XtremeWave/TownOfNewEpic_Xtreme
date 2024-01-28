@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 
@@ -38,7 +38,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
 
     private int ShotLimit;
     private bool Storaging;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.KillCooldown, new(2.5f, 180f, 2.5f), 35f, false)
@@ -51,8 +51,12 @@ public sealed class QuickShooter : RoleBase, IImpostor
     public override void Add()
     {
         ShotLimit = 0;
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
-    public override void OnGameStart() => UsePetCooldown = OptionShapeshiftCooldown.GetInt();
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.SetQuickShooterShotLimit);
@@ -75,8 +79,8 @@ public sealed class QuickShooter : RoleBase, IImpostor
     }
     public override bool GetPetButtonText(out string text)
     {
-             text = GetString("QuickShooterShapeshiftText");
-        return !(UsePetCooldown != 0);
+        text = GetString("QuickShooterShapeshiftText");
+        return !(UsePetCooldown != -1);
     }
     public override int OverrideAbilityButtonUsesRemaining() => ShotLimit;
     public override void OnShapeshift(PlayerControl target)
@@ -96,12 +100,13 @@ public sealed class QuickShooter : RoleBase, IImpostor
             Logger.Info($"{Utils.GetPlayerById(Player.PlayerId)?.GetNameWithRole()} : 剩余子弹{ShotLimit}发", "QuickShooter.OnShapeshift");
         }
     }
-        public override void OnUsePet()
+    public override void OnUsePet()
     {
-                    if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (!Options.UsePets.GetBool()) return;
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)OptionShapeshiftCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         if (Player.killTimer < 1)
@@ -114,7 +119,7 @@ public sealed class QuickShooter : RoleBase, IImpostor
             Player.Notify(GetString("QuickShooterStoraging"));
             Logger.Info($"{Utils.GetPlayerById(Player.PlayerId)?.GetNameWithRole()} : 剩余子弹{ShotLimit}发", "QuickShooter.OnShapeshift");
         }
-   }
+    }
     public float CalculateKillCooldown()
     {
         float cooldown = (Storaging || ShotLimit < 1) ? OptionKillCooldown.GetFloat() : 0.01f;
@@ -134,18 +139,19 @@ public sealed class QuickShooter : RoleBase, IImpostor
         ShotLimit = Mathf.Max(ShotLimit, 0);
         if (ShotLimit != before) SendRPC();
     }
-           public override void OnSecondsUpdate(PlayerControl player, long now)
+    public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        var now = Utils.GetTimeStamp();
+        if (Player.IsAlive() && UsePetCooldown + (long)OptionShapeshiftCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
-       public override void AfterMeetingTasks()
+    public override void AfterMeetingTasks()
     {
-        UsePetCooldown = OptionShapeshiftCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
     }
 }

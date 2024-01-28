@@ -1,11 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
 using System.Collections.Generic;
 using Hazel;
 using UnityEngine;
 using System.Linq;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Medusa : RoleBase, IImpostor

@@ -13,6 +13,7 @@ internal class MakePublicPatch
     public static bool Prefix(GameStartManager __instance)
     {
         // 定数設定による公開ルームブロック
+#if RELEASE
         if (!Main.AllowPublicRoom)
         {
             var message = GetString("DisabledByProgram");
@@ -23,13 +24,14 @@ internal class MakePublicPatch
         if (ModUpdater.isBroken || (ModUpdater.hasUpdate && ModUpdater.forceUpdate) || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)
         {
             var message = "";
-            if (!Main.IsPublicAvailableOnThisVersion) message = GetString("PublicNotAvailableOnThisVersion");
+            message = GetString("PublicNotAvailableOnThisVersion");
             if (ModUpdater.isBroken) message = GetString("ModBrokenMessage");
             if (ModUpdater.hasUpdate) message = GetString("CanNotJoinPublicRoomNoLatest");
             Logger.Info(message, "MakePublicPatch");
             Logger.SendInGame(message);
             return false;
         }
+#endif
         return true;
     }
 }
@@ -38,6 +40,7 @@ class MMOnlineManagerStartPatch
 {
     public static void Postfix(MMOnlineManager __instance)
     {
+#if RELEASE
         if (!(ModUpdater.hasUpdate || ModUpdater.isBroken || !VersionChecker.IsSupported || !Main.IsPublicAvailableOnThisVersion)) return;
         var obj = GameObject.Find("FindGameButton");
         if (obj)
@@ -67,7 +70,9 @@ class MMOnlineManagerStartPatch
             }
             textObj.text = $"<size=2>{Utils.ColorString(Color.red, message)}</size>";
         }
+#endif
     }
+
 }
 [HarmonyPatch(typeof(SplashManager), nameof(SplashManager.Update))]
 internal class SplashLogoAnimatorPatch
@@ -95,7 +100,7 @@ internal class RunLoginPatch
         // 如果您修改了代码，请在房间公告内表明这是修改版本，并给出修改作者
         // If you wish to make your lobby public in a debug build, please use it only for testing purposes
         // If you modify the code, please indicate in the lobby announcement that this is a modified version and provide the author of the modification
-        canOnline = System.Environment.UserName == "Leever";
+        canOnline = true;
 #endif
     }
 }

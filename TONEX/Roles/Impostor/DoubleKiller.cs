@@ -1,11 +1,11 @@
 ﻿using AmongUs.GameOptions;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using System.Collections.Generic;
 using static TONEX.Translator;
 using Hazel;
 using UnityEngine;
 using MS.Internal.Xml.XPath;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class DoubleKiller : RoleBase, IImpostor
@@ -41,7 +41,7 @@ public sealed class DoubleKiller : RoleBase, IImpostor
         DoubleKillerTwoKillCooldown,
     }
     private float KillCooldown;
-    private bool ShCooldown;
+    private float ShCooldown;
     private static void SetupOptionItem()
     {
         DoubleKillerDefaultKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.DoubleKillerDefaultKillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -52,18 +52,20 @@ public sealed class DoubleKiller : RoleBase, IImpostor
     public override void Add()
     {
         KillCooldown = DoubleKillerDefaultKillCooldown.GetFloat();
-        ShCooldown = false;
+        ShCooldown = TwoKillCooldown.GetFloat();
         DoubleKillerReady = new();
+        DoubleKillerTwoTime = -1;
     }
     public override void OnGameStart()
     {
         DoubleKillerTwoTime = Utils.GetTimeStamp();
+        ShCooldown = TwoKillCooldown.GetFloat();
     }
     public float CalculateKillCooldown() => KillCooldown;
 
     public override void ApplyGameOptions(IGameOptions opt)
     {
-        AURoleOptions.ShapeshifterCooldown = ShCooldown ? 255f : TwoKillCooldown.GetFloat();
+        AURoleOptions.ShapeshifterCooldown = ShCooldown;
     }
     public void BeforeMurderPlayerAsKiller(MurderInfo info)
     {
@@ -75,8 +77,8 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             KillCooldown = 0f;
             killer.ResetKillCooldown();
             killer.SyncSettings();
-            ShCooldown = false;
             DoubleKillerTwoTime = Utils.GetTimeStamp();
+            ShCooldown = TwoKillCooldown.GetFloat();
             Player.RpcResetAbilityCooldown();
             killer.SyncSettings();
         }
@@ -87,14 +89,20 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             killer.SyncSettings();
         }
     }
-    public override bool CanUseAbilityButton() => DoubleKillerTwoTime != -1 && !ShCooldown;
+    public override bool CanUseAbilityButton()
+    {
+        if (!DoubleKillerReady.Contains(Player.PlayerId) && ShCooldown != 255f) return true;
+        return false;
+    }
     public override bool GetAbilityButtonSprite(out string buttonName)
     {
-        return base.GetAbilityButtonSprite(out buttonName);
+        buttonName = "KillButton";
+        return true;
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        return base.GetAbilityButtonText(out text);
+        text = GetString("DoubleKillerKillButton");
+        return true;
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
@@ -106,15 +114,16 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             DoubleKillerTwoTime = -1;
             Player.Notify(GetString("DoubleKillerReady"),2f);
             DoubleKillerReady.Add(Player.PlayerId);
-            ShCooldown = true;
+            ShCooldown = 255f;
             Player.RpcResetAbilityCooldown();
             Player.SyncSettings();
         }
     }
     public override void AfterMeetingTasks()
     {
-        ShCooldown = false;
+        ShCooldown = TwoKillCooldown.GetFloat();
         DoubleKillerTwoTime = Utils.GetTimeStamp();
         Player.RpcResetAbilityCooldown();
+        DoubleKillerReady.Remove(Player.PlayerId);
     }
 }

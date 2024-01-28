@@ -60,6 +60,10 @@ public static class Mini
                     UpTime = 0;
                     SendRPC();
                     player.RpcProtectedMurderPlayer(player);
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        Utils.NotifyRoles(pc);
+                    }
                 }
             }
         }

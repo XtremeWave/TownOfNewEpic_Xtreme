@@ -4,7 +4,7 @@ using InnerNet;
 using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Impostor;
@@ -77,7 +77,7 @@ public sealed class Butcher : RoleBase, IImpostor
                 messageWriter.WriteNetObject(target);
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
             }
-            Utils.TP(killer.NetTransform, ops);
+            killer.RpcTeleport(ops);
         }, 0.05f, "Butcher Murder");
 
         return;
