@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using Il2CppInterop.Runtime;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX;
@@ -25,6 +25,7 @@ class HudSpritePatch
     private static SpriteRenderer? Defalt_Remain => DestroyableSingleton<HudManager>.Instance.AbilityButton?.usesRemainingSprite;
     private static GameObject? Defalt_Set => DestroyableSingleton<HudManager>.Instance.SettingsButton;
     private static PassiveButton? Defalt_Map => DestroyableSingleton<HudManager>.Instance.MapButton;
+    private static GameObject? Defalt_Chat => DestroyableSingleton<HudManager>.Instance.Chat.chatButton;
     public static void Postfix(HudManager __instance)
     {
         var player = PlayerControl.LocalPlayer;
@@ -41,7 +42,7 @@ class HudSpritePatch
         Sprite newAdminButton = Defalt_Admin ?? __instance.AdminButton.graphic.sprite;
         GameObject newSetting = Defalt_Set ?? __instance.SettingsButton;
         PassiveButton newMap = Defalt_Map ?? __instance.MapButton;
-
+        GameObject newChat = Defalt_Chat ?? __instance.Chat.chatButton;
 
         if (Main.EnableCustomButton.Value)
         {
@@ -52,7 +53,7 @@ class HudSpritePatch
                 if (killer.OverrideVentButtonSprite(out var newVentButtonName))
                     newVentButton = CustomButton.GetSprite(newVentButtonName);
             }
-            if(player.Is(CustomRoles.EvilGuardian)) newAbilityButton = CustomButton.GetSprite("KillButton");
+            if (player.Is(CustomRoles.EvilGuardian)) newAbilityButton = CustomButton.GetSprite("KillButton");
             if (player.GetRoleClass()?.GetAbilityButtonSprite(out var newAbilityButtonName) ?? false)
                 newAbilityButton = CustomButton.GetSprite(newAbilityButtonName);
             if (player.GetRoleClass()?.GetReportButtonSprite(out var newReportButtonName) ?? false)
@@ -67,9 +68,9 @@ class HudSpritePatch
             else if (player.GetRoleClass()?.GetPetButtonSprite(out var newPetButtonNameV2) == false && Options.UsePets.GetBool() && newPetButtonNameV2 != null)
             {
                 var PetButton = newPetButtonNameV2;
-                if(PetButton != null)
+                if (PetButton != default)
                 {
-                 newPetButton = CustomButton.GetSprite(PetButton);
+                    newPetButton = CustomButton.GetSprite(PetButton);
                     __instance.PetButton?.graphic?.material?.SetFloat("_Desat", 1f);
                 }
             }
@@ -80,72 +81,93 @@ class HudSpritePatch
                 newAdminButton = CustomButton.GetSprite(newAdminButtonName);
 
 
-            Sprite newSprite = CustomButton.GetSprite("UseNum");
-            newRemain.sprite = newSprite;          
+            Sprite newUseNumSprite = CustomButton.GetSprite("UseNum");
+            newRemain.sprite = newUseNumSprite;
 
+            Sprite newSettingButton = CustomButton.GetSprite("SettingButton");
+            SpriteRenderer spritesetting = newSetting.GetComponent<SpriteRenderer>();
+            spritesetting.sprite = newSettingButton;
 
-            Sprite qwqnew = CustomButton.GetSprite("UseNum");
-                SpriteRenderer spriteerer = newSetting.GetComponent<SpriteRenderer>();
-                if (spriteerer != null)
-                {
-                    spriteerer.sprite = qwqnew;
-                }
-            Sprite newmap = CustomButton.GetSprite("UseNum");
-                SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
-                if (spritemap != null)
-                {
-                spritemap.sprite = newmap;
-                }
-        }
+            //Sprite newChatButton = CustomButton.GetSprite("ChatButton");
+            //SpriteRenderer spritechat = newChat.GetComponent<SpriteRenderer>();
+            //spritechat.sprite = newChatButton;
 
-        if (player.GetRoleClass() is IKiller)
-        {
-            if (__instance.KillButton.graphic.sprite != newKillButton && newKillButton != null)
+            #region 地图
+            Sprite newmap = CustomButton.GetSprite("mapJourne");
+            switch (Main.NormalOptions.MapId)
             {
-                __instance.KillButton.graphic.sprite = newKillButton;
-                __instance.KillButton.graphic.material = __instance.ReportButton.graphic.material;
+                case 0:
+                    newmap = CustomButton.GetSprite("mapJourne");
+                    break;
+                case 1:
+                    newmap = CustomButton.GetSprite("mapMIRA");
+                    break;
+                case 2:
+                    newmap = CustomButton.GetSprite("mapPolus");
+                    break;
+                case 4:
+                    newmap = CustomButton.GetSprite("mapAirship");
+                    break;
+                case 5:
+                    newmap = CustomButton.GetSprite("theFungle");
+                    break;
+
             }
-            if (__instance.ImpostorVentButton.graphic.sprite != newVentButton && newVentButton != null)
+            SpriteRenderer spritemap = newMap.GetComponent<SpriteRenderer>();
+            spritemap.sprite = newmap;
+            #endregion
+            if (player.GetRoleClass() is IKiller)
             {
-                __instance.ImpostorVentButton.graphic.sprite = newVentButton;
+                if (__instance.KillButton.graphic.sprite != newKillButton && newKillButton != null)
+                {
+                    __instance.KillButton.graphic.sprite = newKillButton;
+                    __instance.KillButton.graphic.material = __instance.ReportButton.graphic.material;
+                }
+                if (__instance.ImpostorVentButton.graphic.sprite != newVentButton && newVentButton != null)
+                {
+                    __instance.ImpostorVentButton.graphic.sprite = newVentButton;
+                }
+                __instance.KillButton?.graphic?.material?.SetFloat("_Desat", __instance?.KillButton?.isCoolingDown ?? true ? 1f : 0f);
             }
-            __instance.KillButton?.graphic?.material?.SetFloat("_Desat", __instance?.KillButton?.isCoolingDown ?? true ? 1f : 0f);
+            if (__instance.AbilityButton.graphic.sprite != newAbilityButton && newAbilityButton != null)
+            {
+                __instance.AbilityButton.graphic.sprite = newAbilityButton;
+                __instance.AbilityButton.graphic.material = __instance.ReportButton.graphic.material;
+            }
+            if (__instance.ReportButton.graphic.sprite != newReportButton && newReportButton != null)
+            {
+                __instance.ReportButton.graphic.sprite = newReportButton;
+            }
+            if (__instance.PetButton.graphic.sprite != newPetButton && newPetButton != null)
+            {
+                __instance.PetButton.graphic.sprite = newPetButton;
+            }
+            if (__instance.AbilityButton.usesRemainingSprite != newRemain && newRemain != null)
+            {
+                __instance.AbilityButton.usesRemainingSprite = newRemain;
+            }
+            if (__instance.SettingsButton != newSetting && newSetting != null)
+            {
+                __instance.SettingsButton = newSetting;
+            }
+            if (__instance.Chat.chatButton != newChat && newChat != null)
+            {
+                __instance.Chat.chatButton = newChat;
+            }
+            if (__instance.MapButton != newMap && newMap != null)
+            {
+                __instance.MapButton = newMap;
+            }
+            if (__instance.UseButton.graphic.sprite != newUseButton && newUseButton != null)
+            {
+                __instance.UseButton.graphic.sprite = newUseButton;
+            }
+            if (__instance.AdminButton.graphic.sprite != newAdminButton && newAdminButton != null)
+            {
+                __instance.AdminButton.graphic.sprite = newAdminButton;
+            }
+            __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat", __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
         }
-        if (__instance.AbilityButton.graphic.sprite != newAbilityButton && newAbilityButton != null)
-        {
-            __instance.AbilityButton.graphic.sprite = newAbilityButton;
-            __instance.AbilityButton.graphic.material = __instance.ReportButton.graphic.material;
-        }
-        if (__instance.ReportButton.graphic.sprite != newReportButton && newReportButton != null)
-        {
-            __instance.ReportButton.graphic.sprite = newReportButton;
-        }
-        if (__instance.PetButton.graphic.sprite != newPetButton && newPetButton != null)
-        {
-            __instance.PetButton.graphic.sprite = newPetButton;
-        }
-        if (__instance.AbilityButton.usesRemainingSprite != newRemain && newRemain != null)
-        {
-            __instance.AbilityButton.usesRemainingSprite = newRemain;
-        }
-        if (__instance.SettingsButton != newSetting && newSetting != null)
-        {
-           __instance.SettingsButton = newSetting;
-        }
-        if (__instance.MapButton != newMap && newMap != null)
-        {
-            __instance.MapButton = newMap;
-        }
-        if (__instance.UseButton.graphic.sprite != newUseButton && newUseButton != null)
-        {
-            __instance.UseButton.graphic.sprite = newUseButton;
-        }
-        if (__instance.AdminButton.graphic.sprite != newAdminButton && newAdminButton != null)
-        {
-            __instance.AdminButton.graphic.sprite = newAdminButton;
-        }
-        __instance.PetButton?.graphic?.material?.SetFloat("_Desat", player.GetRoleClass()?.GetPetButtonSprite(out var AWA) == false && Options.UsePets.GetBool() ? 1f : 0f);
-        __instance.AbilityButton?.graphic?.material?.SetFloat("_Desat", __instance?.AbilityButton?.isCoolingDown ?? true ? 1f : 0f);
     }
 }
 #nullable disable

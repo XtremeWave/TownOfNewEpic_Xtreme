@@ -56,8 +56,7 @@ public enum CustomRPC
     SetKickReason,
 
     //TONEX
-    SetVagor,
-    ForNV,
+    ColorFlash,
 
     //GameMode
     SyncHpNameNotify,
@@ -98,22 +97,48 @@ public enum CustomRPC
     SyncEscapist,
     OnClickMeetingButton,
     SyncMarioVentedTimes,
+    //时间之主
     SyncTimeMaster,
-    ProphetKill,
+    //绝望先生
     DespairBeKill,
+    //预言家
+    ProphetKill,
     SetProphetList,
+    //老兵
     VeteranKill,
+    //迷你船员
     MiniAge,
+    //通讯兵
     SignalPosition,
+    //双刀手
     DoubleKillerBeKillTime,
+    //悬赏官
     SetRewardOfficerTarget,
-    ViciousKill,
+    //恶猎手
+    ViciousSeekerKill,
+    //秃鹫
     VultureLimit,
     SetVultureArrow,
+    //热土豆
     SetHotPotatoBoomTime,
+    //市长
     MayorCanUseButton,
-    ColorFlash,
+    //冒险家
     AdventurerSabotage,
+    //异世闲游
+    SetVagor,
+    //'不演反派'
+    ForNVBeKilled,
+    ForNVStaticOvercomeList,
+    ForNVStaticFarAheadList,
+    ForNVMoney,
+    ForNVWAH,
+    ForNVCAAList,
+    ForNVOvercomeList,
+    ForNVFarAheadList,
+    ForNVDFList,
+     ////////////
+    SetRewardOfficerName,
 }
 public enum Sounds
 {
@@ -354,9 +379,6 @@ internal class RPCHandlerPatch
             case CustomRPC.SignalPosition:
                 Signal.ReceiveRPC(reader, rpcType);
                 break;
-            case CustomRPC.SetMarkedPlayer:
-                Ninja.ReceiveRPC_SyncList(reader);
-                break;
             case CustomRPC.SetYangPlayer:
                 Onmyoji.ReceiveRPC_SyncYangList(reader);
                 break;
@@ -369,8 +391,8 @@ internal class RPCHandlerPatch
             case CustomRPC.VultureLimit:
                 Vulture.ReceiveRPC_Limit(reader);
                 break;
-            case CustomRPC.ViciousKill:
-                Vicious.ReceiveRPC_Limit(reader,rpcType);
+            case CustomRPC.ViciousSeekerKill:
+                ViciousSeeker.ReceiveRPC_Limit(reader,rpcType);
                 break;
             default:
                 CustomRoleManager.DispatchRpc(reader, rpcType);
@@ -382,6 +404,21 @@ internal class RPCHandlerPatch
 internal static class RPC
 {
     //来源：https://github.com/music-discussion/TownOfHost-TheOtherRoles/blob/main/Modules/RPC.cs
+    public static bool IsNVRPC(this CustomRPC rpc)
+    {
+        if (
+            rpc == CustomRPC.ForNVBeKilled ||
+    rpc == CustomRPC.ForNVStaticOvercomeList ||
+    rpc == CustomRPC.ForNVStaticFarAheadList ||
+    rpc == CustomRPC.ForNVMoney ||
+    rpc == CustomRPC.ForNVWAH ||
+    rpc == CustomRPC.ForNVCAAList ||
+    rpc == CustomRPC.ForNVOvercomeList ||
+    rpc == CustomRPC.ForNVFarAheadList
+            )
+        return true;
+        return false;
+    }
     public static void SyncCustomSettingsRPC(int targetId = -1)
     {
         if (targetId != -1)

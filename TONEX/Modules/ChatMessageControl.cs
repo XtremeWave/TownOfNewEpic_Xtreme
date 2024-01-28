@@ -38,17 +38,17 @@ public class MessageControl
           {
               IsCommand = true;
           }*/
+        CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
-          CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
-          /*
-          if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
-          {
-              foreach (var pc in Main.AllPlayerControls)
-                  if (pc.Is(CustomRoles.Blackmailer)) player.SetRealKiller(pc);
-              player.RpcSuicideWithAnime();
-              recallMode = MsgRecallMode.Spam;
-          }
-          */
+        /*
+        if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
+        {
+            foreach (var pc in Main.AllPlayerControls)
+                if (pc.Is(CustomRoles.Blackmailer)) player.SetRealKiller(pc);
+            player.RpcSuicideWithAnime();
+            recallMode = MsgRecallMode.Spam;
+        }
+        */
         RecallMode = recallMode;
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
         if (!IsCommand)

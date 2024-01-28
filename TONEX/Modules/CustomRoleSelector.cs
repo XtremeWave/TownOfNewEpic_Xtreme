@@ -23,9 +23,13 @@ internal static class CustomRoleSelector
         int optNeutralNum = 0;
         if (Options.NeutralRolesMaxPlayer.GetInt() > 0 && Options.NeutralRolesMaxPlayer.GetInt() >= Options.NeutralRolesMinPlayer.GetInt())
             optNeutralNum = rd.Next(Options.NeutralRolesMinPlayer.GetInt(), Options.NeutralRolesMaxPlayer.GetInt() + 1);
+        int optNKNum = 0;
+        if (Options.NeutralKillingRolesMaxPlayer.GetInt() > 0 && Options.NeutralKillingRolesMaxPlayer.GetInt() >= Options.NeutralKillingRolesMinPlayer.GetInt())
+            optNKNum = rd.Next(Options.NeutralKillingRolesMinPlayer.GetInt(), Options.NeutralKillingRolesMaxPlayer.GetInt() + 1);
 
         int readyRoleNum = 0;
         int readyNeutralNum = 0;
+        int readyNKNum = 0;
 
         List<CustomRoles> rolesToAssign = new();
 
@@ -33,10 +37,12 @@ internal static class CustomRoleSelector
         List<CustomRoles> roleOnList = new();
         List<CustomRoles> ImpOnList = new();
         List<CustomRoles> NeutralOnList = new();
+        List<CustomRoles> NKOnList = new();
 
         List<CustomRoles> roleRateList = new();
         List<CustomRoles> ImpRateList = new();
         List<CustomRoles> NeutralRateList = new();
+        List<CustomRoles> NKRateList = new();
         if (Options.CurrentGameMode == CustomGameMode.HotPotato)
         {
             foreach (var pc in Main.AllAlivePlayerControls)
@@ -60,14 +66,16 @@ internal static class CustomRoleSelector
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 2))
         {
             if (role.IsImpostor()) ImpOnList.Add(role);
-            else if (role.IsNeutral()) NeutralOnList.Add(role);
+            else if (role.IsNotNeutralKilling()) NeutralOnList.Add(role);
+            else if (role.IsNeutralKilling()) NKOnList.Add(role);
             else roleOnList.Add(role);
         }
         // 职业设置为：启用
         foreach (var role in roleList.Where(x => Options.GetRoleChance(x) == 1))
         {
             if (role.IsImpostor()) ImpRateList.Add(role);
-            else if (role.IsNeutral()) NeutralRateList.Add(role);
+            else if (role.IsNotNeutralKilling()) NeutralRateList.Add(role);
+            else if (role.IsNeutralKilling()) NKRateList.Add(role);
             else roleRateList.Add(role);
         }
 
@@ -132,18 +140,18 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNeutralNum < optNeutralNum)
+            /*if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePet.GetBool())
             {
                 var shouldExecute = true;
-                if (NeutralRateList.Count > 0)
+                if (NKRateList.Count > 0)
                 {
-                    var remove = NeutralRateList[rd.Next(0, NeutralRateList.Count)];
-                    NeutralRateList.Remove(remove);
+                    var remove = NeKRateList[rd.Next(0, NKRateList.Count)];
+                    NKRateList.Remove(remove);
                 }
-                else if (NeutralOnList.Count > 0)
+                else if (NKOnList.Count > 0)
                 {
-                    var remove = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
-                    NeutralOnList.Remove(remove);
+                    var remove = NKOnList[rd.Next(0, NKOnList.Count)];
+                    NKOnList.Remove(remove);
                 }
                 else
                 {
@@ -153,13 +161,13 @@ internal static class CustomRoleSelector
                 {
                     rolesToAssign.Add(CustomRoles.Vagor_FAFL);
                     readyRoleNum++;
-                    readyNeutralNum++;
+                    readyNKNum++;
                 }
                 sp = UnityEngine.Random.Range(0, 100);
             }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
+            if (readyRoleNum >= playerCount) goto EndOfAssign;*/
 
-            if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
+            /*if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
             {
                 var shouldExecute = true;
                 if (NeutralRateList.Count > 0)
@@ -184,7 +192,7 @@ internal static class CustomRoleSelector
                 }
                 sp = UnityEngine.Random.Range(0, 100);
             }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
+            if (readyRoleNum >= playerCount) goto EndOfAssign;*/
         }
 #endif
 #endregion
@@ -211,6 +219,33 @@ internal static class CustomRoleSelector
                 Logger.Info(select.ToString() + " 加入内鬼职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
                 if (readyRoleNum >= optImpNum) break;
+            }
+        }
+        // 抽取优先职业（中立杀手）
+        while (NKOnList.Count > 0 && optNKNum > 0)
+        {
+            var select = NKOnList[rd.Next(0, NKOnList.Count)];
+            NKOnList.Remove(select);
+            rolesToAssign.Add(select);
+            readyRoleNum++;
+            readyNKNum += select.GetAssignCount();
+            Logger.Info(select.ToString() + " 加入中立职业待选列表（优先）", "CustomRoleSelector");
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
+            if (readyNKNum >= optNKNum) break;
+        }
+        // 优先职业不足以分配，开始分配启用的职业（中立杀手）
+        if (readyRoleNum < playerCount && readyNKNum < optNKNum)
+        {
+            while (NKRateList.Count > 0 && optNKNum > 0)
+            {
+                var select = NKRateList[rd.Next(0, NKRateList.Count)];
+                NKRateList.Remove(select);
+                rolesToAssign.Add(select);
+                readyRoleNum++;
+                readyNKNum += select.GetAssignCount();
+                Logger.Info(select.ToString() + " 加入中立职业待选列表", "CustomRoleSelector");
+                if (readyRoleNum >= playerCount) goto EndOfAssign;
+                if (readyNKNum >= optNKNum) break;
             }
         }
         // 抽取优先职业（中立）

@@ -2,6 +2,7 @@ using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
 using UnityEngine;
+using Il2CppSystem.Collections.Generic;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Adventurer : RoleBase
@@ -13,7 +14,7 @@ public sealed class Adventurer : RoleBase
             CustomRoles.Adventurer,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            21990,
+            94_3_1_0,
             SetupOptionItem,
             "ad|探险家",
             "#185abd"
@@ -23,8 +24,10 @@ public sealed class Adventurer : RoleBase
         RoleInfo,
         player
     )
-    { }
-
+    {
+        ForAdventurer = new();
+    }
+    public static List<byte> ForAdventurer;
     static OptionItem OptionLimit;
     enum OptionName
     {
@@ -39,6 +42,7 @@ public int SabotageFalseLimit;
     public override void Add()
     {
         SabotageFalseLimit = OptionLimit.GetInt();
+        ForAdventurer = new();
     }
     private void SendRPC()
     {
@@ -52,10 +56,12 @@ public int SabotageFalseLimit;
     }
     public override bool OnSabotage(PlayerControl player, SystemTypes systemType)
     {
+        if(ForAdventurer.Contains(player.PlayerId)) return false;
       if(SabotageFalseLimit >= 1)
       {
         SabotageFalseLimit--;
         SendRPC();
+            ForAdventurer.Add(player.PlayerId);
                     player.ResetKillCooldown();
             player.SetKillCooldown();
                player.SyncSettings();
@@ -65,5 +71,6 @@ public int SabotageFalseLimit;
       }
 return true;
     }
-       public override string GetProgressText(bool comms = false) => Utils.ColorString(SabotageFalseLimit >= 1 ? Utils.GetRoleColor(CustomRoles.Adventurer) : Color.gray, $"({SabotageFalseLimit})");
+    public override void AfterMeetingTasks()   => ForAdventurer.Clear(); 
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(SabotageFalseLimit >= 1 ? RoleInfo.RoleColor : Color.gray, $"({SabotageFalseLimit})");
 }

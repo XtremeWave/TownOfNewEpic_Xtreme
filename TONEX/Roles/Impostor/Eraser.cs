@@ -1,7 +1,7 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 

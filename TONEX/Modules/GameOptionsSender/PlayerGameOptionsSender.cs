@@ -136,6 +136,15 @@ public class PlayerGameOptionsSender : GameOptionsSender
             Utils.NotifyRoles(player);
         }
 
+        //最好的请过来
+        if (Non_Villain.ComeAndAwayList != null)
+        if (Non_Villain.ComeAndAwayList.Contains(player.PlayerId))
+        {
+            opt.SetVision(false);
+            opt.SetFloat(FloatOptionNames.CrewLightMod, 5f);
+            opt.SetFloat(FloatOptionNames.ImpostorLightMod, 5f);
+            Utils.NotifyRoles(player);
+        }
         // 投掷傻瓜蛋啦！！！！！
         if (Grenadier.IsBlinding(player))
         {
@@ -174,8 +183,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
 
 
         AURoleOptions.ShapeshifterCooldown = Mathf.Max(1f, AURoleOptions.ShapeshifterCooldown);
-        AURoleOptions.ProtectionDurationSeconds = Main.CanPublic.Value ? 60f : 0;
-
+        AURoleOptions.ProtectionDurationSeconds = 0f;
         return opt;
     }
 

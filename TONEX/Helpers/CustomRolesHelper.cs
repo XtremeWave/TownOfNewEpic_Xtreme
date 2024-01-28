@@ -30,6 +30,34 @@ static class CustomRolesHelper
             return roleInfo.CustomRoleType == CustomRoleTypes.Neutral;
         return false;
     }
+    public static bool IsNotNeutralKilling(this CustomRoles role)
+    {
+        var roleInfo = role.GetRoleInfo();
+        if (roleInfo != null)
+            return roleInfo.CustomRoleType == CustomRoleTypes.Neutral && !role.IsNeutralKilling();
+        return false;
+    }
+    public static bool IsNeutralKilling(this CustomRoles role)
+    {
+        var roleInfo = role.GetRoleInfo();
+        if (roleInfo != null)
+            return roleInfo.CustomRoleType == CustomRoleTypes.Neutral && roleInfo.IsNK;
+        return false;
+    }
+    public static bool IsHidden(this CustomRoles role)
+    {
+        var roleInfo = role.GetRoleInfo();
+        if (roleInfo != null)
+            return roleInfo.IsHidden;
+        return false;
+    }
+    public static bool IsCanNotOpen(this CustomRoles role)
+    {
+        var roleInfo = role.GetRoleInfo();
+        if (roleInfo != null)
+            return roleInfo.CantOpen;
+        return false;
+    }
     public static bool IsCrewmate(this CustomRoles role)
     {
         var roleInfo = role.GetRoleInfo();
@@ -42,7 +70,7 @@ static class CustomRolesHelper
     }
     public static bool IsAddon(this CustomRoles role) => (int)role > 500;
     public static bool IsValid(this CustomRoles role) => role is not CustomRoles.GM and not CustomRoles.NotAssigned;
-    public static bool IsExist(this CustomRoles role, bool CountDeath = false) => Main.AllPlayerControls.Any(x => x.Is(role) && x.IsAlive() || CountDeath);
+    public static bool IsExist(this CustomRoles role, bool CountDeath = false) => Main.AllPlayerControls.Any(x => x.Is(role) && (x.IsAlive() || CountDeath));
     public static bool IsVanilla(this CustomRoles role)
     {
         return

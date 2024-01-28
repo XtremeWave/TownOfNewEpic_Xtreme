@@ -13,16 +13,16 @@ public static class UpdateFriendCodeUIPatch
     public static void Prefix(AccountTab __instance)
     {
 
-        string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>TEAM-TONEX</color>");
+        string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>Team-XtremeWave</color>");
         credentialsText += "\t\t\t";
         string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginShowVersion}";
 
 #if CANARY
-        versionText = $"<color=#fffcbe>{Main.ModName}</color> - {ThisAssembly.Git.Commit}";
+        versionText = $"<color=#cdfffd>{Main.ModName}</color> - {ThisAssembly.Git.Commit}";
 #endif
 
 #if DEBUG
-        versionText = $"<color=#fffcbe>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
+        versionText = $"<color=#cdfffd>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
 #endif
 
         credentialsText += versionText;

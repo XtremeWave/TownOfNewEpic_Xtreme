@@ -252,9 +252,8 @@ public static class GameStartManagerBeginGamePatch
             /*TheSkeld   = 0
             MIRAHQ     = 1
             Polus      = 2
-            Dleks      = 3
-            TheAirShip = 4
-            TheFungle  = 5*/
+            TheAirShip = 3
+            TheFungle  = 4*/
             if (Options.AddedTheSkeld.GetBool()) randomMaps.Add(0);
             if (Options.AddedMiraHQ.GetBool()) randomMaps.Add(1);
             if (Options.AddedPolus.GetBool()) randomMaps.Add(2);

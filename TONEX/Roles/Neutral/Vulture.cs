@@ -4,10 +4,11 @@ using System.Collections.Generic;
 using TONEX.Roles.Core;
 using static TONEX.Translator;
 using UnityEngine;
+using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vulture : RoleBase
+public sealed class Vulture : RoleBase, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
                SimpleRoleInfo.Create(
@@ -44,7 +45,7 @@ public sealed class Vulture : RoleBase
     {
         OptionEatLimitPerMeeting = IntegerOptionItem.Create(RoleInfo, 10, OptionName.VultureNeedEatLimit, new(1, 99, 1), 4, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionEatTime = FloatOptionItem.Create(RoleInfo, 10, OptionName.VultureEatTime, new(2.5f, 180f, 2.5f), 10f, false)
+        OptionEatTime = FloatOptionItem.Create(RoleInfo, 11, OptionName.VultureEatTime, new(2.5f, 180f, 2.5f), 10f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
     public override void ApplyGameOptions(IGameOptions opt)
@@ -56,14 +57,18 @@ public sealed class Vulture : RoleBase
     public override void Add()
     {
         EatLimit = OptionEatLimitPerMeeting.GetInt();
-        EatTime = 0;
+        EatTime = Utils.GetTimeStamp();
+    }
+    public override void OnGameStart()
+    {
+        EatTime = Utils.GetTimeStamp();
     }
     public override string GetReportButtonText() => GetString("VultureReportButtonText");
-        public override bool GetReportButtonSprite(out string buttonName)
-        {
-        buttonName = GetString("VultureEat");
+    public override bool GetReportButtonSprite(out string buttonName)
+    {
+        buttonName = "VultureEat";
         return true;
-        } 
+    }
     private static void SendRPCLimit()
     {
         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.VultureLimit, SendOption.Reliable, -1);
@@ -127,6 +132,14 @@ public sealed class Vulture : RoleBase
             return false;
         }
         if (!Is(reporter) || target == null) return true;
+        if( reporter.PlayerId ==  Player.PlayerId )
+        {
+            if (EatTime != -1)
+            {
+                var cooldown = EatTime + (long)OptionEatTime.GetFloat() - Utils.GetTimeStamp();
+               Player.Notify(string.Format(GetString("ShowEatCooldown"), cooldown, 1f));
+                return false;
+            }
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         ForVulture.Add(target.PlayerId);
         EatLimit -= 1;
@@ -134,6 +147,8 @@ public sealed class Vulture : RoleBase
        Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
         SendRPCLimit();
         if (EatLimit >= OptionEatLimitPerMeeting.GetInt()) Win();
+        }
+
             return false;
     }
     public void Win()
@@ -144,10 +159,10 @@ public sealed class Vulture : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (EatTime == 0) return;
-        if (EatTime + OptionEatTime.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (EatTime + (long)OptionEatTime.GetFloat() < now && EatTime != -1)
         {
-            EatTime = 0;
+            EatTime = -1;
             player.RpcProtectedMurderPlayer();
             player.Notify(string.Format(GetString("EatTimeReady")));
         }

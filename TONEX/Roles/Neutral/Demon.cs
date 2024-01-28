@@ -5,10 +5,11 @@ using System;
 using System.Collections.Generic;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
+public sealed class Demon : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -21,6 +22,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner
             SetupOptionItem,
             "dm",
             "#68bc71",
+            true,
             true,
             countType: CountTypes.Demon
         );

@@ -2,9 +2,10 @@ using AmongUs.GameOptions;
 using System;
 using System.Collections.Generic;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Interfaces;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Jester : RoleBase
+public sealed class Jester : RoleBase, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

@@ -6,6 +6,7 @@ using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 using System.Collections.Generic;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
@@ -17,11 +18,12 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
             CustomRoles.Prosecutors,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            50900,
+            94_6_1_0,
             null,
             "pro",
             "#788514",
-            true
+            true,
+            ctop: true
         );
     public Prosecutors(PlayerControl player)
     : base(

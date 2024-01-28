@@ -15,6 +15,7 @@ public class SimpleRoleInfo
     public Func<RoleTypes> BaseRoleType;
     public CustomRoleTypes CustomRoleType;
     public CountTypes CountType;
+    public bool IsNK;
     public Color RoleColor;
     public string RoleColorCode;
     public int ConfigId;
@@ -27,7 +28,10 @@ public class SimpleRoleInfo
     public bool IsDesyncImpostor;
     private Func<AudioClip> introSound;
     public AudioClip IntroSound => introSound?.Invoke();
+    
     public bool Experimental;
+    public bool IsHidden;
+    public bool CantOpen;
     public bool Broken;
     /// <summary>
     /// 人数设定上的最小人数/最大人数/一单位数
@@ -57,9 +61,13 @@ public class SimpleRoleInfo
         string chatCommand,
         string colorCode,
         bool isDesyncImpostor,
+        bool isNK,
         TabGroup tab,
         Func<AudioClip> introSound,
+        
         bool experimental,
+        bool Hidden,
+        bool ctop,
         bool broken,
         IntegerValueRule assignCountRule,
         CustomRoles[] assignUnitRoles
@@ -74,9 +82,12 @@ public class SimpleRoleInfo
         ConfigId = configId;
         OptionCreator = optionCreator;
         IsDesyncImpostor = isDesyncImpostor;
+        IsNK = isNK;
         this.introSound = introSound;
         ChatCommand = chatCommand;
         Experimental = experimental;
+        IsHidden = Hidden;
+        CantOpen = ctop;
         Broken = broken;
         AssignCountRule = assignCountRule;
         AssignUnitRoles = assignUnitRoles;
@@ -114,13 +125,16 @@ public class SimpleRoleInfo
         CustomRoleTypes customRoleType,
         int configId,
         OptionCreatorDelegate optionCreator,
-        string chatCommand,
-        string colorCode = "",
+        string chatCommand,       
+        string colorCode = "", 
         bool isDesyncImpostor = false,
+        bool isNK = false,
         TabGroup tab = TabGroup.GameSettings,
         Func<AudioClip> introSound = null,
         CountTypes? countType = null,
         bool experimental = false,
+        bool Hidden = false,
+        bool ctop = false,
         bool broken = false,
         IntegerValueRule assignCountRule = null,
         CustomRoles[] assignUnitRoles = null
@@ -145,13 +159,16 @@ public class SimpleRoleInfo
                 chatCommand,
                 colorCode,
                 isDesyncImpostor,
+                isNK,
                 tab,
                 introSound,
                 experimental,
+                Hidden,
+                ctop,
                 broken,
                 assignCountRule,
                 assignUnitRoles
-            );
+            ) ;
         roleInfo.Description = new SingleRoleDescription(roleInfo);
         return roleInfo;
     }
@@ -207,8 +224,11 @@ public class SimpleRoleInfo
                 null,
                 colorCode,
                 false,
+                false,
                 TabGroup.GameSettings,
                 null,
+                false,
+                false,
                 false,
                 false,
                 new(1, 15, 1),

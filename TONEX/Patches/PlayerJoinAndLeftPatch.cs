@@ -1,6 +1,7 @@
 using AmongUs.Data;
 using AmongUs.GameOptions;
 using HarmonyLib;
+using Hazel;
 using InnerNet;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -218,7 +219,12 @@ class CreatePlayerPatch
             {
                 if (client.Character == null) return;
                 Logger.Warn($"规范昵称：{client.PlayerName} => {name}", "Name Format");
-                client.Character.RpcSetName(name);
+                //client.Character.RpcSetName(name);
+                
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(client.Character.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
+                    writer.Write(name);
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                
             }, 1f, "Name Format");
         }
 

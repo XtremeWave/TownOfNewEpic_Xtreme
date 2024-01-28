@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Modules;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 
@@ -38,7 +38,8 @@ public sealed class Warlock : RoleBase, IImpostor
     PlayerControl CursedPlayer;
     bool IsCursed;
     bool Shapeshifting;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
+    public float Cooldown;
     private static void SetupOptionItem()
     {
         OptionCanKillAllies = BooleanOptionItem.Create(RoleInfo, 10, GeneralOption.CanKillAllies, false, false);
@@ -49,8 +50,13 @@ public sealed class Warlock : RoleBase, IImpostor
         CursedPlayer = null;
         IsCursed = false;
         Shapeshifting = false;
+        Cooldown = Options.DefaultKillCooldown;
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
-    public override void OnGameStart() => UsePetCooldown = (int)Options.DefaultKillCooldown;
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.SyncWarlock);
@@ -99,12 +105,12 @@ public sealed class Warlock : RoleBase, IImpostor
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("WarlockShapeshiftButtonText");
-        return IsCursed && !(UsePetCooldown != 0);
+        return IsCursed && !(UsePetCooldown != -1);
     }
     public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "CurseKill";
-        return IsCursed && !(UsePetCooldown != 0);
+        return IsCursed && !(UsePetCooldown != -1);
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {
@@ -128,7 +134,7 @@ public sealed class Warlock : RoleBase, IImpostor
                 killer.SetKillCooldownV2(255f);
                 killer.RpcResetAbilityCooldown();
                 killer.RPCPlayCustomSound("Line");
-              
+              Cooldown = 1f;
             }
             //どちらにしてもキルは無効
             return false;
@@ -136,22 +142,13 @@ public sealed class Warlock : RoleBase, IImpostor
         //変身中は通常キル
         return true;
     }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
-        {
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
-        }
-    }
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)Options.DefaultKillCooldown - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
         if (CursedPlayer != null && CursedPlayer.IsAlive())
@@ -204,6 +201,7 @@ public sealed class Warlock : RoleBase, IImpostor
             Player.RpcResetAbilityCooldown();
         }
         IsCursed = false;
+                Cooldown = Options.DefaultKillCooldown;
     }
     public override void OnShapeshift(PlayerControl target)
     {
@@ -272,9 +270,20 @@ public sealed class Warlock : RoleBase, IImpostor
             }
         }
     }
-    public override void AfterMeetingTasks()
+        public override void OnFixedUpdate(PlayerControl player)
     {
-        CursedPlayer = null;
-        UsePetCooldown = (int)Options.DefaultKillCooldown;
+        if (!AmongUsClient.Instance.AmHost) return;
+        var now = Utils.GetTimeStamp();
+        if (Player.IsAlive() &&  UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
+        {
+            UsePetCooldown = -1;
+            player.RpcProtectedMurderPlayer();
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
+        }
+    }
+      public override void AfterMeetingTasks()
+    {
+                CursedPlayer = null;
+        UsePetCooldown = Utils.GetTimeStamp();
     }
 }

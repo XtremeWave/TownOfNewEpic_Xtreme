@@ -3,7 +3,7 @@ using Hazel;
 using TONEX.Attributes;
 using TONEX.Modules;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Patches.ISystemType;
 

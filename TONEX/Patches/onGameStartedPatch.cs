@@ -48,7 +48,7 @@ internal class ChangeRoleSettings
             Main.FirstDied = byte.MaxValue;
 
             ReportDeadBodyPatch.CanReport = new();
-
+            AURoleOptions.ProtectionDurationSeconds = 0f;
             Options.UsedButtonCount = 0;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
@@ -88,11 +88,20 @@ internal class ChangeRoleSettings
                     var pair = (target.PlayerId, seer.PlayerId);
                     Main.LastNotifyNames[pair] = target.name;
                 }
+               target.RpcSetScanner(false);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
+                writer.Write(false);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
             }
             foreach (var pc in Main.AllPlayerControls)
             {
                 var colorId = pc.Data.DefaultOutfit.ColorId;
-                if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) pc.RpcSetName(Palette.GetColorName(colorId));
+                if (AmongUsClient.Instance.AmHost && Options.FormatNameMode.GetInt() == 1) //pc.RpcSetName(Palette.GetColorName(colorId));
+                {
+                    MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(pc.NetId, (byte)RpcCalls.SetName, SendOption.None, -1);
+                    writer.Write(Palette.GetColorName(colorId));
+                    AmongUsClient.Instance.FinishRpcImmediately(writer);
+                }
                 PlayerState.Create(pc.PlayerId);
                 //Main.AllPlayerNames[pc.PlayerId] = pc?.Data?.PlayerName;
                 Main.PlayerColors[pc.PlayerId] = Palette.PlayerColors[colorId];

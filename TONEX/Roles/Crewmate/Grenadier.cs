@@ -42,7 +42,7 @@ public sealed class Grenadier : RoleBase
 
     private long BlindingStartTime;
     private long MadBlindingStartTime;
-    public int UsePetCooldown;
+    public long UsePetCooldown;
     private static void SetupOptionItem()
     {
         OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.GrenadierSkillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
@@ -55,10 +55,14 @@ public sealed class Grenadier : RoleBase
     }
     public override void Add()
     {
-        BlindingStartTime = 0;
-        MadBlindingStartTime = 0;
+        BlindingStartTime = -1;
+        MadBlindingStartTime = -1;
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
-    public override void OnGameStart() => UsePetCooldown = OptionSkillCooldown.GetInt();
+    public override void OnGameStart()
+    {
+        if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
+    }
     public override void ApplyGameOptions(IGameOptions opt)
     {
         AURoleOptions.EngineerCooldown = OptionSkillCooldown.GetFloat();
@@ -72,7 +76,7 @@ public sealed class Grenadier : RoleBase
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("GrenadierVetnButtonText");
-        return !(UsePetCooldown != 0);
+        return !(UsePetCooldown != -1);
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
     {
@@ -95,12 +99,13 @@ public sealed class Grenadier : RoleBase
     public override void OnUsePet()
     {
         if (!Options.UsePets.GetBool()) return;
-        if (UsePetCooldown != 0)
+        if (UsePetCooldown != -1)
         {
-            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), UsePetCooldown, 1f));
+            var cooldown = UsePetCooldown + (long)OptionSkillCooldown.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowUsePetCooldown"), cooldown, 1f));
             return;
         }
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
         if (Player.Is(CustomRoles.Madmate))
         {
             MadBlindingStartTime = Utils.GetTimeStamp();
@@ -120,30 +125,26 @@ public sealed class Grenadier : RoleBase
     public override void OnFixedUpdate(PlayerControl player)
     {
         if (!AmongUsClient.Instance.AmHost) return;
-        if (BlindingStartTime != 0 && BlindingStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        var now = Utils.GetTimeStamp();
+        if (BlindingStartTime != -1 && BlindingStartTime + (long)OptionSkillDuration.GetFloat() < now)
         {
-            BlindingStartTime = 0;
+            BlindingStartTime = -1;
             Player.RpcProtectedMurderPlayer();
             Player.Notify(GetString("GrenadierSkillStop"));
             Utils.MarkEveryoneDirtySettings();
         }
-        if (MadBlindingStartTime != 0 && MadBlindingStartTime + OptionSkillDuration.GetFloat() < Utils.GetTimeStamp())
+        if (MadBlindingStartTime != -1 && MadBlindingStartTime + (long)OptionSkillDuration.GetFloat() < now )
         {
-            MadBlindingStartTime = 0;
+            MadBlindingStartTime = -1;
             Player.RpcProtectedMurderPlayer();
             Player.Notify(GetString("GrenadierSkillStop"));
             Utils.MarkEveryoneDirtySettings();
         }
-    }
-    public override void OnSecondsUpdate(PlayerControl player, long now)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-        if (UsePetCooldown == 0 || !Options.UsePets.GetBool()) return;
-        if (UsePetCooldown >= 1 && Player.IsAlive() && !GameStates.IsMeeting) UsePetCooldown -= 1;
-        if (UsePetCooldown <= 0 && Player.IsAlive())
+        if (UsePetCooldown + (long)OptionSkillCooldown.GetFloat() < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
+            UsePetCooldown = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
+            player.Notify(string.Format(GetString("PetSkillCanUse")));
         }
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
@@ -155,7 +156,7 @@ public sealed class Grenadier : RoleBase
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.Is(CustomRoles.Grenadier)))
         {
             if (pc.GetRoleClass() is not Grenadier roleClass) continue;
-            if (roleClass.BlindingStartTime != 0)
+            if (roleClass.BlindingStartTime != -1)
             {
                 if ((target.IsImp() || target.Is(CustomRoles.Madmate))
                     || target.IsNeutral() && OptionCanAffectNeutral.GetBool())
@@ -163,7 +164,7 @@ public sealed class Grenadier : RoleBase
                     return true;
                 }
             }
-            else if (roleClass.MadBlindingStartTime != 0)
+            else if (roleClass.MadBlindingStartTime != -1)
             {
                 if (!target.IsImp() && !target.Is(CustomRoles.Madmate))
                     return true;
@@ -173,11 +174,11 @@ public sealed class Grenadier : RoleBase
     }
     public override void AfterMeetingTasks()
     {
-        UsePetCooldown = OptionSkillCooldown.GetInt();
+        UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void OnStartMeeting()
     {
-        MadBlindingStartTime = 0;
-        BlindingStartTime = 0;
+        MadBlindingStartTime = -1;
+        BlindingStartTime = -1;
     }
 }

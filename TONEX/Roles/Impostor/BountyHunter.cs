@@ -3,7 +3,7 @@ using Hazel;
 using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Neutral;
 using UnityEngine;
 using static TONEX.Translator;
