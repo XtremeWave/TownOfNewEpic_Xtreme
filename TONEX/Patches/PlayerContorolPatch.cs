@@ -211,9 +211,10 @@ class MurderPlayerPatch
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.UseClosest))]
 class UsePatch
 {
-    public static void Prefix(PlayerControl __instance)
+    public static bool Prefix(PlayerControl __instance)
     {
-        __instance.GetRoleClass()?.OnUse();
+        if ((!__instance.GetRoleClass()?.OnUse() ?? false)) return false;
+        else return true;
     }
 }
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]

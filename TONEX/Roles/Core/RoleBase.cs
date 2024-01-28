@@ -185,8 +185,10 @@ public abstract class RoleBase : IDisposable
     /// 不需要验证您的身份，因为调用前已经验证
     /// 请注意：全部模组端都会调用
     /// </summary>
-    public virtual void OnUse()
-    { }
+    public virtual bool OnUse()
+    {
+        return true;
+    }
 
     /// <summary>
     /// 保护别人时调用的函数
