@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Modules;
 using TONEX.Roles.Core;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Transporter : RoleBase
@@ -51,7 +52,12 @@ public sealed class Transporter : RoleBase
 
         var pcList = Main.AllAlivePlayerControls.Where(x => x.PlayerId != Player.PlayerId && x.IsAlive() && !x.inVent).ToList();
         var SelectedTarget = pcList[IRandom.Instance.Next(0, pcList.Count)];
-        Utils.TPAll(SelectedTarget.GetTruePosition());
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (pc.IsEaten()) continue;
+            if (SelectedTarget == null) continue;
+               pc.RpcTeleport(SelectedTarget.GetTruePosition());
+        }
         return false;
     }
 }

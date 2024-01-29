@@ -15,13 +15,13 @@ public sealed class Whoops : RoleBase
             CustomRoles.Whoops,
             () => RoleTypes.Engineer,
             CustomRoleTypes.Neutral,
-            50900,
+            94_4_1_0,
             null,
             "wh|狈",
             "#00b4eb",
             true,
             countType: CountTypes.Jackal,
-            assignCountRule: new(1, 1, 1)
+            ctop: true
         );
     public Whoops(PlayerControl player)
     : base(
@@ -39,8 +39,8 @@ public sealed class Whoops : RoleBase
     {
         //seenが省略の場合seer
         seen ??= seer;
-        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$$");
-        else if (seen.Is(CustomRoles.Attendant)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        //else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
         else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "M");
         else
             return "";

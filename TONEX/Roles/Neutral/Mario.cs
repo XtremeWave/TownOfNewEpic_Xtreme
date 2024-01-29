@@ -3,10 +3,11 @@ using Hazel;
 
 using TONEX.Modules;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Mario : RoleBase
+public sealed class Mario : RoleBase, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(

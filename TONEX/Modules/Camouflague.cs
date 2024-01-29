@@ -2,14 +2,7 @@ using System.Collections.Generic;
 using TONEX.Attributes;
 using TONEX.Roles.Core;
 using TONEX.Roles.Impostor;
-using static UnityEngine.GraphicsBuffer;
 using Hazel;
-using System.Collections.Generic;
-using TONEX.Attributes;
-using TONEX.Roles.Core;
-using UnityEngine;
-using UnityEngine.UIElements.UIR;
-using static TONEX.Options;
 
 namespace TONEX;
 

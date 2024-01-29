@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Modules;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Impostor;
@@ -25,8 +25,7 @@ public sealed class Stealth : RoleBase, IImpostor
         CustomRoleTypes.Impostor,
         5400,
         SetupOptionItems,
-        "st",
-        introSound: () => GetIntroSound(RoleTypes.Shapeshifter));
+        "st");
     private static LogHandler logger = Logger.Handler(nameof(Stealth));
 
     #region カスタムオプション

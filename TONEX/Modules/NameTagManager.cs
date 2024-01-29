@@ -1,5 +1,6 @@
 ﻿using AmongUs.Data;
 using HarmonyLib;
+using Hazel;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -72,7 +73,7 @@ public static class NameTagManager
             };
 
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
-            player.RpcSetName(name);
+        player.RpcSetName(name);
     }
     public static void ReloadTag(string? friendCode)
     {
@@ -216,17 +217,17 @@ public static class NameTagManager
             if (onlyName) return name;
 
             name = Prefix?.Generate(true, !inOneLine) + name + Suffix?.Generate(true, !inOneLine);
-
+            
             if (host && GameStates.IsOnlineGame && UpperText == null)
             {
-                var upper = $"<size=80%><color=#ffd6ec>{Main.ModName}</color><color=#baf7ca>★</color>";
-                upper += Options.CurrentGameMode switch
-                {  
-                    CustomGameMode.HotPotato => $"<color=#87cefa>{GetString("HotPotatoMode")}</color>",
-                    _ => $"<color=#87cefa>{Main.PluginShowVersion}</color>",
-          
-                };
+                var upper = $"<size=80%><color=#cdfffd>{Main.ModName}</color><color=#C4F7BA>★</color>";
+                
                 name = upper + "</size>\r\n" + name;
+            }
+            else if (host && GameStates.IsOnlineGame && UpperText != null && Prefix == null)
+            {
+                var upper = $"<size=80%><color=#cdfffd>{Main.ModName}</color><color=#C4F7BA>★</color>";
+                name = upper + "</size>" + name;
             }
             else if (!inOneLine)
             {
@@ -234,6 +235,14 @@ public static class NameTagManager
                 if (upperText is not null and not "")
                     name = upperText + "\r\n" + name;
             }
+            switch(Options.CurrentGameMode)
+            {
+                case CustomGameMode.HotPotato:
+                    name = $"<color=#87cefa>{GetString("HotPotatoMode")}</color>" +
+                    $"<color=#87cefa>{Main.PluginShowVersion}</color>";
+                    break;
+
+            };
             return name;
         }
     }

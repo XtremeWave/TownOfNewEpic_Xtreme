@@ -2,10 +2,11 @@
 using Hazel;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Succubus : RoleBase, IKiller
+public sealed class Succubus : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -18,6 +19,7 @@ public sealed class Succubus : RoleBase, IKiller
             SetupOptionItem,
             "su",
             "#ff00ff",
+            true,
             true,
             countType: CountTypes.Succubus
         );

@@ -2,7 +2,7 @@
 using Hazel;
 using System.Linq;
 using InnerNet;
-
+/*
 namespace TONEX.Modules
 {
     public static class KeepProtect
@@ -23,7 +23,7 @@ namespace TONEX.Modules
                 messageWriter.WriteNetObject(target);
                 messageWriter.Write(18);
                 AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-                */
+                
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId,
                     (byte)RpcCalls.ProtectPlayer, SendOption.Reliable, -1);
                 writer.WriteNetObject(target);
@@ -54,4 +54,4 @@ namespace TONEX.Modules
         }
 
     }
-}
+}*/

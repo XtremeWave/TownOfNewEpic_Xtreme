@@ -63,12 +63,12 @@ class GameEndChecker
             {
                 case CustomWinner.Crewmate:
                     Main.AllPlayerControls
-                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Attendant))
+                        .Where(pc => pc.Is(CustomRoleTypes.Crewmate) && !pc.Is(CustomRoles.Madmate) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Wolfmate))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Impostor:
                     Main.AllPlayerControls
-                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Attendant))
+                        .Where(pc => (pc.Is(CustomRoleTypes.Impostor) || pc.Is(CustomRoles.Madmate)) && !pc.Is(CustomRoles.Charmed) && !pc.Is(CustomRoles.Wolfmate))
                         .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.Succubus:
@@ -78,7 +78,7 @@ class GameEndChecker
                     break;
                 case CustomWinner.Jackal:
                     Main.AllPlayerControls
-                     .Where(pc => pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Attendant) || pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Whoops))
+                     .Where(pc => pc.Is(CustomRoles.Jackal) || pc.Is(CustomRoles.Wolfmate) || pc.Is(CustomRoles.Sidekick) || pc.Is(CustomRoles.Whoops))
                      .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
                 case CustomWinner.FAFL:
@@ -135,14 +135,14 @@ class GameEndChecker
                     if (!nv.Is(CustomRoles.Non_Villain) || Non_Villain.DigitalLifeList.Count <=0) continue;
                     foreach (var pc in Non_Villain.DigitalLifeList)
                     {
-                        if (CustomWinnerHolder.WinnerIds.Contains(nv.PlayerId) && Non_Villain.BlessingCode[pc].ContainsKey((Non_Villain.Blessing)5))
+                        if (CustomWinnerHolder.WinnerIds.Contains(nv.PlayerId))
                         {
-                            CustomWinnerHolder.WinnerIds.Add(pc.PlayerId);
+                            CustomWinnerHolder.WinnerIds.Add(pc);
                         }
                     }
                 }
 
-                // 中立共同胜利
+                // 第三方共同胜利
                 if (Options.NeutralWinTogether.GetBool() && Main.AllPlayerControls.Any(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.IsNeutral()))
                 {
                     Main.AllPlayerControls.Where(p => p.IsNeutral())

@@ -1,8 +1,8 @@
 ﻿using AmongUs.GameOptions;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using MS.Internal.Xml.XPath;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class EvilGuardian : RoleBase, IImpostor
@@ -17,7 +17,8 @@ public sealed class EvilGuardian : RoleBase, IImpostor
             CustomRoleTypes.Impostor,
             3254,
            SetupOptionItem,
-            "eg|邪恶守护"
+            "eg|邪恶守护",
+            ctop: true
         );
     public EvilGuardian(PlayerControl player)
     : base(

@@ -3,21 +3,13 @@ using static TONEX.Translator;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using UnityEngine;
-using MS.Internal.Xml.XPath;
-using static UnityEngine.GraphicsBuffer;
-using TONEX.Roles.Neutral;
 using System.Collections.Generic;
 using Hazel;
-using TONEX.Modules;
-using static TONEX.Roles.Neutral.Non_Villain;
-using Rewired.Utils.Platforms.Windows;
-using YamlDotNet.Core.Tokens;
 using System.Linq;
-using static Il2CppSystem.Xml.Schema.FacetsChecker.FacetsCompiler;
-using System.Text;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using Il2CppSystem.Runtime.Remoting.Messaging;
 
 namespace TONEX.Roles.Neutral;
-
 public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -28,15 +20,16 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
             7565_2_1_0,
-#if DEBUG
-            SetupOptionItem,
-#else
-            null,
-#endif
+null,
             "恭喜发财|刘德华|商场|Non_Villain|不演反派",
              "#FF0000",
             true,
+            true,
             countType: CountTypes.None
+#if RELEASE
+,
+            Hidden: true
+#endif
         );
     public Non_Villain(PlayerControl player)
     : base(
@@ -46,36 +39,24 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     )
     {
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        CustomRoleManager.OnCheckMurderPlayerOthers_Before.Add(OnCheckMurderPlayerOthers_Before);
+        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
         DigitalLifeList = new();
         MoneyCount = new();
-        BlessingCode = new();
-        FarAheadYet = new();
-    }
-    public override void Add()
-    {
-        foreach (var pc in Main.AllAlivePlayerControls)
-        {
-            Dictionary<Blessing, int> dic2 = new();
-            dic2.Add((Blessing)0, 1);
-            BlessingCode.Add(pc, dic2);
-            MoneyCount.Add(pc, 0);
-        }
-    }
-    public enum Blessing
-    {
-        Non_Blessing = 0,
-        WealthAndBrilliance = 1,
-        ComeAndAway = 2,
-        Overcome = 3,
-        FarAhead = 4,
-        Etiquette = 5,
+        WealthAndBrillianceDictionary = new();
+        ComeAndAwayList = new();
+        OvercomeList = new();
+        FarAheadList = new();
+        EtiquetteList = new();
     }
     #region 参数
-    public static List<PlayerControl> DigitalLifeList;
-    public static Dictionary<PlayerControl, int> MoneyCount;
-    public static Dictionary<PlayerControl, Dictionary<Blessing, int>> BlessingCode;
-    public static Dictionary<PlayerControl, bool> FarAheadYet;
+    public static Dictionary<byte, int> MoneyCount;
+    public static Dictionary<byte, int> WealthAndBrillianceDictionary;
+    public static List<byte> ComeAndAwayList;
+    public static List<byte> OvercomeList;
+    public static List<byte> FarAheadList;
+    public static List<byte> HasFarAheadList;
+    public static List<byte> EtiquetteList;
+    public static List<byte> DigitalLifeList;
     private float KillCooldown;
     #endregion
     #region 外部函数
@@ -85,139 +66,204 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     public float CalculateKillCooldown() => KillCooldown;
     public bool IsKiller { get; private set; } = true;
     #endregion
+    #region 被击杀事件RPC
+    public static void SendRPC_ForBeKilled(byte targetId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForNVBeKilled, SendOption.Reliable, -1);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SendRPC_StaticOvercomeList(byte targetId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForNVStaticOvercomeList, SendOption.Reliable, -1);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    public static void SendRPC_StaticFarAheadList(byte targetId)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForNVStaticFarAheadList, SendOption.Reliable, -1);
+        writer.Write(targetId);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+    #endregion
+    #region 击杀事件&秒更新的RPC
+    public void SendRPC_MoneyCount(byte targetId, int money)
+    {
+        using var sender = CreateSender(CustomRPC.ForNVMoney);
+        sender.Writer.Write(targetId);
+        sender.Writer.Write(money);
+    }
+    public void SendRPC_WealthAndBrillianceDictionary(byte targetId)
+    {
+        using var sender = CreateSender(CustomRPC.ForNVWAH);
+        sender.Writer.Write(targetId);
+    }
+    public void SendRPC_ComeAndAwayList(byte targetId)
+    {
+        using var sender = CreateSender(CustomRPC.ForNVCAAList);
+        sender.Writer.Write(targetId);
+    }
+    public void SendRPC_OvercomeList(byte targetId)
+    {
+        using var sender = CreateSender(CustomRPC.ForNVOvercomeList);
+        sender.Writer.Write(targetId);
+    }
+    public void SendRPC_FarAheadList(byte targetId)
+    {
+        using var sender = CreateSender(CustomRPC.ForNVFarAheadList);
+        sender.Writer.Write(targetId);
+    }
+    public void SendRPC_DFList(byte targetId)
+    {
+        using var sender = CreateSender(CustomRPC.ForNVFarAheadList);
+        sender.Writer.Write(targetId);
+    }
+    #endregion
+    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    {
+        if (rpcType.IsNVRPC())
+        {
+            var targetId = reader.ReadByte();
+            switch (rpcType)
+            {
+                case CustomRPC.ForNVBeKilled:
+                    MoneyCount[targetId] = 0;
+                    if (WealthAndBrillianceDictionary.ContainsKey(targetId))
+                    {
+                        WealthAndBrillianceDictionary.Remove(targetId);
+                    }
+                    if (ComeAndAwayList.Contains(targetId))
+                    {
+                        ComeAndAwayList.Remove(targetId);
+                    }
+                    if (OvercomeList.Contains(targetId))
+                    {
+                        OvercomeList.Remove(targetId);
+                    }
+                    if (FarAheadList.Contains(targetId))
+                    {
+                        FarAheadList.Remove(targetId);
+                    }
+                    if (!EtiquetteList.Contains(targetId))
+                    {
+                        EtiquetteList.Add(targetId);
+                    }
+                    break;
+                case CustomRPC.ForNVStaticOvercomeList:
+                    if (OvercomeList.Contains(targetId))
+                    {
+                        OvercomeList.Remove(targetId);
+                    }
+                    break;
+                case CustomRPC.ForNVStaticFarAheadList:
+                    if (FarAheadList.Contains(targetId))
+                    {
+                        FarAheadList.Remove(targetId);
+                    }
+                    break;
+                case CustomRPC.ForNVMoney:
+                    var money = reader.ReadInt32();
+                    MoneyCount[targetId] = money;
+                    break;
+                case CustomRPC.ForNVWAH:
+                    if (!WealthAndBrillianceDictionary.ContainsKey(targetId))
+                    {
+                        WealthAndBrillianceDictionary.TryAdd(targetId, 1);
+                    }
+                    else
+                    {
+                        WealthAndBrillianceDictionary[targetId] += 1;
+                    }
+                    break;
+                case CustomRPC.ForNVCAAList:
+                    if (!ComeAndAwayList.Contains(targetId))
+                    {
+                        ComeAndAwayList.Add(targetId);
+                    }
+                    break;
+                case CustomRPC.ForNVOvercomeList:
+                    if (!OvercomeList.Contains(targetId))
+                    {
+                        OvercomeList.Add(targetId);
+                    }
+                    break;
+                case CustomRPC.ForNVFarAheadList:
+                    if (!FarAheadList.Contains(targetId))
+                    {
+                        FarAheadList.Add(targetId);
+                    }
+                    if (!HasFarAheadList.Contains(targetId))
+                    {
+                        HasFarAheadList.Add(targetId);
+                    }
+                    break;
+                case CustomRPC.ForNVDFList:
+                    if (!DigitalLifeList.Contains(targetId))
+                    {
+                        DigitalLifeList.Add(targetId);
+                    }
+                    break;
+
+            }
+        }
+        else return;
+    }
+    public override void Add()
+    {
+        foreach (var pc in Main.AllAlivePlayerControls)
+        {
+            if (pc == Player) continue;
+            MoneyCount.Add(pc.PlayerId, 0);
+        }
+    }
     private static void SetupOptionItem()
     {
     }
-    private void SendRPC(PlayerControl bl = null, PlayerControl df = null, PlayerControl mone = null, PlayerControl FAY = null, int Int1 = 2555555, int Int2 = 2555555, Blessing blessing = Blessing.Non_Blessing, bool Bool = false)
-    {
-        using var sender = CreateSender(CustomRPC.ForNV);
-        if (bl != null)
-            sender.Writer.Write(bl);
-        if (df != null)
-            sender.Writer.Write(df);
-        if (mone != null)
-            sender.Writer.Write(mone);
-        if (FAY != null)
-            sender.Writer.Write(FAY);
-        if (Int1 != 2555555)
-            sender.Writer.Write(Int1);
-        if (Int2 != 2555555)
-            sender.Writer.Write(Int2);
-        if (blessing != Blessing.Non_Blessing)
-            sender.Writer.Write((int)blessing);
-        if (Bool)
-            sender.Writer.Write(Bool);
-    }
-    private static void StaticSendRPC(PlayerControl bl = null, PlayerControl df = null, PlayerControl mone = null, PlayerControl FAY = null, int Int1 = 2555555, int Int2 = 2555555, Blessing blessing = Blessing.Non_Blessing, bool Bool = false)
-    {
-        if (!AmongUsClient.Instance.AmHost) return;
-
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.ForNV, SendOption.Reliable, -1);
-        if (bl != null)
-            writer.Write(bl);
-        if (df != null)
-            writer.Write(df);
-        if (mone != null)
-            writer.Write(mone);
-        if (FAY != null)
-            writer.Write(FAY);
-        if (Int1 != 2555555)
-            writer.Write(Int1);
-        if (Int2 != 2555555)
-            writer.Write(Int2);
-        if (blessing != Blessing.Non_Blessing)
-            writer.Write((int)blessing);
-        if (Bool)
-            writer.Write(Bool);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
-    }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
-    {
-        if (rpcType != CustomRPC.ForNV) return;
-        byte bl;
-        byte df;
-        byte mone;
-        byte FAY;
-        int Int1 ;
-        int Int2;
-        Blessing blessing;
-        bool Bool;
-        bl = reader.ReadByte();
-        df = reader.ReadByte();
-        mone = reader.ReadByte();
-        FAY = reader.ReadByte();
-        Int1 = reader.ReadInt32();
-        Int2 = reader.ReadInt32();
-        int blessingValue = reader.ReadInt32();
-        blessing = (Blessing)blessingValue;
-        Bool = reader.ReadBoolean();
-        foreach (var pc in Main.AllPlayerControls)
-        {
-            if (pc.PlayerId == df)
-            {
-                DigitalLifeList.Add(pc);
-            }
-                
-            if (pc.PlayerId == bl)
-            {
-                Dictionary<Blessing, int> a = new();
-                
-                if (!BlessingCode.ContainsKey(pc))
-                {
-                    
-                    a.Add(blessing, Int1);
-                    BlessingCode.Add(pc, a);
-                }
-                else if ((!BlessingCode[pc].ContainsKey(blessing)))
-                {
-                    BlessingCode[pc].Add(blessing, Int1);
-                }
-                else
-                {
-                    BlessingCode[pc][blessing] += Int1;
-                }
-              
-            }
-            if (pc.PlayerId == mone)
-            {
-                if (!MoneyCount.ContainsKey(pc))
-                    MoneyCount.Add(pc, Int2);
-                else MoneyCount[pc] += Int2;
-            }
-            if (pc.PlayerId == FAY && !FarAheadYet.ContainsKey(pc))
-                FarAheadYet.Add(pc, Bool);
-        }
-    }
-    private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
+    private static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
         if (target.Is(CustomRoles.Non_Villain))
         {
-            foreach (var pc in Main.AllAlivePlayerControls)
+            var realkill = target.GetRealKiller();
+            EtiquetteList.Add(realkill.PlayerId);
+            Main.CantUseSkillList.Add(realkill);
+            MoneyCount[realkill.PlayerId] = 0;
+            if (WealthAndBrillianceDictionary.ContainsKey(realkill.PlayerId))
             {
-                if (pc != target)
-                {
-                    var posi = target.transform.position;
-                    var diss = Vector2.Distance(posi, pc.transform.position);
-                    if (diss < 3f)
-                    {
-                        BlessingCode[pc].Add(Blessing.Etiquette, 1);
-                        StaticSendRPC(bl: pc, blessing: Blessing.Etiquette, Int1: 1);
-                        Main.CantUseSkillList.Add(target);
-                    }
-                }
+                WealthAndBrillianceDictionary.Remove(realkill.PlayerId);
             }
+            if (ComeAndAwayList.Contains(realkill.PlayerId))
+            {
+                ComeAndAwayList.Remove(realkill.PlayerId);
+            }
+            if (OvercomeList.Contains(realkill.PlayerId))
+            {
+                OvercomeList.Remove(realkill.PlayerId);
+            }
+            if (FarAheadList.Contains(realkill.PlayerId))
+            {
+                FarAheadList.Remove(realkill.PlayerId);
+            }
+            if (DigitalLifeList.Contains(realkill.PlayerId))
+            {
+                DigitalLifeList.Remove(realkill.PlayerId);
+            }
+            SendRPC_ForBeKilled(realkill.PlayerId);
         }
-        else if (BlessingCode.ContainsKey(target) && BlessingCode[target].ContainsKey((Blessing)3))
+        else if (OvercomeList.Contains(target.PlayerId))
         {
-            BlessingCode[target][(Blessing)3] -= 1;
-            StaticSendRPC(bl: target, blessing: (Blessing)3, Int1: -1);
+            OvercomeList.Remove(target.PlayerId);
+            SendRPC_StaticOvercomeList(target.PlayerId);
+            killer.SetKillCooldownV2(target: target, forceAnime: true);
+            killer.RpcProtectedMurderPlayer(target);
             return false;
         }
-        else if (BlessingCode.ContainsKey(target) && BlessingCode[target].ContainsKey((Blessing)4))
+        else if (FarAheadList.Contains(target.PlayerId))
         {
-            BlessingCode[target].Remove((Blessing)4);
-            StaticSendRPC(bl: target, blessing: (Blessing)4, Int1: -1);
+            FarAheadList.Remove(target.PlayerId);
+            SendRPC_StaticFarAheadList(target.PlayerId);
+            killer.SetKillCooldownV2(target: target, forceAnime: true);
+            killer.RpcProtectedMurderPlayer(target);
             Main.AllPlayerSpeed[target.PlayerId] = Main.AllPlayerSpeed[target.PlayerId] * (10 / Main.AllPlayerSpeed[target.PlayerId]);
             return false;
         }
@@ -225,27 +271,69 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
+        ;
         var (killer, target) = info.AttemptTuple;
         var blessing = Random.Range(1, 3);
-        var Money = Random.Range(100, 1000);
-        
+        var money = MoneyCount[target.PlayerId];
+        money += Random.Range(100, 1000);
+
         new LateTask(() =>
         {
-            if (BlessingCode[target].ContainsKey((Blessing)0))
-                BlessingCode[target].Remove((Blessing)0);
-            if (BlessingCode[target].ContainsKey((Blessing)blessing))
+            if (WealthAndBrillianceDictionary.ContainsKey(target.PlayerId) && WealthAndBrillianceDictionary[target.PlayerId] >= 3 && ComeAndAwayList.Contains(target.PlayerId) && OvercomeList.Contains(target.PlayerId))
+                money += 1000;
+            else
             {
-                if (blessing == 1 && BlessingCode[target][(Blessing)blessing] == 3)
-                    blessing = Random.Range(2, 3);
-                BlessingCode[target][(Blessing)blessing]++;
-
+            Retry:
+                switch (blessing)
+                {
+                    case 1:
+                        if (!WealthAndBrillianceDictionary.ContainsKey(target.PlayerId))
+                        {
+                            WealthAndBrillianceDictionary.TryAdd(target.PlayerId, 1);
+                            SendRPC_WealthAndBrillianceDictionary(target.PlayerId);
+                        }
+                        else if (WealthAndBrillianceDictionary[target.PlayerId] < 3)
+                        {
+                            WealthAndBrillianceDictionary[target.PlayerId]++;
+                            SendRPC_WealthAndBrillianceDictionary(target.PlayerId);
+                        }
+                        else
+                        {
+                            blessing = Random.Range(2, 3);
+                            goto Retry;
+                        }
+                        break;
+                    case 2:
+                        if (!ComeAndAwayList.Contains(target.PlayerId))
+                        {
+                            ComeAndAwayList.Add(target.PlayerId);
+                            SendRPC_ComeAndAwayList(target.PlayerId);
+                        }
+                        else
+                        {
+                            blessing = Random.Range(1, 3);
+                            goto Retry;
+                        }
+                        break;
+                    case 3:
+                        if (!OvercomeList.Contains(target.PlayerId))
+                        {
+                            OvercomeList.Add(target.PlayerId);
+                            SendRPC_OvercomeList(target.PlayerId);
+                        }
+                        else
+                        {
+                            blessing = Random.Range(1, 2);
+                            goto Retry;
+                        }
+                        break;
+                }
             }
-            else BlessingCode[target].Add((Blessing)blessing, 1);
-            SendRPC(bl: target, blessing: (Blessing)blessing, Int1: 1);
-            MoneyCount[target] += Money;
-            SendRPC(mone: target, Int2: Money);
+            MoneyCount[target.PlayerId] = money;
+            SendRPC_MoneyCount(target.PlayerId, money);
+            Utils.NotifyRoles(target);
 
-        },2f); 
+        }, 2f, "RedPackageAndBlessing");
         return false;
     }
     public override void OnSecondsUpdate(PlayerControl player, long now)
@@ -253,48 +341,35 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
         if (!AmongUsClient.Instance.AmHost) return;
         foreach (var pc in Main.AllAlivePlayerControls)
         {
-            if (!MoneyCount.ContainsKey(pc))
+            if (pc == Player) continue;
+            if (EtiquetteList.Contains(pc.PlayerId)) continue;
+            int money = MoneyCount[pc.PlayerId];
+            if (WealthAndBrillianceDictionary.ContainsKey(pc.PlayerId))
             {
-                MoneyCount.Add(pc, 0);
-                SendRPC(mone: pc, Int2: 0);
+                var Multiply = WealthAndBrillianceDictionary[pc.PlayerId];
+                money += 20 * Multiply;
             }
-            MoneyCount[pc] += 25;
-            SendRPC(mone: pc, Int2: 25);
-            if (BlessingCode.ContainsKey(pc))
+            if (FarAheadList.Contains(pc.PlayerId))
             {
-                if (BlessingCode[pc].ContainsKey((Blessing)1))
-                {
-                    var Multiply = BlessingCode[pc][(Blessing)1];
-                    MoneyCount[pc] += 20 * Multiply;
-                    SendRPC(mone: pc, Int2: 20 * Multiply);
-                }
-                else if (BlessingCode.ContainsKey(pc) && BlessingCode[pc].ContainsKey((Blessing)4))
-                {
-                    MoneyCount[pc] += 25;
-                    SendRPC(mone: pc, Int2: 25);
-                }
+                money += 25;
             }
-            if (MoneyCount[pc] >= 7500 && BlessingCode[pc].ContainsKey((Blessing)4))
+            if (money >= 7500 && !FarAheadList.Contains(pc.PlayerId))
             {
-                MoneyCount[pc] -= 7500;
-                SendRPC(mone: pc, Int2: -7500);
-                BlessingCode[pc].Add((Blessing)4, 1);
-                SendRPC(bl: pc, blessing: (Blessing)4, Int1: 1);
+                money -= 7500;
+                FarAheadList.Add(pc.PlayerId);
+                HasFarAheadList.Add(pc.PlayerId);
+                SendRPC_FarAheadList(pc.PlayerId);
                 Main.AllPlayerSpeed[pc.PlayerId] = Main.AllPlayerSpeed[pc.PlayerId] + Main.AllPlayerSpeed[pc.PlayerId] * 0.1f;
-                if (!FarAheadYet[pc])
-                {
-                    FarAheadYet[pc] = true;
-                    SendRPC(FAY: pc, Bool: true);
-                }
-
             }
-            else if (MoneyCount[pc] >= 5000 && FarAheadYet[pc] && !DigitalLifeList.Contains(pc))
+            if (money >= 5000 && HasFarAheadList.Contains(pc.PlayerId) && !DigitalLifeList.Contains(pc.PlayerId))
             {
-                MoneyCount[pc] -= 5000;
-                SendRPC(mone: pc, Int2: -5000);
-                DigitalLifeList.Add(pc);
-                SendRPC(df: pc);
+                money -= 5000;
+                DigitalLifeList.Add(pc.PlayerId);
+                SendRPC_DFList(pc.PlayerId);
             }
+            MoneyCount[pc.PlayerId] = money;
+            SendRPC_MoneyCount(pc.PlayerId, money);
+            Utils.NotifyRoles(pc);
         }
     }
     public override void AfterMeetingTasks()
@@ -305,31 +380,61 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     {
         seen ??= seer;
         int money;
+        int blessingcount = 0;
         string blessings;
-
-        if (!BlessingCode.ContainsKey(seen) || BlessingCode[seen].Count <= 0)
+        var isdf = "";
+        if (seen.Is(CustomRoles.Non_Villain)) return "";
+        if (!WealthAndBrillianceDictionary.ContainsKey(seen.PlayerId)&& !OvercomeList.Contains(seen.PlayerId)&&!ComeAndAwayList.Contains(seen.PlayerId) && !FarAheadList.Contains(seen.PlayerId) && !EtiquetteList.Contains(seen.PlayerId) &&  !DigitalLifeList.Contains(seen.PlayerId))
         {
-            blessings = $"({GetString("Non_Blessing")}";
+            blessings = $"<color=#AAAAAA>{GetString("Non_Blessing")}</color>";
         }
         else
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (var kvp in BlessingCode[seen])
+            
+            blessings = "";
+            if (DigitalLifeList.Contains(seen.PlayerId))
             {
-                sb.Append($"{GetString("Blessing")}{kvp.Key}: {kvp.Value}, ");
-
+                isdf = "<color=#00D6BC>▲</color>";
             }
-            blessings = sb.ToString().TrimEnd(',', ' ');
+            blessings += $"{GetString("Blessing")}";
+            if (WealthAndBrillianceDictionary.ContainsKey(seen.PlayerId))
+            {
+                blessingcount += 1;
+                blessings += $"\n{GetString("Blessing1")} * {WealthAndBrillianceDictionary[seen.PlayerId]}";
+            }
+            if (ComeAndAwayList.Contains(seen.PlayerId))
+            {
+                blessingcount += 1;
+                blessings += $"\n{GetString("Blessing2")}";
+            }
+            if (blessingcount >= 2)
+                blessings += "\n";
+            if (OvercomeList.Contains(seen.PlayerId))
+            {
+                blessingcount += 1;
+                blessings += $"\n{GetString("Blessing3")}";
+            }
+            if (blessingcount >= 2)
+                blessings += "\n";
+            if (FarAheadList.Contains(seen.PlayerId)) 
+            {
+                blessingcount += 1;
+                blessings += $"\n{GetString("Blessing4")}";
+            }
+            if (EtiquetteList.Contains(seen.PlayerId))
+            {
+                blessings = $"{GetString("Etiquette")}";
+            }
         }
-        if (!MoneyCount.ContainsKey(seen))
+        if (!MoneyCount.ContainsKey(seen.PlayerId))
         {
             money = 0;
         }
         else
         {
-            money = MoneyCount[seen];
+            money = MoneyCount[seen.PlayerId];
         }
-        return (seer == seen || seer.Is(CustomRoles.Non_Villain)) ? $"({GetString("MoneyCount")}: {money}, {blessings})" : "";
+        return (seer == seen || seer.Is(CustomRoles.Non_Villain)) ? $"({isdf}<color=#ffff00>{GetString("MoneyCount")}: {money}</color>, {blessings})" : "";
     }
     public bool OverrideKillButtonText(out string text)
     {
@@ -343,28 +448,44 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
     }
     public bool CheckWin(ref CustomRoles winnerRole, ref CountTypes winnerCountType)
     {
-        List<CountTypes> refe = new();
+        List<CountTypes> refe = new List<CountTypes>();
         if (Player.IsAlive())
         {
-            
-            Dictionary<CountTypes, int> countTypeMapping = new();
+            Dictionary<CountTypes, int> countTypeMapping = new Dictionary<CountTypes, int>();
             foreach (var pc in Main.AllAlivePlayerControls)
             {
-                if (!countTypeMapping.ContainsKey(pc.GetCountTypes()))
-                countTypeMapping.Add(pc.GetCountTypes(), MoneyCount[pc]);
-                else countTypeMapping[pc.GetCountTypes()]+= MoneyCount[pc];
-                
+                CountTypes countType = pc.GetCountTypes();
+                int moneyCount = MoneyCount.ContainsKey(pc.PlayerId) ? MoneyCount[pc.PlayerId] : 0;
+
+                if (!countTypeMapping.ContainsKey(countType))
+                    countTypeMapping.Add(countType, moneyCount);
+                else
+                    countTypeMapping[countType] += moneyCount;
             }
-            refe.Add(countTypeMapping.OrderByDescending(kvp => kvp.Value).First().Key);
+
+            if (countTypeMapping.Count > 0)
+            {
+                CountTypes highestCountType = countTypeMapping.OrderByDescending(kvp => kvp.Value).First().Key;
+                refe.Add(highestCountType);
+            }
         }
         else
         {
             foreach (var pc in DigitalLifeList)
             {
-                if (!refe.Contains(pc.GetCountTypes()))
-                    refe.Add(pc.GetCountTypes() );
+                foreach (var player in Main.AllPlayerControls)
+                {
+                    if (player.PlayerId == pc && !refe.Contains(player.GetCountTypes()))
+                        refe.Add(player.GetCountTypes());
+                }
             }
         }
+
         return refe.Contains(winnerCountType);
+    }
+    public static float CountDown(float timer)
+    {
+        timer -= Time.deltaTime;
+        return timer;
     }
 }

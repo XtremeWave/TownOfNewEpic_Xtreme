@@ -1,4 +1,7 @@
-﻿using HarmonyLib;
+﻿using AmongUs.GameOptions;
+using HarmonyLib;
+using Hazel;
+using InnerNet;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +10,7 @@ using System.Text.RegularExpressions;
 using TONEX.Roles.Core;
 using UnityEngine;
 using static TONEX.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Modules;
 
@@ -119,6 +123,17 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 Utils.ShowHelp(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, null);
             }),
+           new(["ss", "SetScanner"], CommandAccess.All, mc =>
+            {
+
+                string text = GetString("Message.ReadySetScanner");
+            var player = mc.Player;
+                        player.RpcSetScanner(true);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
+        writer.Write(true);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                return (MsgRecallMode.Block, text);
+            }),
             new(["m", "myrole"], CommandAccess.All, mc =>
             {
                 string text = GetString("Message.CanNotUseInLobby");
@@ -196,7 +211,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     var color = Utils.MsgToColor(mc.Args, mc.IsFromSelf);
                     if (color != byte.MaxValue)
                     {
-                        mc.Player.RpcSetColor(color);
+                        mc.Player.SetOutFitStatic(color);
                         text = string.Format(GetString("Message.SetColor"), mc.Args);
                     }
                 }
@@ -345,6 +360,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 || role.IsAddon()
                 || role.IsVanilla()
                 || role is CustomRoles.GM or CustomRoles.NotAssigned
+                || role.IsCanNotOpen()
+                || role.IsHidden()
                 || !Options.CustomRoleSpawnChances.ContainsKey(role))
             {
                 Utils.SendMessage(string.Format(GetString("Message.DirectorModeSelectFailed"), roleName), playerId);

@@ -1,7 +1,6 @@
 ﻿using AmongUs.GameOptions;
-
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Miner : RoleBase, IImpostor
@@ -15,7 +14,8 @@ public sealed class Miner : RoleBase, IImpostor
             CustomRoleTypes.Impostor,
             1900,
             null,
-            "mn|礦工"
+            "mn|礦工",
+            ctop: true
         );
     public Miner(PlayerControl player)
     : base(

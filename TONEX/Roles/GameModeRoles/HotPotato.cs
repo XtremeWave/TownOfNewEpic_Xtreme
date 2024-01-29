@@ -2,10 +2,10 @@
 using UnityEngine;
 using Hazel;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 using System.Collections.Generic;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.GameModeRoles;
 public sealed class HotPotato : RoleBase, IKiller
@@ -17,12 +17,13 @@ public sealed class HotPotato : RoleBase, IKiller
             CustomRoles.HotPotato,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            4900,
+            94_2_1_0,
             null,
             "ho",
             "#ff9900",
             true,
-           introSound: () => GetIntroSound(RoleTypes.Impostor)
+           introSound: () => GetIntroSound(RoleTypes.Impostor),
+           ctop: true
         );
     public HotPotato(PlayerControl player)
     : base(

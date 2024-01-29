@@ -16,6 +16,7 @@ using TONEX.Roles.Impostor;
 using TONEX.Roles.Neutral;
 using UnityEngine;
 using static TONEX.Translator;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX;
 
@@ -30,6 +31,7 @@ static class ExtendedPlayerControl
         {
             player.GetRoleClass()?.Dispose();
             PlayerState.GetByPlayerId(player.PlayerId).SetMainRole(role);
+
         }
         else if (role >= CustomRoles.NotAssigned)   //500:NoSubRole 501~:SubRole
         {
@@ -255,7 +257,9 @@ static class ExtendedPlayerControl
         else
         {
             MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.Reliable, killer.GetClientId());
-            messageWriter.WriteNetObject(target);
+            messageWriter.WriteNetObject(target); 
+            
+            messageWriter.Write((int)SucceededFlags);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
         }
     }
@@ -463,10 +467,6 @@ static class ExtendedPlayerControl
         Main.AllPlayerKillCooldown[player.PlayerId] = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
-        if (Main.AllPlayerKillCooldown[player.PlayerId] < 1.6f && Main.CanPublic.Value)
-        {
-            Main.AllPlayerKillCooldown[player.PlayerId] = 1.6f;
-        }
     }
     public static void RpcExileV2(this PlayerControl player)
     {
@@ -493,19 +493,14 @@ static class ExtendedPlayerControl
     public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
     {
         if (target == null) target = killer;
-
-        if (!Main.CanPublic.Value)
+        if (AmongUsClient.Instance.AmClient)
         {
-            killer.RpcMurderPlayer(target, true);
-            return;
+            killer.MurderPlayer(target);
         }
-
-        killer.MurderPlayer(target, SucceededFlags);
-        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, PsendOption, -1);
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(killer.NetId, (byte)RpcCalls.MurderPlayer, SendOption.None, -1);
         messageWriter.WriteNetObject(target);
-        messageWriter.Write((int)SucceededFlags); //Prevent server side protect
+        messageWriter.Write((int)SucceededFlags);
         AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
-        target.Data.IsDead = true;
         Utils.NotifyRoles();
     }
     public static void RpcProtectedMurderPlayer(this PlayerControl killer, PlayerControl target = null)
@@ -629,10 +624,10 @@ static class ExtendedPlayerControl
     public static bool IsCrewKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
     public static bool IsCrewNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && !player.IsCrewKiller();
     public static bool IsNeutral(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral);
-    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
+    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is INeutralKilling;
     public static bool IsNeutralNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && !player.IsNeutralKiller();
-    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is IAdditionalWinner;
-    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is not IAdditionalWinner;
+    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is IIndependent;
+    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is not IIndependent;
     public static bool IsShapeshifting(this PlayerControl player) => Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl seen)
     {
@@ -767,5 +762,4 @@ static class ExtendedPlayerControl
         }
         return !state.IsDead;
     }
-    public static SendOption PsendOption = Main.CanPublic.Value ? SendOption.None : SendOption.Reliable;
 }

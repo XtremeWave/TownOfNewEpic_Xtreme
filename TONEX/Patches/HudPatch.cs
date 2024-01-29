@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using TMPro;
 using TONEX.Roles.Core;
-using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Crewmate;
 using UnityEngine;
 using static TONEX.Translator;
@@ -146,13 +146,16 @@ class HudManagerPatch
                 __instance.ReportButton.Hide();
                 __instance.ImpostorVentButton.Hide();
                 __instance.KillButton.Hide();
-                __instance.AbilityButton.Show();
                 if (player.Is(CustomRoles.EvilGuardian))
                 {
                    __instance.AbilityButton.OverrideText(GetString("KillButtonText"));
+                    __instance.AbilityButton.Show();
                 }
                 else
+                {
+                    __instance.AbilityButton.Hide();
                     __instance.AbilityButton.OverrideText(GetString(StringNames.HauntAbilityName));
+                }
                 __instance.PetButton.Hide();
                 if (LowerInfoText != null) LowerInfoText.enabled = false;
             }
@@ -249,7 +252,7 @@ class VentButtonDoClickPatch
     {
         var pc = PlayerControl.LocalPlayer;
         if (pc == null || pc.inVent || __instance.currentTarget == null || !pc.CanMove || !__instance.isActiveAndEnabled) return true;
-        if (pc.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Revolutionist or CustomRoles.Veteran or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.Grenadier or CustomRoles.DoveOfPeace)
+        if (pc.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.TimeStops or CustomRoles.TimeMaster or CustomRoles.RubePeople or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
         {
             pc?.MyPhysics?.RpcEnterVent(__instance.currentTarget.Id);
             return false;
