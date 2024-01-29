@@ -27,6 +27,7 @@ public class ModUpdater
 #if DEBUG
         "file:///D:/Desktop/TONEX/info.json",
         "file:///C:/Users/YJNSH/Desktop/info.json",
+        "file:///C:/Users/Administrator/Desktop/info.json",
         "file:///D:/Desktop/info.json",
 #else
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
