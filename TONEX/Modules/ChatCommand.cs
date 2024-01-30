@@ -360,8 +360,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 || role.IsAddon()
                 || role.IsVanilla()
                 || role is CustomRoles.GM or CustomRoles.NotAssigned
-                || role.IsCanNotOpen()
                 || role.IsHidden()
+                || role.IsCanNotOpen()
                 || !Options.CustomRoleSpawnChances.ContainsKey(role))
             {
                 Utils.SendMessage(string.Format(GetString("Message.DirectorModeSelectFailed"), roleName), playerId);

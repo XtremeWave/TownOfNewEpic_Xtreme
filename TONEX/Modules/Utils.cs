@@ -555,7 +555,8 @@ public static class Utils
             return string.Empty;
         string mode;
         if (role.IsVanilla()) return "";
-        else if (!Options.CustomRoleSpawnChances.ContainsKey(role)) mode = GetString("HidenRole");
+        else if (role.IsHidden()) mode = GetString("HidenRole");
+        else if (role.IsCanNotOpen()) mode = GetString("CTOPRole");
         else mode = Options.CustomRoleSpawnChances[role].GetString().RemoveHtmlTags();
         return parentheses ? $"({mode})" : mode;
     }
@@ -563,15 +564,22 @@ public static class Utils
     public static bool HasTasks(GameData.PlayerInfo p, bool ForRecompute = true)
     {
         if (GameStates.IsLobby) return false;
+      //  Logger.Info($"1", "test");
         //Tasksがnullの場合があるのでその場合タスク無しとする
         if (p.Tasks == null) return false;
+       // Logger.Info($"2", "test");
         if (p.Role == null) return false;
+       // Logger.Info($"3", "test");
         if (p.Disconnected) return false;
+       // Logger.Info($"4", "test");
 
         var hasTasks = true;
+        
         var States = PlayerState.GetByPlayerId(p.PlayerId);
+       // Logger.Info($"5", "test");
         if (p.Role.IsImpostor)
             hasTasks = false; //タスクはCustomRoleを元に判定する
+      //  Logger.Info($"6", "test");
         // 死んでいて，死人のタスク免除が有効なら確定でfalse
         if (p.IsDead && Options.GhostIgnoreTasks.GetBool())
         {
@@ -579,6 +587,7 @@ public static class Utils
         }
         var role = States.MainRole;
         var roleClass = CustomRoleManager.GetByPlayerId(p.PlayerId);
+       // Logger.Info($"7", "test");
         if (roleClass != null)
         {
             switch (roleClass.HasTasks)
@@ -603,7 +612,7 @@ public static class Utils
                 if (role.IsImpostor()) hasTasks = false;
                 break;
         }
-
+        //Logger.Info($"8", "test");
         foreach (var subRole in States.SubRoles)
             switch (subRole)
             {
@@ -615,7 +624,6 @@ public static class Utils
                     hasTasks &= !ForRecompute;
                     break;
             }
-
         return hasTasks;
     }
     public static bool CanBeMadmate(this PlayerControl pc)
@@ -756,7 +764,9 @@ public static class Utils
         sb.Append($"━━━━━━━━━━━━【{GetString("Roles")}】━━━━━━━━━━━━");
         foreach (var role in Options.CustomRoleCounts)
         {
+            if (role.Key.IsHidden() || role.Key.IsCanNotOpen()) continue;
             if (!role.Key.IsEnable()) continue;
+            
             sb.Append($"\n【{GetRoleName(role.Key)}:{GetRoleDisplaySpawnMode(role.Key, false)}×{role.Key.GetCount()}】\n");
             ShowChildrenSettings(Options.CustomRoleSpawnChances[role.Key], ref sb);
             var text = sb.ToString();
@@ -774,6 +784,17 @@ public static class Utils
         sb.Append($"━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
         ClipboardHelper.PutClipboardString(sb.ToString());
     }
+    private static void CheckPageChange(byte PlayerId, StringBuilder sb, bool force = false)
+    {
+        //2Byte文字想定で1000byt越えるならページを変える
+        if (force || sb.Length > 500)
+        {
+            SendMessage(sb.ToString(), PlayerId, removeTags: false);
+            sb.Clear();
+            sb.AppendFormat("<size={0}>", ActiveSettingsSize);
+        }
+    }
+
     public static void ShowActiveRoles(byte PlayerId = byte.MaxValue)
     {
         if (Options.HideGameSettings.GetBool() && PlayerId != byte.MaxValue)
@@ -1281,16 +1302,16 @@ public static class Utils
     }
     public static string SummaryTexts(byte id, bool isForChat)
     {
-        // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
+        /*// 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
         // 1em ≒ 半角2文字
         // 空白は0.5emとする
         // SJISではアルファベットは1バイト，日本語は基本的に2バイト
         var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
         //最大11.5emとする(★+日本語10文字分+半角空白)
-        var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白 */ , 11.5f);
-
+        var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白  , 11.5f);
+        */
         var builder = new StringBuilder();
-        var pc = GetPlayerById(id);
+        /*var pc = GetPlayerById(id);
         builder.Append(isForChat ? Main.AllPlayerNames[id] : ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
         string progressText = string.IsNullOrEmpty(GetProgressText(id)) ? GetProgressText(id) : GetKillCountText(id);
         builder.AppendFormat("<pos={0}em>", pos).Append(isForChat ? progressText.RemoveColorTags() : progressText).Append("</pos>");
@@ -1312,8 +1333,38 @@ public static class Utils
         }
         builder.AppendFormat("<pos={0}em>", pos);
         builder.Append(isForChat ? GetTrueRoleName(id, false).RemoveColorTags() : GetTrueRoleName(id, false));
-        builder.Append(isForChat ? GetSubRolesText(id).RemoveColorTags() : GetSubRolesText(id));
-
+        builder.Append(isForChat ? GetSubRolesText(id).RemoveColorTags() : GetSubRolesText(id));*/
+        // チャットならposタグを使わない(文字数削減)
+        if (isForChat)
+        {
+            builder.Append(Main.AllPlayerNames[id]);
+            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
+            builder.Append(' ').Append(GetVitalText(id));
+            builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+            builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
+        }
+        else
+        {
+            // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
+            // 1em ≒ 半角2文字
+            // 空白は0.5emとする
+            // SJISではアルファベットは1バイト，日本語は基本的に2バイト
+            var longestNameByteCount = Main.AllPlayerNames.Values.Select(name => name.GetByteCount()).OrderByDescending(byteCount => byteCount).FirstOrDefault();
+            //最大11.5emとする(★+日本語10文字分+半角空白)
+            var pos = Math.Min(((float)longestNameByteCount / 2) + 1.5f /* ★+末尾の半角空白 */ , 11.5f);
+            builder.Append(ColorString(Main.PlayerColors[id], Main.AllPlayerNames[id]));
+            builder.AppendFormat("<pos={0}em>", pos).Append(GetProgressText(id)).Append("</pos>");
+            // "(00/00) " = 4em
+            pos += 4f;
+            builder.AppendFormat("<pos={0}em>", pos).Append(GetVitalText(id)).Append("</pos>");
+            // "Lover's Suicide " = 8em
+            // "回線切断 " = 4.5em
+            pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
+            builder.AppendFormat("<pos={0}em>", pos);
+            builder.Append(GetTrueRoleName(id, false));
+            builder.Append(GetSubRolesText(id));
+            builder.Append("</pos>");
+        }
         return builder.ToString();
     }
     private static string GetOldRoleName(PlayerControl pc)

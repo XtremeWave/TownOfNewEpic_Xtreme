@@ -31,7 +31,7 @@ public static class CustomSoundsManager
     public static void ReceiveRPC(MessageReader reader) => Play(reader.ReadString());
 
 
-    private static readonly string SOUNDS_PATH = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}/BepInEx/resources/";
+    private static readonly string SOUNDS_PATH = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}/BepInEx/resources/Sounds/";
     public static void Play(string sound)
     {
         if (!Constants.ShouldPlaySfx() || !Main.EnableCustomSoundEffect.Value) return;

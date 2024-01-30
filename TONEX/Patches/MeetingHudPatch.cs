@@ -204,7 +204,7 @@ public static class MeetingHudPatch
                 //海王相关显示
                 if ((seer.Is(CustomRoles.Neptune) || target.Is(CustomRoles.Neptune)) && !seer.Data.IsDead && !isLover)
                     sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
-                else if (seer == target && CustomRoles.Neptune.IsExist() && !isLover)// ****
+                else if (seer == target && CustomRoles.Neptune.IsExist() && !isLover)
                     sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
                 if (target.Is(CustomRoles.Mini))
                     sb.Append(Utils.ColorString(Color.yellow, $"({Mini.Age})"));

@@ -448,13 +448,6 @@ public static class CustomRoleManager
     /// <returns>true: 阻塞该消息并停止向下判断</returns>
     public static bool OnReceiveMessage(MessageControl msgControl, out MsgRecallMode recallMode)
     {
-        foreach (var msg in ReceiveMessage)
-        {
-             msg(msgControl);
-             recallMode = msgControl.RecallMode;
-            if (recallMode != MsgRecallMode.None)
-                return true;
-        }
         recallMode = MsgRecallMode.None;
         return false;
     }

@@ -751,10 +751,10 @@ class PlayerControlSetRolePatch
                 {
                     ghostRoles[seer] = RoleTypes.Impostor;
                 }
-                else if(target.Is(CustomRoles.EvilGuardian))
-                {
-                    ghostRoles[seer] = RoleTypes.GuardianAngel;
-                }
+               // else if(target.Is(CustomRoles.EvilGuardian))
+                //{
+                //    ghostRoles[seer] = RoleTypes.GuardianAngel;
+                //}
                 else
                 {
                     ghostRoles[seer] = RoleTypes.CrewmateGhost;

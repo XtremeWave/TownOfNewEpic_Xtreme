@@ -28,6 +28,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
             "Zhongli|Vagor|µÛ¾ý|ÏÐÓÎ",
              "#E6AD0A",
             true,
+            true,
             countType: CountTypes.FAFL
 #if RELEASE
 ,

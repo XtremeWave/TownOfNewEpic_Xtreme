@@ -48,7 +48,6 @@ internal class ChangeRoleSettings
             Main.FirstDied = byte.MaxValue;
 
             ReportDeadBodyPatch.CanReport = new();
-            AURoleOptions.ProtectionDurationSeconds = 0f;
             Options.UsedButtonCount = 0;
 
             Main.RealOptionsData = new OptionBackupData(GameOptionsManager.Instance.CurrentGameOptions);
@@ -65,7 +64,7 @@ internal class ChangeRoleSettings
 
             Main.PlayerColors = new();
 
-            Main.CantUseSkillList.Clear();
+            Main.CantUseSkillList = new();
             //名前の記録
             RPC.SyncAllPlayerNames();
 
@@ -159,6 +158,7 @@ internal class SelectRolesPatch
 
         try
         {
+            Logger.Info($"6-1", "test");
             //CustomRpcSenderとRpcSetRoleReplacerの初期化
             Dictionary<byte, CustomRpcSender> senders = new();
             foreach (var pc in Main.AllPlayerControls)
@@ -167,7 +167,7 @@ internal class SelectRolesPatch
                         .StartMessage(pc.GetClientId());
             }
             RpcSetRoleReplacer.StartReplace(senders);
-
+            Logger.Info($"6-2", "test");
             if (Options.EnableGM.GetBool())
             {
                 PlayerControl.LocalPlayer.RpcSetCustomRole(CustomRoles.GM);
@@ -175,11 +175,13 @@ internal class SelectRolesPatch
                 PlayerControl.LocalPlayer.Data.IsDead = true;
                 PlayerState.AllPlayerStates[PlayerControl.LocalPlayer.PlayerId].SetDead();
             }
-
+            Logger.Info($"6-3", "test");
             SelectCustomRoles();
+            Logger.Info($"6-4", "test");
             SelectAddonRoles();
+            Logger.Info($"6-5", "test");
             CalculateVanillaRoleCount();
-
+            Logger.Info($"6-6", "test");
             //指定原版特殊职业数量
             RoleTypes[] RoleTypesList = { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Shapeshifter };
             foreach (var roleTypes in RoleTypesList)
@@ -187,17 +189,22 @@ internal class SelectRolesPatch
                 var roleOpt = Main.NormalOptions.roleOptions;
                 int numRoleTypes = GetRoleTypesCount(roleTypes);
                 roleOpt.SetRoleRate(roleTypes, numRoleTypes, numRoleTypes > 0 ? 100 : 0);
+                Logger.Info($"6-7", "test");
             }
-
+           
             Dictionary<(byte, byte), RoleTypes> rolesMap = new();
 
             // 注册反职业
             foreach (var kv in RoleResult.Where(x => x.Value.GetRoleInfo().IsDesyncImpostor))
+            {
                 AssignDesyncRole(kv.Value, kv.Key, senders, rolesMap, BaseRole: kv.Value.GetRoleInfo().BaseRoleType.Invoke());
-
+                Logger.Info($"6-8", "test");
+            }
             foreach (var cp in RoleResult.Where(x => x.Value == CustomRoles.CrewPostor))
+            {
                 AssignDesyncRole(cp.Value, cp.Key, senders, rolesMap, BaseRole: RoleTypes.Crewmate, hostBaseRole: RoleTypes.Impostor);
-
+                Logger.Info($"6-9", "test");
+            }
             MakeDesyncSender(senders, rolesMap);
         }
         catch (Exception ex)
@@ -228,25 +235,19 @@ internal class SelectRolesPatch
                     Logger.Warn($"注册原版职业 => {sd.Item1.GetRealName()}: {sd.Item2}", "Override Role Select");
                 else
                     Logger.Warn($"覆盖原版职业 => {sd.Item1.GetRealName()}: {sd.Item2} => {kp.Value.GetRoleTypes()}", "Override Role Select");
+                Logger.Info($"7-0", "test");
             }
             if (Options.EnableGM.GetBool()) newList.Add((PlayerControl.LocalPlayer, RoleTypes.Crewmate));
             RpcSetRoleReplacer.StoragedData = newList;
-
+            Logger.Info($"7-1", "test");
             RpcSetRoleReplacer.Release(); //保存していたSetRoleRpcを一気に書く
             RpcSetRoleReplacer.senders.Do(kvp => kvp.Value.SendMessage());
-
+            Logger.Info($"7-2", "test");
             // 不要なオブジェクトの削除
             RpcSetRoleReplacer.senders = null;
             RpcSetRoleReplacer.OverriddenSenderList = null;
             RpcSetRoleReplacer.StoragedData = null;
 
-            //Utils.ApplySuffix();
-            // 热土豆用
-            //if (Options.CurrentGameMode == CustomGameMode.HotPotato)
-            //{
-            //    foreach (var pair in PlayerState.AllPlayerStates)
-            //        ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
-            //}
             var rd = IRandom.Instance;
 
             foreach (var pc in Main.AllAlivePlayerControls)
@@ -257,9 +258,10 @@ internal class SelectRolesPatch
                 var role = pc.Data.Role.Role.GetCustomRoleTypes();
                 if (role == CustomRoles.NotAssigned)
                     Logger.SendInGame(string.Format(GetString("Error.InvalidRoleAssignment"), pc?.Data?.PlayerName));
+                Logger.Info($"7-2.9", "test");
                 state.SetMainRole(role);
             }
-
+            Logger.Info($"7-3", "test");
             foreach (var (player, role) in RoleResult.Where(kvp => !(kvp.Value.GetRoleInfo()?.IsDesyncImpostor ?? false)))
             {
                 SetColorPatch.IsAntiGlitchDisabled = true;
@@ -268,35 +270,37 @@ internal class SelectRolesPatch
                 Logger.Info($"注册模组职业：{player?.Data?.PlayerName} => {role}", "AssignCustomRoles");
 
                 SetColorPatch.IsAntiGlitchDisabled = false;
+                Logger.Info($"7-3.5", "test");
             }
-
+            Logger.Info($"7-4", "test");
             if (CustomRoles.Lovers.IsEnable() && CustomRoles.Hater.IsEnable()) AssignLoversRoles();
             else if (CustomRoles.Lovers.IsEnable() && rd.Next(0, 100) < Options.GetRoleChance(CustomRoles.Lovers)) AssignLoversRoles();
             if (CustomRoles.Madmate.IsEnable() && Options.MadmateSpawnMode.GetInt() == 0) AssignMadmateRoles();
             AddOnsAssignData.AssignAddOnsFromList();
-
+            Logger.Info($"7-5", "test");
             foreach (var pair in PlayerState.AllPlayerStates)
             {
                 ExtendedPlayerControl.RpcSetCustomRole(pair.Key, pair.Value.MainRole);
 
                 foreach (var subRole in pair.Value.SubRoles)
                     ExtendedPlayerControl.RpcSetCustomRole(pair.Key, subRole);
+                Logger.Info($"7-6", "test");
             }
-
+            Logger.Info($"7-7", "test");
             CustomRoleManager.CreateInstance();
             foreach (var pc in Main.AllPlayerControls)
             {
                 HudManager.Instance.SetHudActive(true);
                 pc.ResetKillCooldown();
             }
-
+            Logger.Info($"7-8", "test");
             RoleTypes[] RoleTypesList = { RoleTypes.Scientist, RoleTypes.Engineer, RoleTypes.Shapeshifter };
             foreach (var roleTypes in RoleTypesList)
             {
                 var roleOpt = Main.NormalOptions.roleOptions;
                 roleOpt.SetRoleRate(roleTypes, 0, 0);
             }
-
+            Logger.Info($"7-9", "test");
             switch (Options.CurrentGameMode)
             {
                 case CustomGameMode.Standard:
@@ -314,7 +318,7 @@ internal class SelectRolesPatch
                     new PlayerGameOptionsSender(pc)
                 );
             }
-
+            Logger.Info($"7-10", "test");
             /*
             //インポスターのゴーストロールがクルーになるバグ対策
             foreach (var pc in PlayerControl.AllPlayerControls)
@@ -326,7 +330,9 @@ internal class SelectRolesPatch
             }
             */
             Utils.CountAlivePlayers(true);
+            Logger.Info($"7-11", "test");
             Utils.SyncAllSettings();
+            Logger.Info($"7-12", "test");
             SetColorPatch.IsAntiGlitchDisabled = false;
         }
         catch (Exception ex)

@@ -39,7 +39,7 @@ public class Main : BasePlugin
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
     public const string PluginVersion = "0.9.2";
-    public const string PluginShowVersion = "1.0_20240128_dev_5";
+    public const string PluginShowVersion = "1.0_20240130_dev_6";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -195,7 +195,8 @@ public class Main : BasePlugin
             TONEX.Logger.Disable("SyncCustomSettings");
             TONEX.Logger.Disable("CancelPet");
             TONEX.Logger.Disable("Pet");
-            TONEX.Logger.Disable("SetScanner");
+            //TONEX.Logger.Disable("SetScanner");
+            TONEX.Logger.Disable("test");
         }
         //TONEX.Logger.isDetail = true;
 

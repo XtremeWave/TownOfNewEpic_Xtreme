@@ -79,7 +79,8 @@ class HudManagerPatch
                 
                     if (roleClass.HasAbility)
                     {
-                        if (roleClass.GetAbilityButtonText(out var abilityLabel)) __instance.AbilityButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()), abilityLabel));
+                        if (roleClass.GetAbilityButtonText(out var abilityLabel)) 
+                            __instance.AbilityButton.OverrideText(Utils.ColorString(Utils.GetRoleColor(player.GetCustomRole()), abilityLabel));
                         __instance.AbilityButton.ToggleVisible(roleClass.CanUseAbilityButton() && GameStates.IsInTask);
                         int uses = roleClass.OverrideAbilityButtonUsesRemaining();
                         if (uses != -1) __instance.AbilityButton.SetUsesRemaining(uses);

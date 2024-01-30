@@ -194,7 +194,7 @@ public abstract class OptionItem
             opt.oldValue = opt.Value = CurrentValue;
         }
     }
-    public void SetValue(int afterValue, bool doSave, bool doSync = true)
+    public virtual void SetValue(int afterValue, bool doSave, bool doSync = true)
     {
         int beforeValue = CurrentValue;
         if (IsSingleValue)

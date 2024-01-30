@@ -54,6 +54,7 @@ public enum CustomRPC
     KillFlash,
     NotificationPop,
     SetKickReason,
+    OnClickMeetingButton,
 
     //TONEX
     ColorFlash,
@@ -91,11 +92,15 @@ public enum CustomRPC
     SetSwooperTimer,
     SetBKTimer,
     SyncFollowerTargetAndTimes,
+    //魅魔
     SetSuccubusCharmLimit,
+    //傀儡
     SyncPuppeteerList,
+    //术士
     SyncWarlock,
+    //逃逸
     SyncEscapist,
-    OnClickMeetingButton,
+    //马里奥
     SyncMarioVentedTimes,
     //时间之主
     SyncTimeMaster,

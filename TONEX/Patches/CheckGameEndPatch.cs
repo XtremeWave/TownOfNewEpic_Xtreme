@@ -130,17 +130,12 @@ class GameEndChecker
                         }
                     }
                 }
-                foreach (var nv in Main.AllPlayerControls)
-                {
-                    if (!nv.Is(CustomRoles.Non_Villain) || Non_Villain.DigitalLifeList.Count <=0) continue;
+                if (CustomRoles.Non_Villain.IsExist() && Non_Villain.DigitalLifeList.Count <=0) 
                     foreach (var pc in Non_Villain.DigitalLifeList)
                     {
-                        if (CustomWinnerHolder.WinnerIds.Contains(nv.PlayerId))
-                        {
                             CustomWinnerHolder.WinnerIds.Add(pc);
-                        }
                     }
-                }
+                
 
                 // 第三方共同胜利
                 if (Options.NeutralWinTogether.GetBool() && Main.AllPlayerControls.Any(p => CustomWinnerHolder.WinnerIds.Contains(p.PlayerId) && p.IsNeutral()))

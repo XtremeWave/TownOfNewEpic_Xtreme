@@ -15,7 +15,7 @@ public class SimpleRoleInfo
     public Func<RoleTypes> BaseRoleType;
     public CustomRoleTypes CustomRoleType;
     public CountTypes CountType;
-    public bool IsNK;
+    
     public Color RoleColor;
     public string RoleColorCode;
     public int ConfigId;
@@ -26,6 +26,7 @@ public class SimpleRoleInfo
     public string ChatCommand;
     /// <summary>±æ»À“ïµ„§Œ§ﬂ•§•Û•›•π•ø©`§À“ä§®§Î“€¬ö</summary>
     public bool IsDesyncImpostor;
+    public bool IsNK;
     private Func<AudioClip> introSound;
     public AudioClip IntroSound => introSound?.Invoke();
     
@@ -64,7 +65,6 @@ public class SimpleRoleInfo
         bool isNK,
         TabGroup tab,
         Func<AudioClip> introSound,
-        
         bool experimental,
         bool Hidden,
         bool ctop,

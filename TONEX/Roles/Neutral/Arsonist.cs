@@ -21,7 +21,7 @@ public sealed class Arsonist : RoleBase, IKiller, IIndependent
             SetupOptionItem,
             "ar|縱火犯|纵火",
             "#ff6633",
-            true,
+            isDesyncImpostor: true,
             introSound: () => GetIntroSound(RoleTypes.Crewmate)
         );
     public Arsonist(PlayerControl player)
