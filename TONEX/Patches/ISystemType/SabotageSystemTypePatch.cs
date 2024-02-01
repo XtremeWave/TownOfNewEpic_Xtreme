@@ -32,7 +32,7 @@ public static class SabotageSystemTypeUpdateSystemPatch
 
         var nextSabotage = (SystemTypes)amount;
         logger.Info($"PlayerName: {player.GetNameWithRole()}, SabotageType: {nextSabotage}");
-
+        if (player.CantDoAnyAct()) return false;
         if (!CustomRoleManager.OnSabotage(player, nextSabotage))
         {
             return false;

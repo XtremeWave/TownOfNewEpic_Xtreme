@@ -4,7 +4,7 @@
 .vs/
 
 Export/
-TONEX/obj/
+TONEX/obj
 
 TONEX/Properties/PublishProfiles/
 TONEX/FodyWeavers.xsd
@@ -27,3 +27,4 @@ TONEX/FodyWeavers.xsd
 /TONEX/obj/TONEX.csproj.nuget.dgspec.json
 /TONEX/obj/TONEX.csproj.nuget.g.props
 /TONEX/obj/Release/net6.0/GitHead.cache
+/TONEX/obj/Release/net6.0/GitInfo.cache

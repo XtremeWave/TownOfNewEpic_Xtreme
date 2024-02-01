@@ -486,6 +486,13 @@ static class ExtendedPlayerControl
             return false;
         return true;
     }
+    public static bool CantDoAnyAct(this PlayerControl pc)
+    {
+        if (Main.CantDoActList.Count <= 0) return false;
+        if (Main.CantDoActList.Contains(pc))
+            return true;
+        return false;
+    }
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
         killer.RpcMurderPlayer(target, true);

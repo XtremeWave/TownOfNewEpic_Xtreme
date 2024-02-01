@@ -33,7 +33,6 @@ public sealed class Unyielding : RoleBase, IKiller
     }
 
     static OptionItem OptionDieTime;
-    static OptionItem OptionKillCooldown;
     public bool CanKill;
     enum OptionName
     {
@@ -43,14 +42,12 @@ public sealed class Unyielding : RoleBase, IKiller
     {
         OptionDieTime = FloatOptionItem.Create(RoleInfo, 11, OptionName.DieTime, new(12f, 180f, 2.5f), 12f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 12, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 10f, false)
-            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Add()
     {
         CanKill = false;
     }
-    public float CalculateKillCooldown() => CanUseKillButton() ? OptionKillCooldown.GetFloat() : 255f;
+    public float CalculateKillCooldown() => CanUseKillButton() ? 2f : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && CanKill;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
@@ -59,11 +56,14 @@ public sealed class Unyielding : RoleBase, IKiller
     {
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
-        if (Player.IsAlive() && Player.PlayerId != target.PlayerId)
+        if (Player.IsAlive() && Player.PlayerId == target.PlayerId)
         {
             killer.RpcTeleport(target.GetTruePosition());
             target.RpcProtectedMurderPlayer(target);
-            CanKill = true;
+            new LateTask(() =>
+            {
+                CanKill = true;
+            }, 1f, "DieTime");
             Player.SetKillCooldownV2();
             Player.Notify(string.Format(GetString("KillUnyielding")));
             new LateTask(() =>

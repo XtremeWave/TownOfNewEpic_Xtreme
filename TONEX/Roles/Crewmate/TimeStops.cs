@@ -78,12 +78,12 @@ public sealed class TimeStops : RoleBase
         text = GetString("TimeStopsVetnButtonText");
         return true;
     }
-        public override bool GetAbilityButtonSprite(out string buttonName)
+    public override bool GetAbilityButtonSprite(out string buttonName)
     {
         buttonName = "TheWorld";
         return true;
     }
-            public override bool GetPetButtonSprite(out string buttonName)
+    public override bool GetPetButtonSprite(out string buttonName)
     {
         buttonName = "TheWorld";
         return !(UsePetCooldown != -1);
@@ -121,12 +121,12 @@ public sealed class TimeStops : RoleBase
             var tmpSpeed1 = Main.AllPlayerSpeed[player.PlayerId];
             TimeStopsstop.Add(player.PlayerId);
             Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
-            ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
+            Main.CantDoActList.Add(player);
             player.MarkDirtySettings();
             new LateTask(() =>
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Main.MinSpeed + tmpSpeed1;
-                ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
+                Main.CantDoActList.Remove(player);
                 player.MarkDirtySettings();
               TimeStopsstop.Remove(player.PlayerId);
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
@@ -175,12 +175,12 @@ public sealed class TimeStops : RoleBase
             var tmpSpeed1 = Main.AllPlayerSpeed[player.PlayerId];
             TimeStopsstop.Add(player.PlayerId);
             Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
-            ReportDeadBodyPatch.CanReport[player.PlayerId] = false;
+            Main.CantDoActList.Add(player);
             player.MarkDirtySettings();
             new LateTask(() =>
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Main.MinSpeed + tmpSpeed1;
-                ReportDeadBodyPatch.CanReport[player.PlayerId] = true;
+                Main.CantDoActList.Remove(player);
                 player.MarkDirtySettings();
                 TimeStopsstop.Remove(player.PlayerId);
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);

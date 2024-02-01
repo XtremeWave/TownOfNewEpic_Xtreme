@@ -236,7 +236,7 @@ class ShapeshiftPatch
         Main.CheckShapeshift[shapeshifter.PlayerId] = shapeshifting;
         Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
 
-        if (!shapeshifter.IsEaten() && shapeshifter.CanUseSkill())
+        if (!shapeshifter.IsEaten() && shapeshifter.CanUseSkill() || !shapeshifter.CantDoAnyAct())
             shapeshifter.GetRoleClass()?.OnShapeshift(target);
 
         if (!AmongUsClient.Instance.AmHost) return;
@@ -264,7 +264,7 @@ class ReportDeadBodyPatch
         if (GameStates.IsMeeting) return false;
         if (Options.DisableMeeting.GetBool()) return false;
         if (Options.CurrentGameMode == CustomGameMode.HotPotato) return false;
-        if (!CanReport[__instance.PlayerId])
+        if (!CanReport[__instance.PlayerId] || __instance.CantDoAnyAct())
         {
             WaitReport[__instance.PlayerId].Add(target);
             Logger.Warn($"{__instance.GetNameWithRole()}:通報禁止中のため可能になるまで待機します", "ReportDeadBody");
@@ -636,7 +636,7 @@ class CoEnterVentPatch
         Logger.Info($"{__instance.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
         var user = __instance.myPlayer;
-        if (!user.CanUseSkill() && user.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.TimeStops or CustomRoles.TimeMaster or CustomRoles.RubePeople or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
+        if (user.CantDoAnyAct() || !user.CanUseSkill() && user.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.TimeStops or CustomRoles.TimeMaster or CustomRoles.RubePeople or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
             writer.WritePacked(127);

@@ -215,9 +215,6 @@ null,
             MoneyCount.Add(pc.PlayerId, 0);
         }
     }
-    private static void SetupOptionItem()
-    {
-    }
     private static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;

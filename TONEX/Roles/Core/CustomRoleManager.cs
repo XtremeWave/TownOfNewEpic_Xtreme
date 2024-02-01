@@ -59,7 +59,7 @@ public static class CustomRoleManager
 
         var killerRole = attemptKiller.GetRoleClass();
         var targetRole = attemptTarget.GetRoleClass();
-        
+        if (attemptKiller.CantDoAnyAct()) return false;
         // 首先凶手确实是击杀类型的职业
         if (killerRole is IKiller killer)
         {

@@ -65,6 +65,7 @@ internal class ChangeRoleSettings
             Main.PlayerColors = new();
 
             Main.CantUseSkillList = new();
+            Main.CantDoActList = new();
             //名前の記録
             RPC.SyncAllPlayerNames();
 

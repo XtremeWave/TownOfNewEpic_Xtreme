@@ -119,6 +119,7 @@ public enum CustomRPC
     DoubleKillerBeKillTime,
     //悬赏官
     SetRewardOfficerTarget,
+    SetRewardOfficerName,
     //恶猎手
     ViciousSeekerKill,
     //秃鹫
@@ -132,6 +133,8 @@ public enum CustomRPC
     AdventurerSabotage,
     //异世闲游
     SetVagor,
+    AddFeeble,
+    RemoveFeeble,
     //'不演反派'
     ForNVBeKilled,
     ForNVStaticOvercomeList,
@@ -141,9 +144,7 @@ public enum CustomRPC
     ForNVCAAList,
     ForNVOvercomeList,
     ForNVFarAheadList,
-    ForNVDFList,
-     ////////////
-    SetRewardOfficerName,
+    ForNVDFList,    
 }
 public enum Sounds
 {

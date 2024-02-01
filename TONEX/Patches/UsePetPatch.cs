@@ -71,7 +71,7 @@ class ExternalRpcPetPatch
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 AmongUsClient.Instance.FinishRpcImmediately(AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 50, SendOption.None, player.GetClientId()));
         }
-        if (!pc.CanUseSkill()) return;
+        if (!pc.CanUseSkill() || pc.CantDoAnyAct()) return;
         pc.GetRoleClass()?.OnUsePet();
     }
 }
