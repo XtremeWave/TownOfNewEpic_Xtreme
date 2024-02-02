@@ -34,12 +34,8 @@ public class MessageControl
         MsgRecallMode recallMode = MsgRecallMode.None;
         // Check if it is a role command
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
-        /*    if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
-          {
-              IsCommand = true;
-          }*/
-        CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
+        CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
         /*
         if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
         {
@@ -53,8 +49,8 @@ public class MessageControl
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
         if (!IsCommand)
         {
-         
-            
+
+
             // Not a role command, check for command listw
             foreach (var command in ChatCommand.AllCommands)
             {

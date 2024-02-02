@@ -59,7 +59,6 @@ public static class Mini
                     Age += 1;
                     UpTime = 0;
                     SendRPC();
-                    player.RpcProtectedMurderPlayer(player);
                     foreach (var pc in Main.AllPlayerControls)
                     {
                         Utils.NotifyRoles(pc);

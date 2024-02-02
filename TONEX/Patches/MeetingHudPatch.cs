@@ -206,7 +206,7 @@ public static class MeetingHudPatch
                     sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
                 else if (seer == target && CustomRoles.Neptune.IsExist() && !isLover)
                     sb.Append(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Lovers), "♡"));
-                if (target.Is(CustomRoles.Mini))
+                if (target.Is(CustomRoles.Mini) && seer != target)
                     sb.Append(Utils.ColorString(Color.yellow, $"({Mini.Age})"));
                 
 
