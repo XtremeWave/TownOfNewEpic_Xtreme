@@ -13,7 +13,7 @@ public sealed class Whoops : RoleBase
             typeof(Whoops),
             player => new Whoops(player),
             CustomRoles.Whoops,
-            () => RoleTypes.Engineer,
+            () => RoleTypes.Crewmate,
             CustomRoleTypes.Neutral,
             94_4_1_0,
             null,
@@ -30,18 +30,13 @@ public sealed class Whoops : RoleBase
         () => HasTask.True
     )
     { }
-    public override void ApplyGameOptions(IGameOptions opt)
-    {
-        AURoleOptions.EngineerCooldown = 0;
-        AURoleOptions.EngineerInVentMaxTime = 0;
-    }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer
         seen ??= seer;
         if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
         //else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
-        else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "M");
+        else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
         else
             return "";
     }

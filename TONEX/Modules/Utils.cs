@@ -1147,9 +1147,9 @@ public static class Utils
                     {
                         TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                     }
-                    if (target.Is(CustomRoles.Mini))
+                    if (target.Is(CustomRoles.Mini) && seer != target)
                     {
-                        TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>{Mini.Age}</color>");
+                        TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>({Mini.Age})</color>");
                     }
 
                         //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。

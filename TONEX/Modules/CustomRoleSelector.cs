@@ -140,7 +140,7 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            /*if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePet.GetBool())
+            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePet.GetBool())
             {
                 var shouldExecute = true;
                 if (NKRateList.Count > 0)
@@ -165,7 +165,7 @@ internal static class CustomRoleSelector
                 }
                 sp = UnityEngine.Random.Range(0, 100);
             }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;*/
+            if (readyRoleNum >= playerCount) goto EndOfAssign;
 
             /*if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
             {

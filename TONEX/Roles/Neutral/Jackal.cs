@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+ï»¿using AmongUs.GameOptions;
 using Hazel;
 using MS.Internal.Xml.XPath;
 using TONEX.Modules;
@@ -22,7 +22,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
             CustomRoleTypes.Neutral,
             50900,
             SetupOptionItem,
-            "jac|²òÀÇ",
+            "jac|è±ºç‹¼",
             "#00b4eb",
             true,
             true,
@@ -188,11 +188,11 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     public static bool CanBeSidekick(PlayerControl pc) => pc != null && JackalCanSaveSidekick.GetBool()? !pc.Is(CountTypes.Jackal) : (!pc.GetCustomRole().IsNeutral()) && !pc.Is(CountTypes.Jackal);
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
-        //seen¤¬Ê¡ÂÔ¤ÎˆöºÏseer
+        //seenãŒçœç•¥ã®å ´åˆseer
         seen ??= seer;
-        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$$");
-        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "$");
-        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "??");
+        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "ğŸ”»");
+        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "ğŸ”»");
+        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "ğŸ”»");
         else
         return "";
     }

@@ -327,6 +327,7 @@ null,
             }
             MoneyCount[target.PlayerId] = money;
             SendRPC_MoneyCount(target.PlayerId, money);
+            killer.RpcProtectedMurderPlayer();
             Utils.NotifyRoles(target);
 
         }, 2f, "RedPackageAndBlessing");
@@ -387,7 +388,7 @@ null,
         else
         {
             
-            blessings = "";
+            blessings = "<color=#cdfffd>";
             if (DigitalLifeList.Contains(seen.PlayerId))
             {
                 isdf = "<color=#00D6BC>¡ø</color>";
@@ -421,6 +422,7 @@ null,
             {
                 blessings = $"{GetString("Etiquette")}";
             }
+            blessings += "</color>";
         }
         if (!MoneyCount.ContainsKey(seen.PlayerId))
         {

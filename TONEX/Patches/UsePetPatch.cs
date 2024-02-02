@@ -32,6 +32,7 @@ class TryPetPatch
 {
     public static void Prefix(PlayerControl __instance)
     {
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
         if (!(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
         var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
         if (cancel)
@@ -41,7 +42,7 @@ class TryPetPatch
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
         var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
         if (cancel)
         {
@@ -71,8 +72,8 @@ class ExternalRpcPetPatch
             foreach (PlayerControl player in PlayerControl.AllPlayerControls)
                 AmongUsClient.Instance.FinishRpcImmediately(AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, 50, SendOption.None, player.GetClientId()));
         }
-        if (!pc.CanUseSkill() || pc.CantDoAnyAct()) return;
-        pc.GetRoleClass()?.OnUsePet();
+        if (pc.CanUseSkill() && !pc.CantDoAnyAct())
+            pc.GetRoleClass()?.OnUsePet();
     }
 }
 

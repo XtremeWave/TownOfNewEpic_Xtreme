@@ -38,8 +38,9 @@ public class MessageControl
           {
               IsCommand = true;
           }*/
-        CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
+        
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
+        CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
         /*
         if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
         {

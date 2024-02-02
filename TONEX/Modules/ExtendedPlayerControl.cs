@@ -500,6 +500,7 @@ static class ExtendedPlayerControl
     public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)
     {
         if (target == null) target = killer;
+        if (killer.CantDoAnyAct()) return;
         if (AmongUsClient.Instance.AmClient)
         {
             killer.MurderPlayer(target);

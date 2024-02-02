@@ -507,9 +507,9 @@ class FixedUpdatePatch
                 {
                     Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Lovers)}>♡</color>");
                 }
-                if (__instance.Is(CustomRoles.Mini))
+                if (__instance.Is(CustomRoles.Mini) && __instance!= PlayerControl.LocalPlayer)
                 {
-                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Judge)}>{Mini.Age}</color>");
+                    Mark.Append($"<color={Utils.GetRoleColorCode(CustomRoles.Judge)}>({Mini.Age})</color>");
                 }
                 Suffix.Append(seerRole?.GetLowerText(seer, target));
                 //seerに関わらず発動するLowerText
