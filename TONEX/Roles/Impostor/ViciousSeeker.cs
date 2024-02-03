@@ -8,6 +8,9 @@ using Epic.OnlineServices.Presence;
 using System.Linq;
 using TONEX.Roles.Crewmate;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using MS.Internal.Xml.XPath;
+using Il2CppSystem.Reflection;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Impostor;
 public sealed class ViciousSeeker : RoleBase, IImpostor
@@ -49,6 +52,7 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
         "ViciousSeekerCountMode.Kill",
         "ViciousSeekerCountMode.ImpostorKill",
     };
+    private float OriginalKillCooldown;
     private float KillCooldown;
     public static int Limit;
     private static void SetupOptionItem()
@@ -62,7 +66,7 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
     }
     public override void Add()
     {
-        KillCooldown = OptionKillCooldown.GetFloat();
+        KillCooldown = OriginalKillCooldown = OptionKillCooldown.GetFloat();
         Limit = 0;
     }
     private static void SendRPC()
@@ -81,13 +85,12 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
     {
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
-        if (killer.Is(CustomRoleTypes.Impostor))
+        if (killer.Is(CustomRoleTypes.Impostor) && OptionViciousSeekerCountMode.GetInt() == 2)
         {
-            if (OptionViciousSeekerCountMode.GetInt() == 2)
-            {
-                Limit++;
-                SendRPC();
-            }
+
+            Limit++;
+            SendRPC();
+
         }
         return true;
     }
@@ -103,12 +106,20 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
                 SendRPC();
                 if (Limit >= 6)
                 {
-                    KillCooldown = KillCooldown - OptionReduceKillCooldown.GetFloat();
+                    KillCooldown = OriginalKillCooldown - OptionReduceKillCooldown.GetFloat();
+                    killer.ResetKillCooldown();
+                    killer.SyncSettings();
+                }
+                else if (Limit < 6)
+                {
+                    KillCooldown = OriginalKillCooldown;
                     killer.ResetKillCooldown();
                     killer.SyncSettings();
                 }
             }
         }
+        
+        SendRPC();
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
@@ -122,7 +133,20 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
         {
            Limit++;
            SendRPC();
+            if (Limit >= 6)
+            {
+                KillCooldown = OriginalKillCooldown - OptionReduceKillCooldown.GetFloat();
+                Player.ResetKillCooldown();
+                Player.SyncSettings();
+            }
+            else if (Limit < 6)
+            {
+                KillCooldown = OriginalKillCooldown;
+                Player.ResetKillCooldown();
+                Player.SyncSettings();
+            }
         }
+        
           
     }
     public override bool OnCheckMurderAsTarget(MurderInfo info)
@@ -131,6 +155,20 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
         if (Limit>=2)
         {
            Limit-=2;
+            SendRPC();
+            if (Limit >= 6)
+            {
+                KillCooldown = OriginalKillCooldown - OptionReduceKillCooldown.GetFloat();
+                Player.ResetKillCooldown();
+                Player.SyncSettings();
+            }
+            else if (Limit < 6)
+            {
+                KillCooldown = OriginalKillCooldown;
+                Player.ResetKillCooldown();
+                Player.SyncSettings();
+            }
+            SendRPC();
             return false;
         }
         return true;
@@ -138,8 +176,9 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
     public override void AfterMeetingTasks()
     {
         Limit++;
+        if (Limit >= 8) Limit -= 6;
         SendRPC();
-        if(Limit >= 8)Limit -= 6;
+        
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(Limit >= 1 ? Utils.GetRoleColor(CustomRoles.Veteran) : Color.gray, $"({Limit})");
 }

@@ -14,6 +14,6 @@
   "url": {
     "github": "https://github.com/XtremeWave/TownOfNewEpic_Xtreme/releases/latest/download/TONEX.dll",
     "gitee": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/releases/download/{{version}}/TONEX.dll",
-    "cos": "null"
+    "website": "https://tonex.cc/Resource/Download/TONEX.dll"
   }
 }

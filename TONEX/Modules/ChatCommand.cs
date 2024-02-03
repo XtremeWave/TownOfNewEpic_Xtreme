@@ -331,9 +331,9 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else
         {
-            if (!role.IsAddon() && !role.IsCanNotOpen())
+            if (!role.IsAddon())
             Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp, playerId);
-            else
+            else if (role.IsAddon())
                 Utils.SendMessage(AddonDescription.FullFormatHelpByRole(role) ??
                         // roleInfoがない役職
                         $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{role.GetRoleInfoWithRole()}", playerId);

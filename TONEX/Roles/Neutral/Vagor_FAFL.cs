@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+ï»¿using AmongUs.GameOptions;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
 using UnityEngine;
@@ -14,6 +14,7 @@ using TONEX.Roles.Core.Interfaces;
 using System.Linq;
 
 namespace TONEX.Roles.Neutral;
+/*
 public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -25,7 +26,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
             CustomRoleTypes.Neutral,
             7565_1_1_1,
             null,
-            "Zhongli|Vagor|µÛ¾ı|ÏĞÓÎ",
+            "Zhongli|Vagor|å¸å›|é—²æ¸¸",
              "#E6AD0A",
             true,
             true,
@@ -52,7 +53,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
         SkillCount = 0;
         ShieldTimes = 0;
     }
-    #region ²ÎÊı
+    #region å‚æ•°
     public static int ElementPowerCount;
     public static bool IsFallen;
     public static int NormalKillCount;
@@ -164,7 +165,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
             killer.ResetKillCooldown();
             killer.SyncSettings();
         }
-        //ÇĞ¤ì¤Ê¤¤ÏàÊÖ¤Ê¤é¥­¥ë¥­¥ã¥ó¥»¥ë
+        //åˆ‡ã‚Œãªã„ç›¸æ‰‹ãªã‚‰ã‚­ãƒ«ã‚­ãƒ£ãƒ³ã‚»ãƒ«
         return false;
     }
     public bool IsKiller { get; private set; } = true;
@@ -216,7 +217,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
     {
         if (!seer == PlayerControl.LocalPlayer) return"";
         seen ??= seer;
-        //see¤ª¤è¤Óseen¤¬×Ô·Ö¤Ç¤¢¤ëˆöºÏÒÔÍâ¤Ïév‚S¤Ê¤·
+        //seeãŠã‚ˆã³seenãŒè‡ªåˆ†ã§ã‚ã‚‹å ´åˆä»¥å¤–ã¯é–¢ä¿‚ãªã—
         if (!Is(seer) || !Is(seen)) return "";
 
         return $"{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
@@ -225,7 +226,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
-        //see¤ª¤è¤Óseen¤¬×Ô·Ö¤Ç¤¢¤ëˆöºÏÒÔÍâ¤Ïév‚S¤Ê¤·
+        //seeãŠã‚ˆã³seenãŒè‡ªåˆ†ã§ã‚ã‚‹å ´åˆä»¥å¤–ã¯é–¢ä¿‚ãªã—
         if (seer != seen || seer == PlayerControl.LocalPlayer) return "";
         return $"\n<color=#e6adoa>{GetString("VagorKillCount")}:{KillCount},{GetString("VagorSkillCount")}:{SkillCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}</color>";
 
@@ -351,7 +352,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
     {
         
         if (!IsShield || seer != seen) return "";
-        return Utils.ColorString(RoleInfo.RoleColor, "¡ñ");
+        return Utils.ColorString(RoleInfo.RoleColor, "â—");
     }
     public override bool GetPetButtonText(out string text)
     {
@@ -390,8 +391,8 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
         buttonName = "RainOfGeo";
         return true;
     }
-}
-/*v1.1
+}*/
+///*v1.1
 public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -403,7 +404,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
             CustomRoleTypes.Neutral,
             7565_1_1_1,
             null,
-            "Zhongli|Vagor|µÛ¾ı|ÏĞÓÎ",
+            "Zhongli|Vagor|å¸å›|é—²æ¸¸",
              "#E6AD0A",
             true,
             true,
@@ -430,7 +431,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
         Feeble = new(15);
     }
 
-    #region ²ÎÊı
+    #region å‚æ•°
     public static int ElementPowerCount;
     public static int NormalKillTimesCount;
     public static int KillTimesTotalCount;
@@ -446,7 +447,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
         sound = $"Join{soundId}";
         return true;
     }
-    #region RPCÏà¹Ø
+    #region RPCç›¸å…³
     private void SendRPC()
     {
         using var sender = CreateSender(CustomRPC.SetVagor);
@@ -499,7 +500,7 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
     public float CalculateKillCooldown() => KillCooldown;
     private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
     {
-if (info.IsSuicide) return true;
+        if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
         if (ShieldsCount > 0 && target.Is(CustomRoles.Vagor_FAFL))
         {
@@ -513,7 +514,7 @@ if (info.IsSuicide) return true;
     }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
-if (info.IsSuicide) return true;
+        if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
         var killpercent = Random.Range(0, 100);
         float killsucceed = 5;
@@ -564,9 +565,9 @@ if (info.IsSuicide) return true;
     }
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
-        if (!seer == PlayerControl.LocalPlayer) return"";
+        if (!seer.IsModClient()) return"";
         seen ??= seer;
-        //see¤ª¤è¤Óseen¤¬×Ô·Ö¤Ç¤¢¤ëˆöºÏÒÔÍâ¤Ïév‚S¤Ê¤·
+        //seeãŠã‚ˆã³seenãŒè‡ªåˆ†ã§ã‚ã‚‹å ´åˆä»¥å¤–ã¯é–¢ä¿‚ãªã—
         if (!Is(seer) || !Is(seen)) return "";
 
         return $"{GetString("VagorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
@@ -575,7 +576,7 @@ if (info.IsSuicide) return true;
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
-        //see¤ª¤è¤Óseen¤¬×Ô·Ö¤Ç¤¢¤ëˆöºÏÒÔÍâ¤Ïév‚S¤Ê¤·
+        //seeãŠã‚ˆã³seenãŒè‡ªåˆ†ã§ã‚ã‚‹å ´åˆä»¥å¤–ã¯é–¢ä¿‚ãªã—
         if (seer != seen || seer.IsModClient()) return "";
         return $"\n<color=#e6adoa>{GetString("VagorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}</color>";
 
@@ -702,9 +703,11 @@ if (info.IsSuicide) return true;
     }
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
-        
-        if (ShieldsCount <= 0 || seer != seen) return "";
+
+        if (Feeble.Contains(seen.PlayerId)) return "ğŸ”»";
+        else if (seer == seen)
         return Utils.ColorString(RoleInfo.RoleColor, $"({ShieldsCount})");
+        return "";
     }
     public override bool GetPetButtonText(out string text)
     {
@@ -744,4 +747,4 @@ if (info.IsSuicide) return true;
         return true;
     }
 }
-*/
+//*/
