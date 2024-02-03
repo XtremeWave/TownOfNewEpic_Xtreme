@@ -140,12 +140,12 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePet.GetBool())
+            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePets.GetBool())
             {
                 var shouldExecute = true;
                 if (NKRateList.Count > 0)
                 {
-                    var remove = NeKRateList[rd.Next(0, NKRateList.Count)];
+                    var remove = NKRateList[rd.Next(0, NKRateList.Count)];
                     NKRateList.Remove(remove);
                 }
                 else if (NKOnList.Count > 0)
