@@ -4,7 +4,7 @@ namespace TONEX.Roles.Core.Descriptions;
 
 public static class AddonDescription
 {
-    public static string FullFormatHelp(PlayerControl player)
+    public static string FullFormatHelpByPlayer(PlayerControl player)
     {
         var builder = new StringBuilder(512);
         var subRoles = player?.GetCustomSubRoles();
@@ -22,7 +22,14 @@ public static class AddonDescription
 
         return builder.ToString();
     }
-
+    public static string FullFormatHelpByRole(CustomRoles subRole)
+    {
+        var builder = new StringBuilder(512);
+        builder.AppendFormat("<size={0}>\n", BlankLineSize);
+        builder.AppendFormat("<size={0}>{1}\n", FirstHeaderSize, Translator.GetRoleString(subRole.ToString()).Color(Utils.GetRoleColor(subRole)));
+        builder.AppendFormat("<size={0}>{1}\n", BodySize, Translator.GetString($"{subRole}InfoLong"));
+        return builder.ToString();
+    }
     public const string FirstHeaderSize = "130%";
     public const string SecondHeaderSize = "100%";
     public const string BodySize = "70%";

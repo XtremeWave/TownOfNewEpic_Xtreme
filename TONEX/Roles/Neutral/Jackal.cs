@@ -9,6 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using UnityEngine.UIElements.UIR;
 using static TONEX.Translator;
+using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Neutral;
 public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
@@ -51,8 +52,12 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     private static OptionItem OptionHasImpostorVision;
     private static OptionItem OptionSidekickLimit;
     private static OptionItem OptionItemCanSidekick;
-    private static OptionItem JackalCanSaveSidekick;
-    private static OptionItem RecruitModeSwitchAction;
+    private static OptionItem OptionJackalCanSaveSidekick;
+    private static OptionItem OptionRecruitModeSwitchAction;
+    public static OptionItem OptionSidekickCanKill;
+    public static OptionItem OptionSidekickCanBeJackal;
+    public static OptionItem OptionSidekickCanVent;
+    public static OptionItem OptionSidekickKillCoolDown;
     enum OptionName
     {
         JackalCanWinBySabotageWhenNoImpAlive,
@@ -61,6 +66,10 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
         JackalSidekickLimit,
         CanSaveSidekick,
         RecruitModeSwitchAction,
+        SidekickCanKill,
+        SidekickCanBeJackal,
+        SidekickCanVent,
+        SidekickKillCoolDown,
     }
     public enum SwitchTrigger
     {
@@ -88,13 +97,17 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
         OptionItemCanSidekick = BooleanOptionItem.Create(RoleInfo, 15, OptionName.CanBeSidekick, true, false);
         OptionSidekickLimit = IntegerOptionItem.Create(RoleInfo, 16, OptionName.JackalSidekickLimit, new(1, 15, 1), 1, false, OptionItemCanSidekick)
             .SetValueFormat(OptionFormat.Times);
-        JackalCanSaveSidekick = BooleanOptionItem.Create(RoleInfo, 17, OptionName.CanSaveSidekick, true, false , OptionItemCanSidekick);
-        RecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 18, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
+        OptionJackalCanSaveSidekick = BooleanOptionItem.Create(RoleInfo, 17, OptionName.CanSaveSidekick, true, false , OptionItemCanSidekick);
+        OptionSidekickCanKill = BooleanOptionItem.Create(RoleInfo, 18, OptionName.SidekickCanKill, false, false, OptionJackalCanSaveSidekick);
+        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false);
+        OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanVent, true, false, OptionJackalCanSaveSidekick);
+        OptionSidekickCanBeJackal = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SidekickCanBeJackal, true, false, OptionJackalCanSaveSidekick);
+        OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 22, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
     }
     public override void Add()
     {
         SidekickLimit = OptionSidekickLimit.GetInt();
-        NowSwitchTrigger = (SwitchTrigger)RecruitModeSwitchAction.GetValue();
+        NowSwitchTrigger = (SwitchTrigger)OptionRecruitModeSwitchAction.GetValue();
         Player.AddDoubleTrigger();
     }
     private void SendRPC()
@@ -136,7 +149,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
         Player.SetKillCooldownV2();
         NameColorManager.Add(Player.PlayerId, target.PlayerId, "#00b4eb");
         NameColorManager.Add(target.PlayerId, Player.PlayerId, "#00b4eb");
-        if (!JackalCanSaveSidekick.GetBool())
+        if (!OptionJackalCanSaveSidekick.GetBool())
             target.RpcSetCustomRole(CustomRoles.Wolfmate);
         else
         {
@@ -185,7 +198,15 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
             Recruit(target);
         return false;
     }
-    public static bool CanBeSidekick(PlayerControl pc) => pc != null && JackalCanSaveSidekick.GetBool()? !pc.Is(CountTypes.Jackal) : (!pc.GetCustomRole().IsNeutral()) && !pc.Is(CountTypes.Jackal);
+    public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
+    {
+        if (seen.Is(CustomRoles.Wolfmate) || seen.Is(CustomRoles.Sidekick) || seen.Is(CustomRoles.Whoops) || seen.Is(CustomRoles.Jackal)) enabled = true;
+    }
+    public override void OverrideDisplayRoleNameAsSeen(PlayerControl seer, ref bool enabled, ref Color roleColor, ref string roleText)
+    {
+        if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Wolfmate) || seer.Is(CustomRoles.Sidekick) || seer.Is(CustomRoles.Wolfmate)) enabled = true;
+    }
+    public static bool CanBeSidekick(PlayerControl pc) => pc != null && OptionJackalCanSaveSidekick.GetBool()? !pc.Is(CountTypes.Jackal) : (!pc.GetCustomRole().IsNeutral()) && !pc.Is(CountTypes.Jackal);
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer

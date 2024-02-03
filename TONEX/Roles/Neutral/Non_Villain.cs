@@ -63,7 +63,7 @@ null,
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public float CalculateKillCooldown() => KillCooldown;
-    public bool IsKiller { get; private set; } = true;
+    public bool IsKiller { get; private set; } = false;
     #endregion
     #region ±»»÷É±ÊÂ¼þRPC
     public static void SendRPC_ForBeKilled(byte targetId)

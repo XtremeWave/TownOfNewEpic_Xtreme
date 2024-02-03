@@ -959,10 +959,10 @@ public static class Options
         AirshipReactorTimeLimit = FloatOptionItem.Create(3_021_003, "AirshipReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
-        FungleReactorTimeLimit = FloatOptionItem.Create(100803, "FungleReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
+        FungleReactorTimeLimit = FloatOptionItem.Create(3_021_004, "FungleReactorTimeLimit", new(1f, 90f, 1f), 60f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
                .SetValueFormat(OptionFormat.Seconds)
                .SetGameMode(CustomGameMode.Standard);
-        FungleMushroomMixupDuration = FloatOptionItem.Create(100804, "FungleMushroomMixupDuration", new(1f, 20f, 1f), 10f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
+        FungleMushroomMixupDuration = FloatOptionItem.Create(3_021_005, "FungleMushroomMixupDuration", new(1f, 20f, 1f), 10f, TabGroup.GameSettings, false).SetParent(SabotageTimeControl)
             .SetValueFormat(OptionFormat.Seconds)
             .SetGameMode(CustomGameMode.Standard);
 

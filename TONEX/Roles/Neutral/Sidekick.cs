@@ -35,18 +35,20 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent,
     )
     { }
     public bool CanUseSabotageButton() => false;
+    public bool CanUseKillButton() => Jackal.OptionSidekickCanKill.GetBool();
+    public bool IsKiller { get; private set; } = Jackal.OptionSidekickCanKill.GetBool();
+    public bool CanKill { get; private set; } = Jackal.OptionSidekickCanKill.GetBool();
+    public bool CanUseImpostorVentButton() => Jackal.OptionSidekickCanVent.GetBool();
+    public float CalculateKillCooldown() => Jackal.OptionSidekickCanKill.GetBool() ? Jackal.OptionSidekickKillCoolDown.GetFloat() : 255f;
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Jackal;
     public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting)
     {
         var target = player;
         
-            if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick))
+            if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick) && Jackal.OptionSidekickCanBeJackal.GetBool())
             {
+                Player.Notify(GetString("BeJackal")); 
                 Player.RpcSetCustomRole(CustomRoles.Jackal);
-                Player.ResetKillCooldown();
-                Player.SetKillCooldown();
-                Player.Notify("BeJackal");
-
             }
        
     }

@@ -157,9 +157,24 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"Slok",
-                    TextColor = new Color32(0, 255, 255, 255),
+                    Text = $"XtremeWave_Dev_Slok",
+                    TextColor = new Color32(205, 255, 253, 255),
                     SizePercentage = 80
+                },
+                Prefix = new()
+                {
+                    Text = "★",
+                    TextColor = new Color32(230, 173, 10, 255)
+                },
+                Suffix = new()
+                {
+                    Text = "★",
+                    TextColor = new Color32(230, 173, 10, 255)
+                },
+                Name = new()
+                {
+                    Gradient = new(new Color32(0, 255, 255, 255), new Color32(205, 255, 253, 255)),
+                    SizePercentage = 90
                 }
             }
         },

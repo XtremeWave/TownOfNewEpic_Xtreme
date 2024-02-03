@@ -48,7 +48,7 @@ public sealed class Prophet : RoleBase, IKiller
         ProphetCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.ProphetCooldown, new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
         ProphetLimits = IntegerOptionItem.Create(RoleInfo, 11, OptionName.ProphetLimit, new(1, 180, 1), 3, false)
-            .SetValueFormat(OptionFormat.Seconds);
+            .SetValueFormat(OptionFormat.Times);
     }
     public override void Add()
     {

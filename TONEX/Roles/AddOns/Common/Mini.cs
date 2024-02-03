@@ -13,6 +13,9 @@ public static class Mini
     private static readonly int Id = 828893;
     private static List<byte> playerIdList = new();
     public static OptionItem OptionAgeTime;
+    public static OptionItem OptionNotGrowInMeeting;
+    public static OptionItem OptionKidKillCoolDown;
+    public static OptionItem OptionAdultKillCoolDown;
     public static int Age;
     public static int UpTime;
     public static void SetupCustomOption()
@@ -21,6 +24,11 @@ public static class Mini
         AddOnsAssignData.Create(Id + 10, CustomRoles.Mini, true, true, true);
         OptionAgeTime = FloatOptionItem.Create(Id + 20, "MiniUpTime", new(60f, 360f, 2.5f), 180f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mini])
 .SetValueFormat(OptionFormat.Seconds);
+        OptionNotGrowInMeeting = BooleanOptionItem.Create(Id + 21, "NotGrowInMeeting", false, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mini]);
+        OptionKidKillCoolDown = FloatOptionItem.Create(Id + 22, "OptionKidKillCoolDown", new(2.5f, 180f, 2.5f), 45f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mini])
+            .SetValueFormat(OptionFormat.Seconds);
+        OptionAdultKillCoolDown = FloatOptionItem.Create(Id + 23, "OptionAdultKillCoolDown", new(2.5f, 180f, 2.5f), 15f, TabGroup.Addons, false).SetParent(CustomRoleSpawnChances[CustomRoles.Mini])
+            .SetValueFormat(OptionFormat.Seconds);
     }
     [GameModuleInitializer]
     public static void Init()
@@ -51,6 +59,7 @@ public static class Mini
         if (!AmongUsClient.Instance.AmHost) return;
         if (player.Is(CustomRoles.Mini))
         {
+            if (!GameStates.IsInTask && OptionNotGrowInMeeting.GetBool()) return;
             if (Age < 18 && player.IsAlive())
             {
                 UpTime++;

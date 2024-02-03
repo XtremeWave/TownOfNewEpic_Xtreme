@@ -1337,11 +1337,20 @@ public static class Utils
         // チャットならposタグを使わない(文字数削減)
         if (isForChat)
         {
+            var pc = GetPlayerById(id);
             builder.Append(Main.AllPlayerNames[id]);
             builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
             builder.Append(' ').Append(GetVitalText(id));
+            string oldRoleName = GetOldRoleName(pc);
+            var newRoleName = GetTrueRoleName(id, false);
+            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
+            {
+                builder.AppendFormat("<pos={0}em>");
+                builder.Append($" {oldRoleName}{GetSubRolesText(id)} =>" + GetTrueRoleName(id, false).RemoveColorTags());
+                builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
+                return builder.ToString();
+            }
             builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
-            builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
         }
         else
         {
@@ -1360,6 +1369,17 @@ public static class Utils
             // "Lover's Suicide " = 8em
             // "回線切断 " = 4.5em
             pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
+            var pc = GetPlayerById(id);
+            string oldRoleName = GetOldRoleName(pc);
+            var newRoleName = GetTrueRoleName(id, false);
+            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
+            {
+                builder.AppendFormat("<pos={0}em>", pos);
+                builder.Append($"  {oldRoleName}{GetSubRolesText(id)} => " + GetTrueRoleName(id, false));
+                builder.Append(GetSubRolesText(id));
+                builder.Append("</pos>");
+                return builder.ToString();
+            }
             builder.AppendFormat("<pos={0}em>", pos);
             builder.Append(GetTrueRoleName(id, false));
             builder.Append(GetSubRolesText(id));
@@ -1502,7 +1522,10 @@ public static class Utils
         is "actorour#0029" //咔哥
         or "pinklaze#1776" //NCM
         or "sofaagile#3120" //天寸
-        or "aerobicgen#3487"; //鲨鲨
+        or "aerobicgen#3487" //鲨鲨
+        or "teamelder#5856" //Slok
+        or "canneddrum#2370" //喜
+        ;
 
     public static Vector2 GetBlackRoomPS()
     {

@@ -7,6 +7,7 @@ using System.Linq;
 using TONEX.Attributes;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Crewmate;
 using TONEX.Roles.Neutral;
 using Mathf = UnityEngine.Mathf;
@@ -110,6 +111,15 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     break;
                 case CustomRoles.Reach:
                     opt.SetInt(Int32OptionNames.KillDistance, 2);
+                    break;
+                case CustomRoles.Mini:
+                    if ((player.GetRoleClass() as IKiller)?.IsKiller ?? false)
+                    {
+                        if (Mini.Age < 18)
+                            opt.SetFloat(FloatOptionNames.KillCooldown, Mini.OptionKidKillCoolDown.GetFloat());
+                        else
+                            opt.SetFloat(FloatOptionNames.KillCooldown, Mini.OptionAdultKillCoolDown.GetFloat());
+                    }
                     break;
                 case CustomRoles.Rambler:
                     Main.AllPlayerSpeed[player.PlayerId] = Rambler.OptionSpeed.GetFloat();

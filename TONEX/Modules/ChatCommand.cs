@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using TONEX.Roles.Core;
+using TONEX.Roles.Core.Descriptions;
 using UnityEngine;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
@@ -48,6 +49,16 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     text = "Winner: " + string.Join(",", Main.winnerNameList);
                 return (MsgRecallMode.Block, text);
             }),
+            new(["level"], CommandAccess.Host, mc =>
+            {
+                string text = GetString("Message.AllowLevelRange");
+                if (int.TryParse(mc.Args, out int level) && level is >= 1 and <= 999)
+                {
+                    text = string.Format(GetString("Message.SetLevel"), level);
+                    mc.Player.RpcSetLevel(Convert.ToUInt32(level) - 1);
+                }
+                return (MsgRecallMode.Block, text);
+            }),
             new(["l", "lastresult"], CommandAccess.All, mc =>
             {
                 Utils.ShowKillLog(mc.Player.PlayerId);
@@ -66,17 +77,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 GameStartManagerPatch.HideName.text = Main.HideName.Value;
                 return (MsgRecallMode.Block, null);
             }),
-            new(["level"], CommandAccess.Host, mc =>
-            {
-                string text = GetString("Message.AllowLevelRange");
-                if (int.TryParse(mc.Args, out int level) && level is >= 1 and <= 999)
-                {
-                    text = string.Format(GetString("Message.SetLevel"), level);
-                    mc.Player.RpcSetLevel(Convert.ToUInt32(level) - 1);
-                }
-                return (MsgRecallMode.Block, text);
-            }),
-            new(["n", "now"], CommandAccess.All, mc =>
+
+            new(["now","n"], CommandAccess.All, mc =>
             {
                 switch (mc.Args)
                 {
@@ -90,7 +92,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 }
                 return (MsgRecallMode.Block, null);
             }),
-            new(["dis", "disconnect"], CommandAccess.Host, mc =>
+            new(["disconnect","dis" ], CommandAccess.Host, mc =>
             {
                 switch (mc.Args)
                 {
@@ -108,7 +110,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 }
                 return (MsgRecallMode.Block, null);
             }),
-            new(["r", "role"], CommandAccess.All, mc =>
+            new(["role","r"], CommandAccess.All, mc =>
             {
                 SendRolesInfo(mc.Args, mc.Player.PlayerId);
                 return (MsgRecallMode.Block, null);
@@ -140,7 +142,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (GameStates.IsInGame)
                 {
                     var role = mc.Player.GetCustomRole();
-                    text = role.GetRoleInfo()?.Description?.GetFullFormatHelpWithAddons(mc.Player) ??
+                    text = role.GetRoleInfo()?.Description?.GetFullFormatHelpWithAddonsByPlayer(mc.Player) ??
                         // roleInfoがない役職
                         GetString(role.ToString()) + mc.Player.GetRoleInfo(true);
                 }
@@ -202,7 +204,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 }
                 return (MsgRecallMode.Block, text);
             }),
-            new(["color", "colour"], CommandAccess.All, mc =>
+            new(["color", "colour"], Options.PlayerCanSetColor.GetBool()?CommandAccess.All:CommandAccess.Host, mc =>
             {
                 string text = GetString("Message.OnlyCanUseInLobby");
                 if (GameStates.IsLobby)
@@ -329,7 +331,12 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else
         {
+            if (!role.IsAddon() && !role.IsCanNotOpen())
             Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp, playerId);
+            else
+                Utils.SendMessage(AddonDescription.FullFormatHelpByRole(role) ??
+                        // roleInfoがない役職
+                        $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{role.GetRoleInfoWithRole()}", playerId);
         }
     }
     public static void SpecifyRole(string input, byte playerId)
