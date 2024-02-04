@@ -1,5 +1,6 @@
 {
-  "version": "0.9.7",
+  "version": "0.9.8",
+  "showVer": "1.0_20240204_Preview_3",
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
@@ -13,7 +14,7 @@
 
   "url": {
     "github": "https://github.com/XtremeWave/TownOfNewEpic_Xtreme/releases/latest/download/TONEX.dll",
-    "gitee": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/releases/download/{{version}}/TONEX.dll",
+    "gitee": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/releases/download/{{showVer}}/TONEX.dll",
     "website": "https://tonex.cc/Resource/Download/TONEX.dll"
   }
 }

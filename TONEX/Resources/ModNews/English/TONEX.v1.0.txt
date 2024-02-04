@@ -25,6 +25,8 @@ We're back again!
 - Fixed the bug of the /level command couldn't be used
 - Fixed the bug of the last result could not be sent (merged from TOH v5.0.4)
 - Fixed the bug of when disable the option 'Allow players to use the /color command to set their own color' was not working.
+- Fixed the bug of Kill log wrong role
+- Fixed the bug of some roles hasn't yet or gamemode roles showed in gusser UI
 
 ## Changing
 - The version number format has been changed to:( two-digit version number)_(Release date)(_file testing mode?)
