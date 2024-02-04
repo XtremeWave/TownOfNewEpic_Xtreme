@@ -132,6 +132,7 @@ public static class CustomRoleManager
     /// <param name="appearanceTarget">视觉上被击杀的玩家，可变</param>
     public static void OnMurderPlayer(PlayerControl appearanceKiller, PlayerControl appearanceTarget)
     {
+        if (appearanceKiller.CantDoAnyAct()) return;
         //MurderInfoの取得
         if (CheckMurderInfos.TryGetValue(appearanceKiller.PlayerId, out var info))
         {

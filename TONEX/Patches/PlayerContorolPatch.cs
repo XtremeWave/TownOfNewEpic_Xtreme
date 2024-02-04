@@ -236,7 +236,7 @@ class ShapeshiftPatch
         Main.CheckShapeshift[shapeshifter.PlayerId] = shapeshifting;
         Main.ShapeshiftTarget[shapeshifter.PlayerId] = target.PlayerId;
 
-        if (!shapeshifter.IsEaten() && shapeshifter.CanUseSkill() || !shapeshifter.CantDoAnyAct())
+        if (!shapeshifter.IsEaten() && (shapeshifter.CanUseSkill() || !shapeshifter.CantDoAnyAct()))
             shapeshifter.GetRoleClass()?.OnShapeshift(target);
 
         if (!AmongUsClient.Instance.AmHost) return;

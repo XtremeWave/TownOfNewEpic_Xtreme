@@ -58,7 +58,7 @@ public enum CustomRPC
 
     //TONEX
     ColorFlash,
-
+    CantDoAnyActPlayer,
     //GameMode
     SyncHpNameNotify,
 
@@ -352,6 +352,22 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SyncNameNotify:
                 NameNotifyManager.ReceiveRPC(reader);
+                break;
+            case CustomRPC.CantDoAnyActPlayer:
+                var counta = reader.ReadInt32();
+                if (reader.ReadBoolean())
+                {
+                    for (int i = 0; i < counta; i++)
+                        if (!Main.CantDoActList.Contains(reader.ReadByte()))
+                            Main.CantDoActList.Add(reader.ReadByte());
+                }
+                else
+                    for (int i = 0; i < counta; i++)
+                        if (Main.CantDoActList.Contains(reader.ReadByte()))
+                            Main.CantDoActList.Remove(reader.ReadByte());
+
+
+
                 break;
             case CustomRPC.KillFlash:
                 Utils.FlashColor(new(1f, 0f, 0f, 0.3f));

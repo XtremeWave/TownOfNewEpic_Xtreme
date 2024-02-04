@@ -51,6 +51,12 @@ static class CustomRolesHelper
             return roleInfo.IsHidden;
         return false;
     }
+    public static bool IsTODO(this CustomRoles role)
+    {
+        if (role is CustomRoles.NiceSwapper or CustomRoles.EvilSwapper or CustomRoles.Blackmailer or CustomRoles.Collector or CustomRoles.EvilGuardian or CustomRoles.Innocent or CustomRoles.Konan or CustomRoles.NiceSwapper or CustomRoles.Provocateur or CustomRoles.PVPboss or CustomRoles.Revolutionist or CustomRoles.Stalker or CustomRoles.Sunnyboy)
+            return true;
+        return false;
+    }
     public static bool IsCanNotOpen(this CustomRoles role)
     {
         var roleInfo = role.GetRoleInfo();

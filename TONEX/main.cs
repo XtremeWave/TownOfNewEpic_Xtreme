@@ -38,16 +38,16 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "0.9.6";
-    public const string PluginShowVersion = "1.0_20240204_Preview";
+    public const string PluginVersion = "0.9.7";
+    public const string PluginShowVersion = "1.0_20240204_dev_7";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
     public static readonly string WebsiteUrl = Translator.IsChineseLanguageUser ? "https://tonex.cc" : "https://tonex.cc/En";
-    public static readonly bool ShowQQButton = false;
-    public static readonly string QQInviteUrl = "https://jq.qq.com/?_wv=1027&k=2RpigaN6";
-    public static readonly bool ShowDiscordButton = false;
-    public static readonly string DiscordInviteUrl = "https://discord.gg/hkk2p9ggv4";
+    public static readonly bool ShowQQButton = true;
+    public static readonly string QQInviteUrl = "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=4ojpzbUU42giZZeQ-DTaal-tC5RIpL46&authKey=49OYQwsCza2x5eHGdXDHXD1M%2FvYvQcEhJBNL5h8Gq7AxOu5eMfTc6g2edtlsMuCm&noverify=0&group_code=733425569";
+    public static readonly bool ShowDiscordButton = true;
+    public static readonly string DiscordInviteUrl = "https://discord.gg/kz787Zg7h8";
     public static readonly bool ShowGithubUrl = true;
     public static readonly string GithubRepoUrl = "https://github.com/XtremeWave/TownOfNewEpic_Xtreme";
     // ==========
@@ -103,8 +103,8 @@ public class Main : BasePlugin
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
     public static List<(string, PlayerControl)> SetRolesList = new List<(string, PlayerControl)>();
-    public static List<PlayerControl> CantUseSkillList = new();
-    public static List<PlayerControl> CantDoActList = new();
+    public static List<byte> CantUseSkillList = new();
+    public static List<byte> CantDoActList = new();
     /// <summary>
     /// 基本的に速度の代入は禁止.スピードは増減で対応してください.
     /// </summary>
@@ -198,6 +198,12 @@ public class Main : BasePlugin
             TONEX.Logger.Disable("Pet");
             //TONEX.Logger.Disable("SetScanner");
             TONEX.Logger.Disable("test");
+            TONEX.Logger.Disable("ForNVBeKilled");
+            TONEX.Logger.Disable("ForNVCAAList");
+            TONEX.Logger.Disable("ForNVDFList");
+            TONEX.Logger.Disable("ForNvFarAheadList");
+            TONEX.Logger.Disable("ForNVMoney");
+            TONEX.Logger.Disable("Pet");
         }
         //TONEX.Logger.isDetail = true;
 

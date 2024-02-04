@@ -482,19 +482,30 @@ static class ExtendedPlayerControl
     public static bool CanUseSkill(this PlayerControl pc)
     {
         if (Main.CantUseSkillList.Count <= 0) return true;
-        if (Main.CantUseSkillList.Contains(pc))
+        if (Main.CantUseSkillList.Contains(pc.PlayerId))
             return false;
         return true;
     }
     public static bool CantDoAnyAct(this PlayerControl pc)
     {
         if (Main.CantDoActList.Count <= 0) return false;
-        if (Main.CantDoActList.Contains(pc))
+        if (Main.CantDoActList.Contains(pc.PlayerId))
             return true;
         return false;
     }
+    public static void SendCantDoActPlayer(bool isadd)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CantDoAnyActPlayer, SendOption.Reliable, -1);
+        writer.Write(Main.CantDoActList.Count);
+        writer.Write(isadd);
+        foreach (var pc in Main.CantDoActList)
+            writer.Write(pc);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
+    }
+
     public static void RpcMurderPlayer(this PlayerControl killer, PlayerControl target)
     {
+        if (killer.CantDoAnyAct()) return;
         killer.RpcMurderPlayer(target, true);
     }
     public static void RpcMurderPlayerV2(this PlayerControl killer, PlayerControl target)

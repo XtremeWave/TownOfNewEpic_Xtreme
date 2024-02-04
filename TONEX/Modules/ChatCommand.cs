@@ -125,15 +125,15 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 Utils.ShowHelp(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, null);
             }),
-           new(["ss", "SetScanner"], CommandAccess.All, mc =>
+            new(["ss", "SetScanner"], CommandAccess.All, mc =>
             {
 
                 string text = GetString("Message.ReadySetScanner");
-            var player = mc.Player;
-                        player.RpcSetScanner(true);
-        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
-        writer.Write(true);
-        AmongUsClient.Instance.FinishRpcImmediately(writer);
+                var player = mc.Player;
+                player.RpcSetScanner(true);
+                MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
+                writer.Write(true);
+                AmongUsClient.Instance.FinishRpcImmediately(writer);
                 return (MsgRecallMode.Block, text);
             }),
             new(["m", "myrole"], CommandAccess.All, mc =>

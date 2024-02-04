@@ -121,12 +121,12 @@ public sealed class TimeStops : RoleBase
             var tmpSpeed1 = Main.AllPlayerSpeed[player.PlayerId];
             TimeStopsstop.Add(player.PlayerId);
             Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
-            Main.CantDoActList.Add(player);
+            Main.CantDoActList.Add(player.PlayerId);
             player.MarkDirtySettings();
             new LateTask(() =>
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Main.MinSpeed + tmpSpeed1;
-                Main.CantDoActList.Remove(player);
+                Main.CantDoActList.Remove(player.PlayerId);
                 player.MarkDirtySettings();
               TimeStopsstop.Remove(player.PlayerId);
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
@@ -175,12 +175,12 @@ public sealed class TimeStops : RoleBase
             var tmpSpeed1 = Main.AllPlayerSpeed[player.PlayerId];
             TimeStopsstop.Add(player.PlayerId);
             Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
-            Main.CantDoActList.Add(player);
+            Main.CantDoActList.Add(player.PlayerId);
             player.MarkDirtySettings();
             new LateTask(() =>
             {
                 Main.AllPlayerSpeed[player.PlayerId] = Main.AllPlayerSpeed[player.PlayerId] - Main.MinSpeed + tmpSpeed1;
-                Main.CantDoActList.Remove(player);
+                Main.CantDoActList.Remove(player.PlayerId);
                 player.MarkDirtySettings();
                 TimeStopsstop.Remove(player.PlayerId);
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);

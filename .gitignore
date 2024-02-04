@@ -28,3 +28,5 @@ TONEX/FodyWeavers.xsd
 /TONEX/obj/TONEX.csproj.nuget.g.props
 /TONEX/obj/Release/net6.0/GitHead.cache
 /TONEX/obj/Release/net6.0/GitInfo.cache
+/TONEX/Resources/ModNews/SChinese/TONEX.v1.0.txt
+/TONEX/obj/Debug/net6.0/TONEX.csproj.FileListAbsolute.txt

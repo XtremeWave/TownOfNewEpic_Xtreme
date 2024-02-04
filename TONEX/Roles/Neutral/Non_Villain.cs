@@ -147,6 +147,10 @@ null,
                     {
                         EtiquetteList.Add(targetId);
                     }
+                    if (!Main.CantUseSkillList.Contains(targetId))
+                    {
+                        Main.CantUseSkillList.Add(targetId);
+                    }
                     break;
                 case CustomRPC.ForNVStaticOvercomeList:
                     if (OvercomeList.Contains(targetId))
@@ -222,7 +226,7 @@ null,
         {
             var realkill = target.GetRealKiller();
             EtiquetteList.Add(realkill.PlayerId);
-            Main.CantUseSkillList.Add(realkill);
+            Main.CantUseSkillList.Add(realkill.PlayerId);
             MoneyCount[realkill.PlayerId] = 0;
             if (WealthAndBrillianceDictionary.ContainsKey(realkill.PlayerId))
             {
@@ -267,7 +271,7 @@ null,
     }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
-        ;
+        
         var (killer, target) = info.AttemptTuple;
         var blessing = Random.Range(1, 3);
         var money = MoneyCount[target.PlayerId];
@@ -432,7 +436,7 @@ null,
         {
             money = MoneyCount[seen.PlayerId];
         }
-        return (seer == seen || seer.Is(CustomRoles.Non_Villain)) ? $"({isdf}<color=#ffff00>{GetString("MoneyCount")}: {money}</color>, {blessings})" : "";
+        return (seer == seen || seer.Is(CustomRoles.Non_Villain)) ? $"<size=60%>({isdf}<color=#ffff00>{GetString("MoneyCount")}: {money}</color>, {blessings})</size>" : "";
     }
     public bool OverrideKillButtonText(out string text)
     {
