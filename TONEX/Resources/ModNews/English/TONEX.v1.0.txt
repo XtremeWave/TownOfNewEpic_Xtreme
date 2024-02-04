@@ -1,0 +1,88 @@
+#Number:100045
+#Title:TownOfNewEpic_Xtreme v1.0
+#SubTitle:★★★★The Chinese New Year!！★★★★
+#ShortTitle:★TONEX v1.0
+#Date:2024-02-09T00:00:00Z
+#-----------------------------
+We're back again!
+
+## Base
+- Based on AmongUs v2023.11.28
+- Based on Town Of Host v5.1.4 & Town Of Next v3.0.1
+
+## Warning
+- Create/join public lobbies is temporarily unavailable
+- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+- Currently, this change is NOT permanent.
+
+## Fix
+- Fixed the bug of skill duration was abnormal
+- Fixed the bug of the hidden roles showed in role list
+- Fixed the bug of when Scavenger kill others will be teleported off-map
+- Fixed the bug of villian client will show a heart symbol after name
+- Fixed the bug of when use the /r command to search addons couldn't be used
+- Fixed the bug of the /role command couldn't be used
+- Fixed the bug of the /level command couldn't be used
+- Fixed the bug of the last result could not be sent (merged from TOH v5.0.4)
+- Fixed the bug of when disable the option 'Allow players to use the /color command to set their own color' was not working.
+
+## Changing
+- The version number format has been changed to:( two-digit version number)_(Release date)(_file testing mode?)
+- Change the skill remain script
+- Redefining Neutral Killer
+
+## Deletion
+- Temporarily remove the miner.
+
+## New Feature
+- Addons：Mini
+- Addons：Signaller
+- Addons：Slowpoke
+- Addons：Chameleon
+- Addons：Libertarian
+- Crewmate：Prophet
+- Crewmate：Time Stop
+- Crewmate：Time Master
+- Crewmate：Provocateur
+- Crewmate：Unyielding
+- Crewmate：Adventurer
+- Impostor：Onmyoji
+- Impostor：Gambler
+- Impostor：Double Killer
+- Impostor：Medusa
+- Impostor：Vicious Seeker
+- Impostor：Skinwalker
+- Nertral：Vulture
+- Nertral：Reward Officer
+- Nertral：Wolf&Sidekick
+- Nertral：Mr.Despair
+- Nertral：？？？（Version restriction）
+- Nertral：？？？
+- Nertral：Lawyer&Prosector
+- Game：Hot Potato
+- Setting：Use pet to release skills
+- Everyone's use button's color will change by role in Mod Client
+- Change some of the roles's intro sound in Mod Client
+- Change the roles's background color in Mod Client
+- Change Custom Setting buttons in Mod Client
+- Change Map button in Mod Client
+- Change Setting button in Mod Client
+- If player's role changed, it will show in the last result
+- Command：/ss（or /SetScanner):Get Scanner effect
+- Jackal Setting：Recruit mode(Priority recruit or double triggle)
+- Jackal Setting：Become sidekick/wolf after recruit
+- Jackal Setting：Sidekick can kill
+- Jackal Setting：Sidekick can use kill button
+- Jackal Setting：Sidekick can become jackal after jackal dead
+- Jackal Setting：Sidekick cooldown
+- Snitch Seeting：Can find wolfmate
+- Snitch Setting：Can find Evil Neutral 
+- Sittings：Neutral Killer max count
+- Setting：Neutral Killer min count
+- Opportunist Setting： Can Kill
+- Setting：Modify the Fungle reactor duration（merge from TOH v5.0.4)
+- Setting：Modify the Fungle Mushroom Mixup duration（merge from TOH v5.0.4)
+
+## Role Changs
+- Vetertan：Show Skills remain
+- Mare：When the power is restored, using the kill button will display in the target's field of view that the power has been disrupted (only the target knows the power has been disrupted, others will not know).

@@ -15,10 +15,10 @@ public static class UpdateFriendCodeUIPatch
 
         string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>Team-XtremeWave</color>");
         credentialsText += "\t\t\t";
-        string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - {Main.PluginShowVersion}";
+        string versionText = $"<color={Main.ModColor}>{Main.ModName} -  v{Main.PluginShowVersion}</color>";
 
 #if CANARY
-        versionText = $"<color=#cdfffd>{Main.ModName}</color> - {ThisAssembly.Git.Commit}";
+        versionText = $"<color=#cdfffd>{Main.ModName}</color> - {ThisAssembly.Git.Commit}";2 
 #endif
 
 #if DEBUG
