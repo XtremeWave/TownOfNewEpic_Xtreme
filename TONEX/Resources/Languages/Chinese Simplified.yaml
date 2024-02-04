@@ -190,6 +190,7 @@ Beartrap: "陷阱师"
 Wolfmate: "狼化者"
 Rambler: "漫步者"
 Chameleon: "变色龙"
+Signal: "通讯兵"
 Mini: "迷你船员"
 Libertarian: "广播员"
 
@@ -216,6 +217,7 @@ Prefix.Beartrap: "陷阱"
 Prefix.Chameleon: "变色"
 Prefix.Rambler: "漫步"
 Prefix.Mini: "迷你"
+Prefix.Signal: "通讯"
 Prefix.Libertarian: "广播"
 
 ## 胜利界面简介
@@ -445,6 +447,7 @@ WolfmateInfo: "超危险兽控：6"
 RamblerInfo: "一步两步~"
 ChameleonInfo: "看不见我看不见我！"
 MiniInfo: "他还是个孩子"
+SignalInfo: "我就不走！"
 LibertarianInfo: "注意啦！死人啦！"
 
 ## 其它 / Other Blurbs
@@ -608,6 +611,7 @@ RamblerInfoLong: "漫步者速度很慢，当漫步者被击杀时，凶手会�
 ChameleonInfoLong: "变色龙随时都会变色！"
 LibertarianInfoLong: "如果有人在广播员判定的范围里死亡，广播员会自动报告尸体"
 MiniInfoLong: "迷你船员在成年前无法被击杀，若以任何方式死亡则迷你船员单独胜利。\n若迷你船员是可以击杀的职业则击杀冷却会随年龄变化"
+SignalInfoLong: "通讯兵在会议时不会回到会议桌"
 
 ## 其它 / Other Descriptions
 GMInfoLong: "看我干啥，我只是个开局就死的冤魂，静静地吃瓜而已。"
