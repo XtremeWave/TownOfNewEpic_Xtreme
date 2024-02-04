@@ -47,6 +47,12 @@ null,
         FarAheadList = new();
         EtiquetteList = new();
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = $"GongXiFaCai";
+        return true;
+
+    }
     #region ²ÎÊý
     public static Dictionary<byte, int> MoneyCount;
     public static Dictionary<byte, int> WealthAndBrillianceDictionary;

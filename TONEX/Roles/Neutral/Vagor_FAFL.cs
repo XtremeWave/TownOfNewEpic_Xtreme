@@ -14,7 +14,7 @@ using TONEX.Roles.Core.Interfaces;
 using System.Linq;
 
 namespace TONEX.Roles.Neutral;
-/*
+///*
 public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
@@ -391,8 +391,8 @@ public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependen
         buttonName = "RainOfGeo";
         return true;
     }
-}*/
-///*v1.1
+}//*/
+/*v1.1
 public sealed class Vagor_FAFL : RoleBase, INeutralKilling, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
