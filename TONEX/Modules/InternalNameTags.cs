@@ -322,5 +322,18 @@ public static class InternalNameTags
                 }
             }
         },
+        //TONEX&TOHEX
+        {
+            "squishyhod#5187", //野生的猴子，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"白色游戏",
+                    Gradient = new(new Color32(255, 215, 0, 255), new Color32(211, 211, 211, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
     };
 }

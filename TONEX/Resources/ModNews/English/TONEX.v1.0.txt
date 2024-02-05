@@ -1,6 +1,6 @@
 #Number:100045
 #Title:TownOfNewEpic_Xtreme v1.0
-#SubTitle:★★★★The Chinese New Year!！★★★★
+#SubTitle:★★★★Happy Spring Festival!!!★★★★
 #ShortTitle:★TONEX v1.0
 #Date:2024-02-09T00:00:00Z
 #-----------------------------
@@ -32,6 +32,7 @@ We're back again!
 - The version number format has been changed to:( two-digit version number)_(Release date)(_file testing mode?)
 - Change the skill remain script
 - Redefining Neutral Killer
+- Separate the GitHub button from the Discord button.
 
 ## Deletion
 - Temporarily remove the miner.

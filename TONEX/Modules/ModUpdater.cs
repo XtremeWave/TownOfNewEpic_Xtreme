@@ -33,8 +33,9 @@ public class ModUpdater
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
         "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",
          //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
+        "https://tonex.cc/Resource/info.json",
         "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
-         //"https://tonex.cc/Resource/info.json",
+         
 
 #endif
     };
@@ -289,6 +290,7 @@ public class ModUpdater
             client.ProgressChanged += OnDownloadProgressChanged;
             await client.StartDownload();
             Logger.Info(GetMD5HashFromFile(DownloadFileTempPath), "md5");
+            Logger.Info(md5, "md5");
             Thread.Sleep(100);
             if (GetMD5HashFromFile(DownloadFileTempPath) != md5)
             {

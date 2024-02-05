@@ -14,6 +14,7 @@ public class MainMenuManagerPatch
     public static MainMenuManager Instance { get; private set; }
 
     public static GameObject InviteButton;
+    public static GameObject GithubButton;
     public static GameObject WebsiteButton;
     public static GameObject UpdateButton;
     public static GameObject PlayButton;
@@ -96,9 +97,10 @@ public class MainMenuManagerPatch
             return button;
         }
 
-        string extraLinkName = "Github";
-        string extraLinkUrl = Main.GithubRepoUrl;
-        bool extraLinkEnabled = Main.ShowGithubUrl;
+
+        var extraLinkName = "";
+        var extraLinkUrl = "";
+        var extraLinkEnabled = false;
         if (IsChineseUser ? Main.ShowQQButton : Main.ShowDiscordButton)
         {
             extraLinkName = IsChineseUser ? "QQ群" : "Discord";
@@ -113,6 +115,10 @@ public class MainMenuManagerPatch
         if (WebsiteButton == null) WebsiteButton = CreatButton(GetString("Website"), () => Application.OpenURL(Main.WebsiteUrl));
         WebsiteButton.gameObject.SetActive(Main.ShowWebsiteButton);
         WebsiteButton.name = "TONEX Website Button";
+
+        if (GithubButton == null) GithubButton = CreatButton("Github", () => Application.OpenURL(Main.GithubRepoUrl));
+        GithubButton.gameObject.SetActive(Main.ShowGithubUrl);
+        GithubButton.name = "TONEX Github Button";
 
         if (UpdateButton == null)
         {
