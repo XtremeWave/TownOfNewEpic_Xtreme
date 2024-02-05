@@ -1,11 +1,14 @@
 {
   "version": "0.9.8",
-  "showVer": "1.0_20240204_Preview_3",
+  "verHead": "1.0",
+  "verDate": "20240205",
+  "verTestName": "Preview",
+  "verTestNum": "3",
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
 
-  "md5": "b600907a7dce87e0ebf0903141e2d6f0",
+  "md5": "d2f63f27df2b20e08a48be9343dba1b2",
 
   "announcement": {
     "SChinese": "感谢您对TONEX的支持！",

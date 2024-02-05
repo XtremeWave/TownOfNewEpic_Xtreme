@@ -55,7 +55,11 @@ public class ModUpdater
     public static string versionInfoRaw = "";
 
     public static Version latestVersion = null;
-    public static string showVer = null;
+    public static string showVer = "";
+    public static string verHead = "";
+    public static string verDate = "";
+    public static string verTestName = "";
+    public static string verTestNum = "";
     public static Version minimumVersion = null;
     public static int creation = 0;
     public static string md5 = "";
@@ -85,7 +89,9 @@ public class ModUpdater
         MainMenuManagerPatch.UpdateButton.SetActive(isChecked && hasUpdate && (firstStart || forceUpdate));
         MainMenuManagerPatch.PlayButton.SetActive(!MainMenuManagerPatch.UpdateButton.activeSelf);
         var buttonText = MainMenuManagerPatch.UpdateButton.transform.FindChild("FontPlacer").GetChild(0).GetComponent<TextMeshPro>();
+        Logger.Info(showVer, "ver");
         buttonText.text = $"{GetString("updateButton")}\nv{showVer?.ToString() ?? "???"}";
+        Logger.Info(showVer.ToString(), "ver");
     }
     public static void Retry()
     {
@@ -183,9 +189,15 @@ public class ModUpdater
             }
 
             JObject data = JObject.Parse(result);
-
+            verHead = new(data["verHead"]?.ToString());
+            verDate = new(data["verDate"]?.ToString());
+            verTestName = new(data["verTestName"]?.ToString());
+            verTestNum = new(data["verTestNum"]?.ToString());
             latestVersion = new(data["version"]?.ToString());
-            showVer = new(data["showVer"]?.ToString());
+            var vertestname = (verTestName == "") ? "" : verTestName;
+            var vertesttext = (verTestNum == "") ? "" : $"{vertestname}_{verTestNum}";
+            showVer = $"{verHead}_{verDate}_{vertesttext}";
+            Logger.Info(showVer, "ver");
             var minVer = data["minVer"]?.ToString();
             minimumVersion = minVer.ToLower() == "latest" ? latestVersion : new(minVer);
             creation = int.Parse(data["creation"]?.ToString());
@@ -198,7 +210,8 @@ public class ModUpdater
 
             JObject downloadUrl = data["url"].Cast<JObject>();
             downloadUrl_github = downloadUrl["github"]?.ToString();
-            downloadUrl_gitee = downloadUrl["gitee"]?.ToString().Replace("{{showVer}}", $"v{latestVersion}");
+            downloadUrl_gitee = downloadUrl["gitee"]?.ToString().Replace("{{showVer}}", $"v{showVer}");
+
             downloadUrl_website = downloadUrl["website"]?.ToString();
 
             hasUpdate = Main.version < latestVersion;
@@ -275,7 +288,7 @@ public class ModUpdater
             using var client = new HttpClientDownloadWithProgress(url, DownloadFileTempPath);
             client.ProgressChanged += OnDownloadProgressChanged;
             await client.StartDownload();
-
+            Logger.Info(GetMD5HashFromFile(DownloadFileTempPath), "md5");
             Thread.Sleep(100);
             if (GetMD5HashFromFile(DownloadFileTempPath) != md5)
             {
