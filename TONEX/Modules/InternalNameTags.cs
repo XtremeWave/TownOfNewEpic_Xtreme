@@ -292,7 +292,7 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"HostTONEX",
+                    Text = $"HostTONX",
                     TextColor = new Color32(255, 214, 236, 255),
                     SizePercentage = 80
                 }
