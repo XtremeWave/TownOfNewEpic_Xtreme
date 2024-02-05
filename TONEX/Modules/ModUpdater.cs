@@ -32,9 +32,9 @@ public class ModUpdater
 #else
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
         "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",
-        //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
+         //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
         "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
-        "https://tonex.cc/Resource/info.json",
+         //"https://tonex.cc/Resource/info.json",
 
 #endif
     };
@@ -194,9 +194,9 @@ public class ModUpdater
             verTestName = new(data["verTestName"]?.ToString());
             verTestNum = new(data["verTestNum"]?.ToString());
             latestVersion = new(data["version"]?.ToString());
-            var vertestname = (verTestName == "") ? "" : verTestName;
+            var vertestname = (verTestName == "") ? "" : $"_{verTestName}";
             var vertesttext = (verTestNum == "") ? "" : $"{vertestname}_{verTestNum}";
-            showVer = $"{verHead}_{verDate}_{vertesttext}";
+            showVer = $"{verHead}_{verDate}{vertesttext}";
             Logger.Info(showVer, "ver");
             var minVer = data["minVer"]?.ToString();
             minimumVersion = minVer.ToLower() == "latest" ? latestVersion : new(minVer);
