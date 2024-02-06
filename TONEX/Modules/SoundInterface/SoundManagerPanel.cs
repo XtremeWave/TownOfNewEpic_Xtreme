@@ -4,17 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static TONEX.NameTagManager;
+using static TONEX.IntSoundManager;
 using static TONEX.Translator;
 using Object = UnityEngine.Object;
+using System.IO;
 
-namespace TONEX.Modules.NameTagInterface;
+namespace TONEX.Modules.SoundInterface;
 
-public static class NameTagPanel
+public static class SoundManagerPanel
 {
     public static SpriteRenderer CustomBackground { get; private set; }
     public static GameObject Slider { get; private set; }
     public static Dictionary<string, GameObject> Items { get; private set; }
+    private static bool IsDownloading = false;
 
     private static int numItems = 0;
     public static void Hide()
@@ -61,11 +63,11 @@ public static class NameTagPanel
             var newButton = Object.Instantiate(mouseMoveToggle, CustomBackground.transform);
             newButton.transform.localPosition = new(1.3f, -1.88f, -16f);
             newButton.name = "New Tag";
-            newButton.Text.text = GetString("NewNameTag");
+            newButton.Text.text = GetString("NewSound");
             newButton.Background.color = Palette.White;
             var newPassiveButton = newButton.GetComponent<PassiveButton>();
             newPassiveButton.OnClick = new();
-            newPassiveButton.OnClick.AddListener(new Action(NameTagNewWindow.Open));
+            newPassiveButton.OnClick.AddListener(new Action(SoundManagerNewWindow.Open));
 
             var helpText = Object.Instantiate(CustomPopup.InfoTMP.gameObject, CustomBackground.transform);
             helpText.name = "Help Text";
@@ -108,37 +110,100 @@ public static class NameTagPanel
         Items?.Values?.Do(Object.Destroy);
         Items = new();
 
-        foreach (var nameTag in AllNameTags.Where(t => !t.Value.Isinternal))
+        foreach (var sound in AllFiles)
         {
             numItems++;
             var button = Object.Instantiate(buttonPrefab, scroller.Inner);
             button.transform.localPosition = new(-1f, 1.6f - 0.6f * numItems, -10.5f);
             button.transform.localScale = new(1.2f, 1.2f, 1.2f);
-            button.name = "Name Tag Item For " + nameTag.Key;
+            button.name = "Name Tag Item For " + sound;
             Object.Destroy(button.GetComponent<UIScrollbarHelper>());
             Object.Destroy(button.GetComponent<NumberButton>());
-            button.transform.GetChild(0).GetComponent<TextMeshPro>().text = nameTag.Key;
+            if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
+                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("delete");
+            else if (AllSounds.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+            button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("download");
+            else if (!AllSounds.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+            {
+                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("NoFound");
+            }
+                if (IsDownloading)
+                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("cancel");
             var renderer = button.GetComponent<SpriteRenderer>();
-            renderer.color = Palette.DisabledGrey;
+            renderer.color = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") ? Color.red : Color.green;
+
             var rollover = button.GetComponent<ButtonRolloverHandler>();
-            rollover.OutColor = Palette.DisabledGrey;
+            rollover.OutColor = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav")? Color.red:Color.green;
+            if (IsDownloading)
+            {
+                renderer.color = rollover.OutColor = Color.yellow;
+            }
             var passiveButton = button.GetComponent<PassiveButton>();
             passiveButton.OnClick = new();
             passiveButton.OnClick.AddListener(new Action(() =>
             {
-                NameTagEditMenu.Toggle(nameTag.Key, null);
+                if (IsDownloading)
+                {
+                    renderer.color = rollover.OutColor = Color.red;
+                }
+                else
+                { 
+                    if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
+                    {
+                        DeleteSoundInName(sound);
+                        DeleteSoundInFile(sound);
+                        ReloadTag(sound);
+                        RefreshTagList();
+                        SoundPanel.RefreshTagList();
+                    }
+                    else
+                    {
+                        renderer.color = rollover.OutColor = Color.yellow;
+                    }
+                }
             }));
             var previewText = Object.Instantiate(button.transform.GetChild(0).GetComponent<TextMeshPro>(), button.transform);
             previewText.transform.SetLocalX(1.9f);
             previewText.fontSize = 1f;
-            string preview = GetString("PreviewNotAvailable");
-            if (nameTag.Value.UpperText?.Text != null)
-                preview = nameTag.Value.UpperText.Generate();
+            string preview ="???";
+            if (sound != null)
+                preview = sound;
             previewText.text = preview;
-            Items.Add(nameTag.Key, button);
+            Items.Add(sound, button);
         }
 
         scroller.SetYBoundsMin(0f);
         scroller.SetYBoundsMax(0.6f * numItems);
+    }
+    public static void DeleteSoundInName(string soundname)
+    {
+        if (AllSounds.Contains(soundname)) return;
+        try
+        {
+
+            var path = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{soundname}.json";
+            Logger.Info($"{soundname} Deleted", "DeleteSound");
+                File.Delete(path);
+            
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"清除文件名称失败\n{e}", "DeleteOldFiles");
+        }
+        return;
+    }
+    public static void DeleteSoundInFile(string sound)
+    {
+        try
+        {
+            var path2 = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav";
+            Logger.Info($"{Path.GetFileName(path2)} Deleted", "DeleteSound");
+            File.Delete(path2);
+        }
+        catch (Exception e)
+        {
+            Logger.Error($"清除文件失败\n{e}", "DeleteSound");
+        }
+        return;
     }
 }

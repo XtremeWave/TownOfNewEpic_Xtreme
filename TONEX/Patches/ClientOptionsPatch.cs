@@ -1,6 +1,8 @@
 using HarmonyLib;
 using TONEX.Modules.ClientOptions;
+using TONEX.Modules.MoreOptions;
 using TONEX.Modules.NameTagInterface;
+using TONEX.Modules.SoundInterface;
 using UnityEngine;
 
 namespace TONEX;
@@ -21,7 +23,9 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientActionItem DumpLog;
     private static ClientOptionItem VersionCheat;
     private static ClientOptionItem GodMode;
-
+    private static MoreActionItem NameTag;
+    private static MoreActionItem Sound;
+    private static MoreActionItem SoundManager;
 
     private static bool reseted = false;
     public static void Postfix(OptionsMenuBehaviour __instance)
@@ -29,6 +33,8 @@ public static class OptionsMenuBehaviourStartPatch
         if (__instance.DisableMouseMovement == null) return;
 
         NameTagPanel.Init(__instance);
+        SoundPanel.Init(__instance);
+        SoundManagerPanel.Init(__instance);
 
         if (!reseted || !DebugModeManager.AmDebugger)
         {
@@ -50,6 +56,7 @@ public static class OptionsMenuBehaviourStartPatch
         //{
             //CanPublic = ClientOptionItem.Create("CanPublic", Main.CanPublic, __instance);
        // }
+       
         if (HorseMode == null || HorseMode.ToggleButton == null)
         {
             HorseMode = ClientOptionItem.Create("HorseMode", Main.HorseMode, __instance);
@@ -101,9 +108,63 @@ public static class OptionsMenuBehaviourStartPatch
         {
             GodMode = ClientOptionItem.Create("GodMode", Main.GodMode, __instance);
         }
+        if ((NameTag == null || NameTag.ToggleButton == null))
+        {
+            NameTag = MoreActionItem.Create("NameTag", () =>
+            {
+                NameTagPanel.CustomBackground.gameObject.SetActive(true);
+            }, __instance);
+        }
+        if ((Sound == null || Sound.ToggleButton == null))
+        {
+            Sound = MoreActionItem.Create("Sound", () =>
+            {
+                SoundPanel.CustomBackground.gameObject.SetActive(true);
+            }, __instance);
+        }
+        if ((SoundManager == null || SoundManager.ToggleButton == null))
+        {
+            SoundManager = MoreActionItem.Create("SoundManager", () =>
+            {
+                SoundManagerPanel.CustomBackground.gameObject.SetActive(true);
+            }, __instance);
+        }
+        if (!GameStates.IsNotJoined)
+        {
+            NameTag.ToggleButton.Text.text = Translator.GetString("OnlyAvailableInMainMenu");
+            NameTag.ToggleButton.GetComponent<PassiveButton>().enabled = false;
+            NameTag.ToggleButton.Background.color = Palette.DisabledGrey;
+            SoundManager.ToggleButton.Text.text = Translator.GetString("OnlyAvailableInMainMenu");
+            SoundManager.ToggleButton.GetComponent<PassiveButton>().enabled = false;
+            SoundManager.ToggleButton.Background.color = Palette.DisabledGrey;
+            return;
+        }
+        else
+        {
+            NameTag.ToggleButton.Text.text = Translator.GetString("NameTagOptions");
+            NameTag.ToggleButton.GetComponent<PassiveButton>().enabled = true;
+            NameTag.ToggleButton.Background.color = Main.ModColor32;
+            Sound.ToggleButton.Text.text = Translator.GetString("SoundOptions");
+            Sound.ToggleButton.GetComponent<PassiveButton>().enabled = true;
+            Sound.ToggleButton.Background.color = Main.ModColor32;
+            SoundManager.ToggleButton.Text.text = Translator.GetString("SoundManagerOptions");
+            SoundManager.ToggleButton.GetComponent<PassiveButton>().enabled = true;
+            SoundManager.ToggleButton.Background.color = Main.ModColor32;
+        }
+        var mouseMoveToggle = __instance.DisableMouseMovement;
+        
+        for (int i = -1; i < SoundPanel.ButtonTotalCount - 1; i++)
+        {
+            
+            string text = TONEX.IntSoundManager.AllFiles[i];
+            var soundButton = Object.Instantiate(mouseMoveToggle, SoundPanel.CustomBackground.transform);
+            soundButton.name = text;
+            soundButton.Text.text = text;
+            soundButton.Background.color = Color.cyan;
+        }
 
         if (ModUnloaderScreen.Popup == null)
-            ModUnloaderScreen.Init(__instance);
+        ModUnloaderScreen.Init(__instance);
     }
 }
 
@@ -116,5 +177,7 @@ public static class OptionsMenuBehaviourClosePatch
         NameTagPanel.Hide();
         NameTagEditMenu.Hide();
         ModUnloaderScreen.Hide();
+        SoundPanel.Hide();
+        SoundManagerPanel.Hide();
     }
 }

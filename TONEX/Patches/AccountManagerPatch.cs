@@ -15,7 +15,7 @@ public static class UpdateFriendCodeUIPatch
 
         string credentialsText = string.Format(GetString("MainMenuCredential"), $"<color={Main.ModColor}>Team-XtremeWave</color>");
         credentialsText += "\t\t\t";
-        string versionText = $"<color={Main.ModColor}>{Main.ModName} -  v{Main.PluginShowVersion}</color>";
+        string versionText = $"<color={Main.ModColor}>{Main.ModName}</color> - <color=#ffff00>v{Main.PluginShowVersion}</color>";
 
 #if CANARY
         versionText = $"<color=#cdfffd>{Main.ModName}</color> - {ThisAssembly.Git.Commit}";2 

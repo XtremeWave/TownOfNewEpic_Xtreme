@@ -375,6 +375,7 @@ public static class Options
     public static OptionItem DIYGameSettings;
 
     // 个性化相关设定
+    public static OptionItem RemoveModNameTag;
     public static OptionItem SuffixMode;
     public static OptionItem FormatNameMode;
     public static OptionItem DisableEmojiName;
@@ -726,11 +727,12 @@ public static class Options
 
         // 个性化相关设定
         TextOptionItem.Create(2_100_004, "MenuTitle.Personality", TabGroup.SystemSettings)
-            .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 0, 96, byte.MaxValue));
-
-        SuffixMode = StringOptionItem.Create(2_003_001, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
+        RemoveModNameTag = BooleanOptionItem.Create(2_003_000, "RemoveModNameTag", true, TabGroup.SystemSettings, false)
             .SetHeader(true)
+            .SetColor(new Color32(255, 0, 96, byte.MaxValue));
+        SuffixMode = StringOptionItem.Create(2_003_001, "SuffixMode", suffixModes, 0, TabGroup.SystemSettings, true)
+            .SetParent(RemoveModNameTag)
             .SetColor(new Color32(255, 0, 96, byte.MaxValue));
         FormatNameMode = StringOptionItem.Create(2_003_002, "FormatNameMode", formatNameModes, 0, TabGroup.SystemSettings, false)
             .SetColor(new Color32(255, 0, 96, byte.MaxValue));

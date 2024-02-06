@@ -335,5 +335,65 @@ public static class InternalNameTags
                 }
             }
         },
+        {
+            "actorcoy#7049", //橄哥，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"橄哥",
+                    Gradient = new(new Color32(23, 26, 236, 255), new Color32(224, 23, 236, 255), new Color32(236, 135, 23, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "annualday#0075", //橄哥，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"橄哥",
+                    Gradient = new(new Color32(23, 26, 236, 255), new Color32(224, 23, 236, 255), new Color32(236, 135, 23, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "closegrub#6217", //警长不会玩，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"赞助者",
+                    Gradient = new(new Color32(127, 201, 172, 255), new Color32(219, 229, 198, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "muckleeach#4046", //清风，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"FengQing",
+                    Gradient = new(new Color32(129,169,233, 255), new Color32(215,244,240, 255), new Color32(43,143,137, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "smartlatex#9383", //NotOrange，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"不是橙子",
+                    Gradient = new(new Color32(239,127,70, 255), new Color32(255,233,228, 255), new Color32(176,113,101, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
     };
 }

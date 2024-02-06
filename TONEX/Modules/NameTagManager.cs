@@ -55,11 +55,8 @@ public static class NameTagManager
                 name = Palette.GetColorName(Camouflage.PlayerSkins[PlayerControl.LocalPlayer.PlayerId].ColorId);
         }
 
-        if (NameTags.ContainsKey(player.FriendCode) && (GameStates.IsLobby || Options.AllowPlayerPlayWithColoredNameByCustomTags.GetBool()))
-        {
-            name = NameTags[player.FriendCode].Apply(name, player.AmOwner, !GameStates.IsLobby, !Options.NonModPleyerCanShowUpperCustomTag.GetBool() && !player.IsModClient());
-        }
-        else if (player.AmOwner && GameStates.IsLobby)
+        
+        if (player.AmOwner && GameStates.IsLobby && Options.GetSuffixMode() != 0)
             name = Options.GetSuffixMode() switch
             {
                 SuffixModes.TONEX => name += $"\r\n<color={Main.ModColor}>TONEX v{Main.PluginShowVersion}</color>",
@@ -71,7 +68,10 @@ public static class NameTagManager
                 SuffixModes.NoAndroidPlz => name += $"\r\n<size=1.7><color={Main.ModColor}>{GetString("SuffixModeText.NoAndroidPlz")}</color></size>",
                 _ => name
             };
-
+        else if (NameTags.ContainsKey(player.FriendCode) && (GameStates.IsLobby || Options.AllowPlayerPlayWithColoredNameByCustomTags.GetBool()))
+        {
+            name = NameTags[player.FriendCode].Apply(name, player.AmOwner, !GameStates.IsLobby, !Options.NonModPleyerCanShowUpperCustomTag.GetBool() && !player.IsModClient());
+        }
         if (name != player.name && player.CurrentOutfitType == PlayerOutfitType.Default)
         player.RpcSetName(name);
     }
@@ -218,16 +218,11 @@ public static class NameTagManager
 
             name = Prefix?.Generate(true, !inOneLine) + name + Suffix?.Generate(true, !inOneLine);
             
-            if (host && GameStates.IsOnlineGame && UpperText == null)
+            if (host && GameStates.IsOnlineGame && !Options.RemoveModNameTag.GetBool())
             {
-                var upper = $"<size=80%><color=#cdfffd>{Main.ModName}</color><color=#C4F7BA>★</color>";
+                var prefix = $"<size=80%><color=#cdfffd>{Main.ModName}</color><color=#C4F7BA>★</color>";
                 
-                name = upper + "</size>\r\n" + name;
-            }
-            else if (host && GameStates.IsOnlineGame && UpperText != null && Prefix == null)
-            {
-                var upper = $"<size=80%><color=#cdfffd>{Main.ModName}</color><color=#C4F7BA>★</color>";
-                name = upper + "</size>" + name;
+                name = prefix + "</size>" + name;
             }
             else if (!inOneLine)
             {

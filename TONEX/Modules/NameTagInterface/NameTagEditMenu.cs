@@ -157,7 +157,7 @@ public static class NameTagEditMenu
         Suffix,
         Name
     }
-    private static bool SaveToFile(string friendCode, NameTag tag)
+    private static bool SaveToFile(string soundname, NameTag tag)
     {
         if (FriendCode is null or "") return false;
 
@@ -214,7 +214,7 @@ public static class NameTagEditMenu
         JsonWriter.WriteEndObject();
         sw.Flush();
 
-        string fileName = TAGS_DIRECTORY_PATH + friendCode.Trim() + ".json";
+        string fileName = TAGS_DIRECTORY_PATH + soundname.Trim() + ".json";
         if (!File.Exists(fileName)) File.Create(fileName).Close();
         File.WriteAllText(fileName, sw.ToString());
         return true;
@@ -228,11 +228,12 @@ public static class NameTagEditMenu
         Menu.name = "Name Tag Edit Menu";
         Menu.transform.SetLocalZ(-30f);
         Menu.transform.FindChild("Background").localScale *= 1.4f;
+        Menu.transform.FindChild("Background").localPosition += Vector3.back * 15;
 
         Object.Destroy(Menu.transform.FindChild("Button2").gameObject);
 
         var closeButton = Object.Instantiate(Menu.transform.parent.FindChild("CloseButton"), Menu.transform);
-        closeButton.transform.localPosition = new Vector3(4.9f, 2.5f, -1f);
+        closeButton.transform.localPosition = new Vector3(4.9f, 2.5f, -31f);
         closeButton.transform.localScale = new Vector3(1f, 1f, 1f);
         closeButton.GetComponent<PassiveButton>().OnClick = new();
         closeButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
@@ -257,7 +258,7 @@ public static class NameTagEditMenu
 
         PreviewButton = Object.Instantiate(buttonPrefab, Menu.transform);
         PreviewButton.name = "Refresh Preview Button";
-        PreviewButton.transform.localPosition = new Vector3(1.2f, -2.5f, 0f);
+        PreviewButton.transform.localPosition = new Vector3(1.2f, -2.5f, -30f);
         PreviewButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             SaveToCache(CurrentComponent);
@@ -268,7 +269,7 @@ public static class NameTagEditMenu
 
         SaveAndExitButton = Object.Instantiate(buttonPrefab, Menu.transform);
         SaveAndExitButton.name = "Save And Exit Button";
-        SaveAndExitButton.transform.localPosition = new Vector3(3.5f, -2.5f, 0f);
+        SaveAndExitButton.transform.localPosition = new Vector3(3.5f, -2.5f, -30f);
         SaveAndExitButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             SaveToCache(CurrentComponent);
@@ -282,7 +283,7 @@ public static class NameTagEditMenu
 
         DeleteButton = Object.Instantiate(buttonPrefab, Menu.transform);
         DeleteButton.name = "Delete Name Tag Button";
-        DeleteButton.transform.localPosition = new Vector3(-3.5f, -2.5f, 0f);
+        DeleteButton.transform.localPosition = new Vector3(-3.5f, -2.5f, -30f);
         DeleteButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             string fileName = TAGS_DIRECTORY_PATH + FriendCode.Trim() + ".json";
@@ -297,7 +298,7 @@ public static class NameTagEditMenu
 
         EditUpperButton = Object.Instantiate(buttonPrefab, Menu.transform);
         EditUpperButton.name = "Edit Upper Button";
-        EditUpperButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, 0f);
+        EditUpperButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, -30f);
         EditUpperButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             SaveToCache(CurrentComponent);
@@ -312,7 +313,7 @@ public static class NameTagEditMenu
 
         EditPrefixButton = Object.Instantiate(buttonPrefab, Menu.transform);
         EditPrefixButton.name = "Edit Prefix Button";
-        EditPrefixButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, 0f);
+        EditPrefixButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, -30f);
         EditPrefixButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             SaveToCache(CurrentComponent);
@@ -327,7 +328,7 @@ public static class NameTagEditMenu
 
         EditSuffixButton = Object.Instantiate(buttonPrefab, Menu.transform);
         EditSuffixButton.name = "Edit Sufix Button";
-        EditSuffixButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, 0f);
+        EditSuffixButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, -30f);
         EditSuffixButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             SaveToCache(CurrentComponent);
@@ -342,7 +343,7 @@ public static class NameTagEditMenu
 
         EditNameButton = Object.Instantiate(buttonPrefab, Menu.transform);
         EditNameButton.name = "Edit Name Button";
-        EditNameButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, 0f);
+        EditNameButton.transform.localPosition = new Vector3(-3.6f + 2.2f * editButtonNum, 2f, -30f);
         EditNameButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
             SaveToCache(CurrentComponent);
@@ -361,13 +362,13 @@ public static class NameTagEditMenu
 
         Text_Info = Object.Instantiate(infoPrefab, Menu.transform);
         Text_Info.name = "Edit Text Description";
-        Text_Info.transform.localPosition = new Vector3(-2.95f, 0f, 0f);
+        Text_Info.transform.localPosition = new Vector3(-2.95f, 0f, -30f);
         var textInfoTmp = Text_Info.GetComponent<TextMeshPro>();
         textInfoTmp.text = GetString("TextContent");
 
         Text_Enter = Object.Instantiate(enterPrefab, Menu.transform);
         Text_Enter.name = "Edit Text Enter Box";
-        Text_Enter.transform.localPosition = new Vector3(-2.9f, 0f, 0f);
+        Text_Enter.transform.localPosition = new Vector3(-2.9f, 0f, -30f);
         var textEnterTBT = Text_Enter.GetComponent<TextBoxTMP>();
         textEnterTBT.allowAllCharacters =
         textEnterTBT.AllowEmail =
@@ -375,13 +376,13 @@ public static class NameTagEditMenu
 
         Size_Info = Object.Instantiate(infoPrefab, Menu.transform);
         Size_Info.name = "Edit Size Description";
-        Size_Info.transform.localPosition = new Vector3(-2.95f, -1.5f, 0f);
+        Size_Info.transform.localPosition = new Vector3(-2.95f, -1.5f, -30f);
         var sizeInfoTmp = Size_Info.GetComponent<TextMeshPro>();
         sizeInfoTmp.text = GetString("TextContentDescription");
 
         Size_Enter = Object.Instantiate(enterPrefab, Menu.transform);
         Size_Enter.name = "Edit Size Enter Box";
-        Size_Enter.transform.localPosition = new Vector3(-2.9f, -1.5f, 0f);
+        Size_Enter.transform.localPosition = new Vector3(-2.9f, -1.5f, -30f);
         var sizeEnterTBT = Size_Enter.GetComponent<TextBoxTMP>();
         sizeEnterTBT.allowAllCharacters =
         sizeEnterTBT.AllowEmail =
@@ -390,21 +391,21 @@ public static class NameTagEditMenu
 
         Color_Info = Object.Instantiate(infoPrefab, Menu.transform);
         Color_Info.name = "Edit Color Description";
-        Color_Info.transform.localPosition = new Vector3(1.95f, 0f, 0f);
+        Color_Info.transform.localPosition = new Vector3(1.95f, 0f, -30f);
         var colorInfoTmp = Color_Info.GetComponent<TextMeshPro>();
         colorInfoTmp.text = GetString("TextColorDescription");
 
         Color1_Enter = Object.Instantiate(enterPrefab, Menu.transform);
         Color1_Enter.name = "Edit Color 1 Enter Box";
-        Color1_Enter.transform.localPosition = new Vector3(1.95f, -0.3f, 0f);
+        Color1_Enter.transform.localPosition = new Vector3(1.95f, -0.3f, -30f);
 
         Color2_Enter = Object.Instantiate(enterPrefab, Menu.transform);
         Color2_Enter.name = "Edit Color 2 Enter Box";
-        Color2_Enter.transform.localPosition = new Vector3(1.95f, -0.9f, 0f);
+        Color2_Enter.transform.localPosition = new Vector3(1.95f, -0.9f, -30f);
 
         Color3_Enter = Object.Instantiate(enterPrefab, Menu.transform);
         Color3_Enter.name = "Edit Color 3 Enter Box";
-        Color3_Enter.transform.localPosition = new Vector3(1.95f, -1.5f, 0f);
+        Color3_Enter.transform.localPosition = new Vector3(1.95f, -1.5f, -30f);
 
         titlePrefab.SetActive(false);
         infoPrefab.SetActive(false);

@@ -85,6 +85,7 @@ We're back again!
 - Opportunist Setting： Can Kill
 - Setting：Modify the Fungle reactor duration（merge from TOH v5.0.4)
 - Setting：Modify the Fungle Mushroom Mixup duration（merge from TOH v5.0.4)
+- Setting：Remove Mod Name Prefix
 
 ## Role Changs
 - Vetertan：Show Skills remain

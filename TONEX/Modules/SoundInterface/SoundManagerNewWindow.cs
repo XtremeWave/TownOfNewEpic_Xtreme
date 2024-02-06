@@ -4,10 +4,15 @@ using TMPro;
 using UnityEngine;
 using static TONEX.Translator;
 using Object = UnityEngine.Object;
+using TONEX.Modules.SoundInterface;
+using Newtonsoft.Json;
+using static TONEX.IntSoundManager;
+using System.IO;
+using System.Linq;
 
-namespace TONEX.Modules.NameTagInterface;
+namespace TONEX.Modules.SoundInterface;
 
-public static class NameTagNewWindow
+public static class SoundManagerNewWindow
 {
     public static GameObject Window { get; private set; }
     public static GameObject Info { get; private set; }
@@ -17,7 +22,6 @@ public static class NameTagNewWindow
     {
         if (Window == null) Init();
         if (Window == null) return;
-        if (NameTagEditMenu.Menu?.active ?? false) return;
         Window.SetActive(true);
         EnterBox.GetComponent<TextBoxTMP>().Clear();
     }
@@ -25,12 +29,11 @@ public static class NameTagNewWindow
     {
         if (!GameStates.IsNotJoined) return;
 
-        Window = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject, NameTagPanel.CustomBackground.transform.parent);
+        Window = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject, SoundManagerPanel.CustomBackground.transform.parent);
         Window.name = "New Name Tag Window";
         Window.transform.FindChild("Background").localScale *= 0.7f;
-        Window.transform.FindChild("Background").localPosition += Vector3.back * 21;
-
-       Object.Destroy(Window.transform.FindChild("Button2").gameObject);
+        Window.transform.localPosition += Vector3.back * 21;
+         Object.Destroy(Window.transform.FindChild("Button2").gameObject);
 
         var closeButton = Object.Instantiate(Window.transform.parent.FindChild("CloseButton"), Window.transform);
         closeButton.transform.localPosition = new Vector3(2.4f, 1.2f, -21f);
@@ -59,19 +62,17 @@ public static class NameTagNewWindow
 
         Info = Object.Instantiate(infoPrefab, Window.transform);
         Info.name = "Enter Friend Code Description";
-        Info.transform.localPosition = new Vector3(0f, 0.1f, -10f);
+        Info.transform.localPosition = new Vector3(0f, 0.1f, -20f);
         var colorInfoTmp = Info.GetComponent<TextMeshPro>();
-        colorInfoTmp.text = GetString("PleaseEnterFriendCode");
-        colorInfoTmp.transform.localPosition += Vector3.back * 10;
+        colorInfoTmp.text = GetString("PleaseEnterMusic");
 
         EnterBox = Object.Instantiate(enterPrefab, Window.transform);
         EnterBox.name = "Enter Friend Code Box";
-        EnterBox.transform.localPosition = new Vector3(0f, -0.04f, -10f);
+        EnterBox.transform.localPosition = new Vector3(0f, -0.04f, -20f);
         var enterBoxTBT = EnterBox.GetComponent<TextBoxTMP>();
         enterBoxTBT.AllowEmail = false;
         enterBoxTBT.AllowSymbols = true;
         enterBoxTBT.AllowPaste = true;
-        enterBoxTBT.transform.localPosition += Vector3.back * 10;
 
         ConfirmButton = Object.Instantiate(buttonPrefab, Window.transform);
         ConfirmButton.name = "Confirm Button";
@@ -80,21 +81,26 @@ public static class NameTagNewWindow
         {
             var code = EnterBox.GetComponent<TextBoxTMP>().text.ToLower().Trim().Replace("-", "#").Replace("—", "#").Replace(" ", string.Empty);
             var reg = new Regex(@"^[a-z]+#[0-9]{4}$");
-            if (NameTagManager.AllNameTags.TryGetValue(code, out var tag) && !tag.Isinternal)
+
+            if (AllMusic.Contains(code))
             {
                 ConfirmButton.SetActive(false);
-                colorInfoTmp.text = GetString("SoundNameAlreadyExist");
+                colorInfoTmp.text = GetString("SoundManagerAlreadyExist");
                 colorInfoTmp.color = Color.blue;
             }
             else
             {
                 Window.SetActive(false);
-                NameTagEditMenu.Toggle(code, true);
+                SaveToFile(code);
+                ReloadTag(code);
+                SoundManagerPanel.RefreshTagList();
+                SoundPanel.RefreshTagList();
                 return;
             }
+
             new LateTask(() =>
             {
-                colorInfoTmp.text = GetString("PleaseEnterFriendCode");
+                colorInfoTmp.text = GetString("PleaseEnterSoundName");
                 colorInfoTmp.color = Color.white;
                 ConfirmButton.SetActive(true);
             }, 1.2f, "Reactivate Enter Box");
@@ -106,5 +112,21 @@ public static class NameTagNewWindow
         infoPrefab.SetActive(false);
         buttonPrefab.SetActive(false);
         enterPrefab.SetActive(false);
+    }
+    private static bool SaveToFile(string friendCode)
+    {
+       
+        Il2CppSystem.IO.StringWriter sw = new();
+        JsonWriter JsonWriter = new JsonTextWriter(sw);
+        JsonWriter.WriteStartObject();
+
+
+        JsonWriter.WriteEndObject();
+        sw.Flush();
+
+        string fileName = TAGS_DIRECTORY_PATH + friendCode.Trim() + ".json";
+        if (!File.Exists(fileName)) File.Create(fileName).Close();
+        File.WriteAllText(fileName, sw.ToString());
+        return true;
     }
 }
