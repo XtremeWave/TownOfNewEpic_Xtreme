@@ -1211,6 +1211,10 @@ FastBoot: "快速启动模式"
 EnableCustomButton: "使用模组按钮样式"
 EnableCustomSoundEffect: "开启模组技能音效"
 
+
+## 更多功能
+MoreFeature: "更多功能"
+
 # 头衔管理 / Custom Titles
 NameTagOptions: "头衔管理"
 NewNameTag: "新建"
@@ -1231,6 +1235,25 @@ PleaseEnterFriendCode: "请输入新头衔绑定的好友代码"
 FriendCodeAlreadyExist: "该好友代码已拥有头衔"
 FriendCodeIncorrect: "请输入正确的好友代码"
 CustomNameTagHelp: "房主可以为其他玩家或自己添加头衔，头衔会在该房主开房时生效。每位房主设定的头衔不同，因此您设定的头衔不会在其他人的房间生效。请注意：私服里只会显示房主的头衔。（若有玩家自带头衔，那是系统发放的）"
+
+#音乐管理
+SoundOptions: "我的音乐"
+PlayMode0: "单次播放"
+PlayMode1: "循环播放"
+Stop: "停止播放"
+SoundManagerOptions: "音频管理"
+download: "下载"
+delete: "删除"
+NoFound: "【文件丢失】"
+CanPlay: "←点击播放"
+NewSound: "新增音乐"
+PleaseEnterMusic: "请输入音乐名"
+SoundManagerAlreadyExists: "该音乐名已存在"
+NotAllowedMusic: "音乐名称格式不合规"
+Spring Rejoices in Parallel Universes: "异世庆同春 _Slok7565"
+GongXiFaCaiLiuDeHua: "恭喜发财 _刘德华"
+CustomSoundManagerHelp: "您可以在“音频管理”中下载TONEX的游戏音频/音乐或添加自己的音乐，当您添加自己的音乐时，请您先在“音频管理”中添加音乐名、之后请在路径“Among Us/TONEX_Data/Sounds”文件夹内添加相同名称的wav文件（若该文件夹不存在请您创建文件夹）。音乐可在“我的音乐”中播放\r\n当您下载音乐时，若出现卡顿，可能是因为该音频文件较大，请耐心等待"
+CustomSoundHelp: "您可以在“音频管理”中下载TONEX的游戏音频或添加自己的音乐，请注意，该文本与音乐播放按钮的边框在游戏中不显示"
 
 # 指令帮助 / Commands Help
 CommandList: "★ 主要指令:"

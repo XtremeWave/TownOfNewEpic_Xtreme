@@ -86,6 +86,12 @@ public static class NameTagNewWindow
                 colorInfoTmp.text = GetString("SoundNameAlreadyExist");
                 colorInfoTmp.color = Color.blue;
             }
+            else if (!reg.Match(code).Success)
+            {
+                ConfirmButton.SetActive(false);
+                colorInfoTmp.text = GetString("FriendCodeIncorrect");
+                colorInfoTmp.color = Color.red;
+            }
             else
             {
                 Window.SetActive(false);

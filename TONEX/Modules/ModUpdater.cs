@@ -212,8 +212,11 @@ public class ModUpdater
             JObject downloadUrl = data["url"].Cast<JObject>();
             downloadUrl_github = downloadUrl["github"]?.ToString();
             downloadUrl_gitee = downloadUrl["gitee"]?.ToString().Replace("{{showVer}}", $"v{showVer}");
-
             downloadUrl_website = downloadUrl["website"]?.ToString();
+
+            MusicDownloader.Url_github = downloadUrl["githubmus"]?.ToString();
+            MusicDownloader.Url_gitee = downloadUrl["giteemus"]?.ToString();
+            MusicDownloader.downloadUrl_website = downloadUrl["websitemus"]?.ToString();
 
             hasUpdate = Main.version < latestVersion;
             forceUpdate = Main.version < minimumVersion || creation > Main.PluginCreation;

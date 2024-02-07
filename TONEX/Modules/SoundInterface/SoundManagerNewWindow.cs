@@ -27,7 +27,7 @@ public static class SoundManagerNewWindow
     }
     public static void Init()
     {
-        if (!GameStates.IsNotJoined) return;
+
 
         Window = Object.Instantiate(AccountManager.Instance.transform.FindChild("InfoTextBox").gameObject, SoundManagerPanel.CustomBackground.transform.parent);
         Window.name = "New Name Tag Window";
@@ -79,14 +79,20 @@ public static class SoundManagerNewWindow
         ConfirmButton.transform.localPosition = new Vector3(0, -0.8f, -20f);
         ConfirmButton.GetComponent<PassiveButton>().OnClick.AddListener((Action)(() =>
         {
-            var code = EnterBox.GetComponent<TextBoxTMP>().text.ToLower().Trim().Replace("-", "#").Replace("—", "#").Replace(" ", string.Empty);
-            var reg = new Regex(@"^[a-z]+#[0-9]{4}$");
+            var code = EnterBox.GetComponent<TextBoxTMP>().text;
+            var reg = new Regex(@"^(\s{1}|)$");
 
             if (AllMusic.Contains(code))
             {
                 ConfirmButton.SetActive(false);
                 colorInfoTmp.text = GetString("SoundManagerAlreadyExist");
                 colorInfoTmp.color = Color.blue;
+            }
+            else if (reg.IsMatch(code))
+            {
+                ConfirmButton.SetActive(false);
+                colorInfoTmp.text = GetString("NotAllowedMusic");
+                colorInfoTmp.color = Color.red;
             }
             else
             {
@@ -100,7 +106,7 @@ public static class SoundManagerNewWindow
 
             new LateTask(() =>
             {
-                colorInfoTmp.text = GetString("PleaseEnterSoundName");
+                colorInfoTmp.text = GetString("PleaseEnterMusic");
                 colorInfoTmp.color = Color.white;
                 ConfirmButton.SetActive(true);
             }, 1.2f, "Reactivate Enter Box");

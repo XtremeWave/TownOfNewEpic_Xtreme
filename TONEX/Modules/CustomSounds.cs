@@ -58,11 +58,9 @@ public static class CustomSoundsManager
                 StartPlay(path);
                 break;
             case 1:
-                StartPlayStill(path);
+                StartPlayLoop(path);
                 break;
-            case 2:
-                StartPlayStill(path);
-                break;
+            
         }
         
         Logger.Msg($"播放声音：{sound}", "CustomSounds");
@@ -70,7 +68,8 @@ public static class CustomSoundsManager
 
     [DllImport("winmm.dll")]
     public static extern bool PlaySound(string Filename, int Mod, int Flags);
-    public static void StartPlay(string path) => PlaySound(@$"{path}", 0, 1); //第3个形参，把1换为9，连续播放
-    public static void StartPlayStill(string path) => PlaySound(@$"{path}", 0, 9); //第3个形参，把1换为9，连续播放
-    public static void StartPlayAuto(string path) => PlaySound(@$"{path}", 0, 1); //第3个形参，把1换为9，连续播放
+    public static void StartPlay(string path) => PlaySound(@$"{path}", 0, 0x0010 | 0x0000); //第3个形参，换为9，连续播放
+    public static void StartPlayOnce(string path) => PlaySound(@$"{path}", 0, 1); //第3个形参，换为9，连续播放
+    public static void StopPlay() => PlaySound(null, 0, 0); 
+    public static void StartPlayLoop(string path) => PlaySound(@$"{path}", 0, 9); //第3个形参，把1换为9，连续播放
 }

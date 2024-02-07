@@ -26,17 +26,10 @@ public static class NameTagPanel
     {
         var mouseMoveToggle = optionsMenuBehaviour.DisableMouseMovement;
 
-        UiElement[] selectableButtons = optionsMenuBehaviour.ControllerSelectable.ToArray();
-        PassiveButton leaveButton = null;
-        PassiveButton returnButton = null;
-        for (int i = 0; i < selectableButtons.Length; i++)
-        {
-            var button = selectableButtons[i];
-            if (button == null) continue;
-            if (button.name == "LeaveGameButton") leaveButton = button.GetComponent<PassiveButton>();
-            else if (button.name == "ReturnToGameButton") returnButton = button.GetComponent<PassiveButton>();
-        }
-        var generalTab = mouseMoveToggle.transform.parent.parent.parent;
+       
+        if (!GameStates.IsNotJoined)
+            return;
+        
         if (CustomBackground == null)
         {
             numItems = 0;

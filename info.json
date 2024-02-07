@@ -20,7 +20,7 @@
     "gitee": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/releases/download/{{showVer}}/TONEX.dll",
     "website": "https://tonex.cc/Resource/Download/TONEX.dll",
     "githubmus": "https://github.com/XtremeWave/TownOfNewEpic_Xtreme/tree/TONEX/Assets/Sounds/{{sound}}.wav",
-    "giteemus": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/tree/TONEX/Assets/Sounds/{{sound}}.wav",
+    "giteemus": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/Assets/Sounds/{{sound}}.wav",
     "websitemus": "https://tonex.cc/Resource/Sounds/{{sound}}.wav"
   }
 }

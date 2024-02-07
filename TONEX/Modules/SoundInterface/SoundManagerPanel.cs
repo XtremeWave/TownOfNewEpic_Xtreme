@@ -28,17 +28,9 @@ public static class SoundManagerPanel
     {
         var mouseMoveToggle = optionsMenuBehaviour.DisableMouseMovement;
 
-        UiElement[] selectableButtons = optionsMenuBehaviour.ControllerSelectable.ToArray();
-        PassiveButton leaveButton = null;
-        PassiveButton returnButton = null;
-        for (int i = 0; i < selectableButtons.Length; i++)
-        {
-            var button = selectableButtons[i];
-            if (button == null) continue;
-            if (button.name == "LeaveGameButton") leaveButton = button.GetComponent<PassiveButton>();
-            else if (button.name == "ReturnToGameButton") returnButton = button.GetComponent<PassiveButton>();
-        }
-        var generalTab = mouseMoveToggle.transform.parent.parent.parent;
+       
+        if (!GameStates.IsNotJoined)
+            return;
         if (CustomBackground == null)
         {
             numItems = 0;
@@ -74,7 +66,7 @@ public static class SoundManagerPanel
             helpText.transform.localPosition = new(-1.25f, -2.15f, -15f);
             helpText.transform.localScale = new(1f, 1f, 1f);
             var helpTextTMP = helpText.GetComponent<TextMeshPro>();
-            helpTextTMP.text = GetString("CustomNameTagHelp");
+            helpTextTMP.text = GetString("CustomSoundHelp");
             helpText.gameObject.GetComponent<RectTransform>().sizeDelta = new(2.45f, 1f);
 
             var sliderTemplate = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider").gameObject;
@@ -121,19 +113,19 @@ public static class SoundManagerPanel
             Object.Destroy(button.GetComponent<NumberButton>());
             if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("delete");
-            else if (AllSounds.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+            else if (AllTONEX.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
             button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("download");
-            else if (!AllSounds.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+            else if (!AllTONEX.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
             {
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("NoFound");
             }
                 if (IsDownloading)
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("cancel");
             var renderer = button.GetComponent<SpriteRenderer>();
-            renderer.color = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") ? Color.red : Color.green;
+            renderer.color =( File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json")) ? (AllTONEX.Contains(sound)?Color.red:Palette.DisabledGrey) : Color.green;
 
             var rollover = button.GetComponent<ButtonRolloverHandler>();
-            rollover.OutColor = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav")? Color.red:Color.green;
+            rollover.OutColor = (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json")) ? (AllTONEX.Contains(sound) ? Color.red : Palette.DisabledGrey) : Color.green;
             if (IsDownloading)
             {
                 renderer.color = rollover.OutColor = Color.yellow;
@@ -159,6 +151,10 @@ public static class SoundManagerPanel
                     else
                     {
                         renderer.color = rollover.OutColor = Color.yellow;
+                        MusicDownloader.StartDownload(sound);
+                        ReloadTag(sound);
+                        RefreshTagList();
+                        SoundPanel.RefreshTagList();
                     }
                 }
             }));
@@ -167,7 +163,7 @@ public static class SoundManagerPanel
             previewText.fontSize = 1f;
             string preview ="???";
             if (sound != null)
-                preview = sound;
+                preview = sound + ".wav";
             previewText.text = preview;
             Items.Add(sound, button);
         }
@@ -177,7 +173,7 @@ public static class SoundManagerPanel
     }
     public static void DeleteSoundInName(string soundname)
     {
-        if (AllSounds.Contains(soundname)) return;
+        if (AllTONEX.Contains(soundname)) return;
         try
         {
 

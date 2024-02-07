@@ -21,15 +21,17 @@ public static class IntSoundManager
     public static IReadOnlyList<string> AllMusic => CustomMusicList.Concat(TONEXMusicList).ToList();
     public static IReadOnlyList<string> AllSounds => TONEXSoundList;
     public static IReadOnlyList<string> AllFiles => AllSounds.Concat(AllMusic).ToList();
+    public static IReadOnlyList<string> AllTONEX => AllSounds.Concat(TONEXMusic).ToList();
 
     private static List<string> TONEXMusicList = new()
     {
         "Spring Rejoices in Parallel Universes",
-    
-    
-    
-    
-    
+        "GongXiFaCaiLiuDeHua",
+
+
+
+
+
     };
     private static List<string> TONEXSoundList = new()
     {
@@ -83,11 +85,6 @@ public static class IntSoundManager
                 Logger.Error($"Load Tag From: {path} Failed\n" + ex.ToString(), "SoundManager", false);
             }
         }
-
-        if (!TONEXSoundList.Contains(sound) && !CustomMusicList.Contains(sound))
-        {
-            CustomMusicList.Add(sound);
-        }
     }
     public static void Init()
     {
@@ -110,7 +107,7 @@ public static class IntSoundManager
     {
         if (path.ToLower().Contains("template")) return;
         string sound = Path.GetFileNameWithoutExtension(path);
-        if (sound != null && !AllSounds.Contains(sound))
+        if (sound != null && !AllSounds.Contains(sound) && !TONEXMusic.Contains(sound))
         {
             CustomMusicList.Add(sound);
             Logger.Info($"Sound Loaded: {sound}", "SoundManager");
