@@ -97,7 +97,7 @@ public static class SoundPanel
                 Logger.Info("c0/2", "test");
                 var helpTextTMP = helpText.GetComponent<TextMeshPro>();
                 Logger.Info("c1/2", "test");
-                helpTextTMP.text = GetString("CustomSoundManagerHelp");
+                helpTextTMP.text = GetString("CustomSoundHelp");
                 helpText.gameObject.GetComponent<RectTransform>().sizeDelta = new(2.45f, 1f);
                 Logger.Info("c2/2", "test");//*/
             }

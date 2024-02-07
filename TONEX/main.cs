@@ -38,8 +38,8 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0";
-    public const string PluginShowVersion = "1.0_20240205_Preview_3";
+    public const string PluginVersion = "1.0.1";
+    public const string PluginShowVersion = "1.0_20240209";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -118,7 +118,8 @@ public class Main : BasePlugin
     public static bool introDestroyed = false;
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
-    public static bool IsInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
+    public static bool IsTOHEInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
+    public static bool IsTONEXInitialRelease = DateTime.Now.Month == 2 && DateTime.Now.Day is 9;
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
     public const float RoleTextSize = 2f;
 

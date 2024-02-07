@@ -389,8 +389,8 @@ public static class InternalNameTags
             {
                 UpperText = new()
                 {
-                    Text = $"不是橙子",
-                    Gradient = new(new Color32(239,127,70, 255), new Color32(255,233,228, 255), new Color32(176,113,101, 255)),
+                    Text = $"不是橙色",
+                   TextColor = new Color32(239,127,70, 255),
                     SizePercentage = 80
                 }
             }

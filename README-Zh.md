@@ -1,6 +1,6 @@
 <div align="center">
   <img width="160" src="Assets/LOGO.png" alt="logo"></br>
-
+  <img width="160" src="Assets/Title.svg" alt="title"></br>
  
 
   </br></br>
@@ -11,7 +11,7 @@
   </br></br>
 
   <h1>:fire: 公告 :fire:</h1>
-  <p>自从5月20日起，因为某些原因，TOHE停止了开发. 应广大玩家的请求, TOHE将保持最基本的兼容，并与TOH同步更新，以确保有需要的玩家仍然可以正常游玩. TOHE已更名为TONX<br>因此，不再以继承的名义</p>
+  <p>自从5月20日起，因为某些原因，TOHE停止了开发. 应广大玩家的请求, TOHE将保持最基本的兼容，并与TOH同步更新，以确保有需要的玩家仍然可以正常游玩. TOHE已更名为TONX<br>因此，我们不必再以继承的名义制作模组，我们启动了一个新计划，称他为“TONEX”</p>
 
   </br></br>
 

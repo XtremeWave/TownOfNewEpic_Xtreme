@@ -8,6 +8,7 @@ using static TONEX.IntSoundManager;
 using static TONEX.Translator;
 using Object = UnityEngine.Object;
 using System.IO;
+using TONEX;
 
 namespace TONEX.Modules.SoundInterface;
 
@@ -66,7 +67,7 @@ public static class SoundManagerPanel
             helpText.transform.localPosition = new(-1.25f, -2.15f, -15f);
             helpText.transform.localScale = new(1f, 1f, 1f);
             var helpTextTMP = helpText.GetComponent<TextMeshPro>();
-            helpTextTMP.text = GetString("CustomSoundHelp");
+            helpTextTMP.text = GetString("CustomSoundManagerHelp");
             helpText.gameObject.GetComponent<RectTransform>().sizeDelta = new(2.45f, 1f);
 
             var sliderTemplate = AccountManager.Instance.transform.FindChild("MainSignInWindow/SignIn/AccountsMenu/Accounts/Slider").gameObject;
@@ -142,11 +143,21 @@ public static class SoundManagerPanel
                 { 
                     if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
                     {
-                        DeleteSoundInName(sound);
-                        DeleteSoundInFile(sound);
-                        ReloadTag(sound);
-                        RefreshTagList();
-                        SoundPanel.RefreshTagList();
+                        try
+                        {
+                            DeleteSoundInName(sound);
+                            DeleteSoundInFile(sound);
+                            ReloadTag(sound);
+                            RefreshTagList();
+                            SoundPanel.RefreshTagList();
+                            //CustomPopup.Show(GetString("deletemusicPopupTitle"), string.Format(GetString("deletemusicPopupTitleDone"), sound), new() { (GetString(StringNames.Okay), null) });
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Error($"{ex}", "Delete");
+                          //  CustomPopup.Show(GetString("deletemusicPopupTitle"), GetString("deletemusicPopupTitleFailed"), new() { (GetString(StringNames.Okay), null) });
+                        }
+                        
                     }
                     else
                     {
@@ -155,6 +166,13 @@ public static class SoundManagerPanel
                         ReloadTag(sound);
                         RefreshTagList();
                         SoundPanel.RefreshTagList();
+                        if (!MusicDownloader.succeed)
+                        {
+                            //       CustomPopup.Show(GetString("downloadmusicPopupTitle"), GetString("downloadmusicPopupTitleFailed"), new() { (GetString(StringNames.Okay), null) });
+                            Logger.Error("DownloadFailed", "downloadsounds");
+                        }
+                     //   else
+                      //      CustomPopup.Show(GetString("downloadmusicPopupTitle"), GetString("downloadmusicPopupTitleDone"), new() { (GetString(StringNames.Okay), null) });
                     }
                 }
             }));

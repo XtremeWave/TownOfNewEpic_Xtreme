@@ -33,6 +33,7 @@ public class ModUpdater
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
         "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",
          //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
+        "https://tohex.club/Resource/info.json",
         "https://tonex.cc/Resource/info.json",
         "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
          
@@ -71,7 +72,7 @@ public class ModUpdater
     public static string downloadUrl_github = "";
     public static string downloadUrl_gitee = "";
     public static string downloadUrl_website = "";
-
+    public static string downloadUrl_website2 = "";
     private static int retried = 0;
     private static bool firstLaunch = true;
 
@@ -127,6 +128,7 @@ public class ModUpdater
             Logger.Info("Github Url: " + downloadUrl_github, "CheckRelease");
             Logger.Info("Gitee Url: " + downloadUrl_gitee, "CheckRelease");
             Logger.Info("Wensite Url: " + downloadUrl_website, "CheckRelease");
+            Logger.Info("Wensite2 Url: " + downloadUrl_website2, "CheckRelease");
             Logger.Info("Announcement (English): " + announcement_en, "CheckRelease");
             Logger.Info("Announcement (SChinese): " + announcement_zh, "CheckRelease");
 
@@ -213,10 +215,12 @@ public class ModUpdater
             downloadUrl_github = downloadUrl["github"]?.ToString();
             downloadUrl_gitee = downloadUrl["gitee"]?.ToString().Replace("{{showVer}}", $"v{showVer}");
             downloadUrl_website = downloadUrl["website"]?.ToString();
+            downloadUrl_website2 = downloadUrl["website2"]?.ToString();
 
             MusicDownloader.Url_github = downloadUrl["githubmus"]?.ToString();
             MusicDownloader.Url_gitee = downloadUrl["giteemus"]?.ToString();
-            MusicDownloader.downloadUrl_website = downloadUrl["websitemus"]?.ToString();
+            MusicDownloader.Url_website = downloadUrl["websitemus"]?.ToString();
+            MusicDownloader.Url_website2 = downloadUrl["website2mus"]?.ToString();
 
             hasUpdate = Main.version < latestVersion;
             forceUpdate = Main.version < minimumVersion || creation > Main.PluginCreation;
@@ -281,12 +285,13 @@ public class ModUpdater
     }
     public static async Task<(bool, string)> DownloadDLL(string url)
     {
+        Retry:
         File.Delete(DownloadFileTempPath);
         File.Create(DownloadFileTempPath).Close();
 
         Logger.Msg("Start Downlaod From: " + url, "DownloadDLL");
         Logger.Msg("Save To: " + DownloadFileTempPath, "DownloadDLL");
-
+        var succeed = false;
         try
         {
             using var client = new HttpClientDownloadWithProgress(url, DownloadFileTempPath);
@@ -298,6 +303,11 @@ public class ModUpdater
             if (GetMD5HashFromFile(DownloadFileTempPath) != md5)
             {
                 File.Delete(DownloadFileTempPath);
+                if (url == downloadUrl_website)
+                {
+                    url = downloadUrl_website2;
+                    goto Retry;
+                }    
                 return (false, GetString("updateFileMd5Incorrect"));
             }
             else
@@ -305,6 +315,7 @@ public class ModUpdater
                 var fileName = Assembly.GetExecutingAssembly().Location;
                 File.Move(fileName, fileName + ".bak");
                 File.Move("BepInEx/plugins/TONEX.dll.temp", fileName);
+                succeed = true;
                 return (true, null);
             }
         }
@@ -312,6 +323,11 @@ public class ModUpdater
         {
             File.Delete(DownloadFileTempPath);
             Logger.Error($"更新失败\n{ex.Message}", "DownloadDLL", false);
+            if (url ==downloadUrl_website)
+            {
+                url = downloadUrl_website2;
+                goto Retry;
+            }
             return (false, GetString("downloadFailed"));
         }
     }
