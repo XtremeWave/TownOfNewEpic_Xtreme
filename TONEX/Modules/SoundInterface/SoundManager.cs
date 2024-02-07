@@ -25,7 +25,7 @@ public static class IntSoundManager
 
     private static List<string> TONEXMusicList = new()
     {
-        "Spring Rejoices in Parallel Universes",
+        "SpringRejoicesinParallelUniverses",
         "GongXiFaCaiLiuDeHua",
 
 
