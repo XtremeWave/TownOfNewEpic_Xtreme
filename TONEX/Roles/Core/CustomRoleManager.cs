@@ -646,7 +646,7 @@ public enum CustomRoles
     Sidekick,
     Despair,
     RewardOfficer,
-    Vagor_FAFL,
+    Vagator,
     Non_Villain,
     Lawyer,
     Prosecutors,

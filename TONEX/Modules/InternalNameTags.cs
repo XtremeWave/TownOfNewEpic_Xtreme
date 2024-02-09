@@ -395,5 +395,41 @@ public static class InternalNameTags
                 }
             }
         },
+        {
+            "lacesome#2271", //株式会社，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"九天弘教普济生灵掌阴阳功过大道思仁紫极仙翁一阳真人元虚玄应开化伏魔忠孝帝君太上大罗天仙紫极长生圣智昭灵统三元证应玉虚总掌五雷大真人玄都境万寿帝君",
+                    Gradient = new(new Color32(255,215,0, 255), new Color32(26,244,137, 255), new Color32(109,223,198, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "veryscarf#5368", //小武，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"跪求三连",
+                    Gradient = new(new Color32(255,128,0, 255), new Color32(255,0,0, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "hoppypuree#2528", //水³，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"水³",
+                    Gradient = new(new Color32(204, 255, 255, 255), new Color32(0, 153, 204, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
     };
 }

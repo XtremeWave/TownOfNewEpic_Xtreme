@@ -83,7 +83,7 @@ class GameEndChecker
                     break;
                 case CustomWinner.FAFL:
                     Main.AllPlayerControls
-                     .Where(pc => pc.Is(CustomRoles.Vagor_FAFL) )
+                     .Where(pc => pc.Is(CustomRoles.Vagator) )
                      .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
             }

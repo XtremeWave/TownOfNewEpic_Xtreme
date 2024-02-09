@@ -171,6 +171,8 @@ class IntroCutscenePatch
         }
         if (PlayerControl.LocalPlayer.GetRoleClass()?.GetGameStartSound(out var newsound) ?? false)
         {
+            if (Options.BlessingMode.GetBool())
+                newsound = "GongXiFaCai";
             new LateTask(() =>
             {
                 PlayerControl.LocalPlayer.RPCPlayCustomSound(newsound);

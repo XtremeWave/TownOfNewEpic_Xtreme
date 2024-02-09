@@ -132,6 +132,10 @@ public static class Options
 
     public static OptionItem EnableGM;
 
+    //游戏模式
+    public static OptionItem BlessingMode;
+
+
     // 驱逐相关设定
     public static OptionItem CEMode;
     public static OptionItem ConfirmEjectionsNK;
@@ -778,6 +782,12 @@ public static class Options
         #region 游戏设置
         HotPotatoManager.SetupCustomOption();
 
+        TextOptionItem.Create(3_020_000, "MenuTitle.GameMode", TabGroup.GameSettings)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+        BlessingMode = BooleanOptionItem.Create(3_020_001, "BlessingMode", true, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
         // 驱逐相关设定
         TextOptionItem.Create(3_100_001, "MenuTitle.Ejections", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)

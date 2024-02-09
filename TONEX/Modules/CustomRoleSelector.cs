@@ -140,7 +140,7 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePets.GetBool())
+            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagator) && readyNKNum < optNKNum && Options.UsePets.GetBool())
             {
                 var shouldExecute = true;
                 if (NKRateList.Count > 0)
@@ -159,7 +159,7 @@ internal static class CustomRoleSelector
                 }
                 if (shouldExecute)
                 {
-                    rolesToAssign.Add(CustomRoles.Vagor_FAFL);
+                    rolesToAssign.Add(CustomRoles.Vagator);
                     readyRoleNum++;
                     readyNKNum++;
                 }

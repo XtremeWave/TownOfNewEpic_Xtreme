@@ -192,11 +192,18 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if ((SidekickLimit < 1 || (NowSwitchTrigger == SwitchTrigger.TriggerDouble && !killer.CheckDoubleTrigger(target, () => { Recruit(target); }))) && target.GetCountTypes() != CountTypes.Jackal
-           || (OptionItemCanSidekick.GetBool() && !CanBeSidekick(target))) return true;
-        if (NowSwitchTrigger != SwitchTrigger.TriggerDouble)
+        if ((SidekickLimit < 1 || (OptionItemCanSidekick.GetBool() && !CanBeSidekick(target)))&& target.GetCountTypes()!=CountTypes.Jackal) return true;
+        if (NowSwitchTrigger != SwitchTrigger.TriggerDouble && SidekickLimit >= 1)
+        {
             Recruit(target);
-        return false;
+            return false;
+        }
+        else if (NowSwitchTrigger == SwitchTrigger.TriggerDouble && SidekickLimit >= 1)
+        {
+            killer.CheckDoubleTrigger(target, () => { Recruit(target); });
+            return false;
+        }
+        return true;
     }
     public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
     {

@@ -18,7 +18,7 @@ public static class AntiBlackout
         || CustomRoles.Demon.IsExist(true)
         || CustomRoles.BloodKnight.IsExist(true)
         || CustomRoles.Succubus.IsExist(true)
-        || CustomRoles.Vagor_FAFL.IsExist(true);
+        || CustomRoles.Vagator.IsExist(true);
 
     public static bool IsCached { get; private set; } = false;
     private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = new();
