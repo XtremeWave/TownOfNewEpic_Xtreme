@@ -127,7 +127,11 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             }),
             new(["ss", "SetScanner"], CommandAccess.All, mc =>
             {
-
+                if (!GameStates.IsLobby)
+                {
+                    string cantuse = GetString("Message.ReadySetScannerReturn");
+                    return (MsgRecallMode.Block, cantuse);
+                }
                 string text = GetString("Message.ReadySetScanner");
                 var player = mc.Player;
                 player.RpcSetScanner(true);

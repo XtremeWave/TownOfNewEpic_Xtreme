@@ -1447,6 +1447,7 @@ Message.DirectorModeCanNotFindRoleThePlayerEnter: "Could not find the role you s
 Message.DirectorModeNotice: "Warning: The [Director Mode] is enabled in this lobby, which means the Host can specify their role in the next game."
 Message.PetModeNotice: "Warning： The [Use Pet To Release Skills] is enabled in this lobby，All of the players will get a pet when game started"
 Message.ReadySetScanner: "You're get scanner'！"
+Message.ReadySetScannerReturn: "You are in Game.So you can't get scanner！"
 # 通知 / Notifications
 PlayerLeft: "[{0}] left the game"
 PlayerKickByHost: "[{0}]  kicked by host"

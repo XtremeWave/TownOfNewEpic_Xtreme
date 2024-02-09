@@ -1474,6 +1474,7 @@ Message.DirectorModeCanNotFindRoleThePlayerEnter: "请正确拼写您要指定�
 Message.DirectorModeNotice: "提示：该房间启用了【导演模式】，房主可以指定自己的职业。"
 Message.PetModeNotice: "提示：该房间启用了【是否用宠物按钮代替技能按钮】，所有人在开始时将拥有宠物"
 Message.ReadySetScanner: "已成功让您拥有扫描特效！"
+Message.ReadySetScannerReturn: "您正在游戏中，无法拥有扫描特效！"
 
 # 通知 / Notifications
 PlayerLeft: "【{0}】离开了游戏"
