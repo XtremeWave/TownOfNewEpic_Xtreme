@@ -1,7 +1,9 @@
-﻿/*using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TONEX.Modules;
+using System.Collections.Generic;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.SwapperHelper;
 
 namespace TONEX.Roles.Impostor;
@@ -14,7 +16,7 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
             CustomRoles.EvilSwapper,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
-            1000,
+            75_1_1_0300,
             SetupOptionItem,
             "eg|邪惡賭怪|邪恶的赌怪|坏赌|邪恶赌|恶赌|赌怪"
         );
@@ -26,32 +28,24 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     { }
 
     public static OptionItem OptionGuessNums;
-    public static OptionItem OptionCanGuessImp;
-    public static OptionItem OptionCanGuessAddons;
-    public static OptionItem OptionCanGuessVanilla;
-    public static OptionItem OptionCanGuessTaskDoneSnitch;
+    public static OptionItem SwapperCanStartMetting;
     enum OptionName
     {
-        SwapperCanGuessTimes,
-        EGCanGuessImp,
-        EGCanGuessAdt,
-        EGCanGuessVanilla,
-        EGCanGuessTaskDoneSnitch,
+        SwapperCanSwapTimes,
+        SwapperCanStartMetting,
     }
 
-    public int GuessLimit;
+    public int SwapLimit;
+    public static List<byte> SwapList;
     private static void SetupOptionItem()
     {
-        OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanGuessTimes, new(1, 15, 1), 15, false)
+        OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanSwapTimes, new(1, 15, 1), 15, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionCanGuessImp = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EGCanGuessImp, true, false);
-        OptionCanGuessAddons = BooleanOptionItem.Create(RoleInfo, 12, OptionName.EGCanGuessAdt, false, false);
-        OptionCanGuessVanilla = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EGCanGuessVanilla, true, false);
-        OptionCanGuessTaskDoneSnitch = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EGCanGuessTaskDoneSnitch, true, false);
+        SwapperCanStartMetting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SwapperCanStartMetting, true, false);
     }
     public override void Add()
     {
-        GuessLimit = OptionGuessNums.GetInt();
+        SwapLimit = OptionGuessNums.GetInt();
     }
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {
@@ -60,7 +54,6 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
             nameText = Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilSwapper), seen.PlayerId.ToString()) + " " + nameText;
         }
     }
-    public string ButtonName { get; private set; } = "Target";
     public bool ShouldShowButton() => Player.IsAlive();
     public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
     public override bool GetGameStartSound(out string sound)
@@ -76,7 +69,14 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     }
     public bool OnClickButtonLocal(PlayerControl target)
     {
-        ShowGuessPanel(target.PlayerId, MeetingHud.Instance);
+        Swap(Player,target, out var reason);
         return false;
     }
-}*/
+    /*public override bool ModifyVote(byte voter, byte target)
+    {
+        
+        if (SwapList.Contains(target))
+            
+
+    }*/
+}

@@ -16,7 +16,7 @@ public sealed class ColdPotato : RoleBase, IKiller
             CustomRoles.ColdPotato,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_1_1_0,
+            94_1_0_0100,
             null,
             "cold|冷土豆",
             "#66ffff",

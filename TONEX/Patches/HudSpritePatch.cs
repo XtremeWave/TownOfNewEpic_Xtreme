@@ -15,6 +15,7 @@ public static class CustomButton
 [HarmonyPatch(typeof(HudManager), nameof(HudManager.Update)), HarmonyPriority(Priority.LowerThanNormal)]
 class HudSpritePatch
 {
+    public static bool IsEnd;
     private static Sprite? Defalt_Kill => DestroyableSingleton<HudManager>.Instance?.KillButton?.graphic?.sprite;
     private static Sprite? Defalt_Ability => DestroyableSingleton<HudManager>.Instance?.AbilityButton?.graphic?.sprite;
     private static Sprite? Defalt_Vent => DestroyableSingleton<HudManager>.Instance?.ImpostorVentButton?.graphic?.sprite;
@@ -88,9 +89,30 @@ class HudSpritePatch
             SpriteRenderer spritesetting = newSetting.GetComponent<SpriteRenderer>();
             spritesetting.sprite = newSettingButton;
 
-            //Sprite newChatButton = CustomButton.GetSprite("ChatButton");
-            //SpriteRenderer spritechat = newChat.GetComponent<SpriteRenderer>();
-            //spritechat.sprite = newChatButton;
+            Sprite newChatButton = CustomButton.GetSprite("ChatLobby");
+            
+            if (!GameStates.IsNotJoined)
+            {
+                switch (player.GetCustomRole().GetCustomRoleTypes())
+                {
+                    case CustomRoleTypes.Crewmate:
+                        newChatButton = CustomButton.GetSprite("ChatCrew");
+                        break;
+                    case CustomRoleTypes.Impostor:
+                        newChatButton = CustomButton.GetSprite("ChatImp");
+                        break;
+                    case CustomRoleTypes.Neutral:
+                        if (player.GetRoleClass() is not IIndependent)
+                            newChatButton = CustomButton.GetSprite("ChatN");
+                        else
+                            newChatButton = CustomButton.GetSprite("ChatEvilN");
+                        break;
+                }
+            }
+            if (IsEnd)
+                newChatButton = CustomButton.GetSprite("ChatLobby");
+            SpriteRenderer spritechat = newChat.GetComponent<SpriteRenderer>();
+            spritechat.sprite = newChatButton;
 
             #region 地图
             Sprite newmap = CustomButton.GetSprite("mapJourne");

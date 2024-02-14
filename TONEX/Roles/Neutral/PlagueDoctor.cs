@@ -320,8 +320,8 @@ public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
                 state.SetDead();
             }
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)))
-                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+            foreach (var PlagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)))
+                CustomWinnerHolder.WinnerIds.Add(PlagueDoctor.PlayerId);
         }
     }
 }

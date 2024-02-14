@@ -11,13 +11,13 @@ using MS.Internal.Xml.XPath;
 
 namespace TONEX.Roles.Crewmate;
 
-public sealed class RubePeople : RoleBase,IRemoveWinner
+public sealed class Instigator : RoleBase,IRemoveWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
     SimpleRoleInfo.Create(
-        typeof(RubePeople),
-        player => new RubePeople(player),
-        CustomRoles.RubePeople,
+        typeof(Instigator),
+        player => new Instigator(player),
+        CustomRoles.Instigator,
          () => Options.UsePets.GetBool() ? RoleTypes.Crewmate : RoleTypes.Engineer,
         CustomRoleTypes.Crewmate,
         22568,
@@ -25,13 +25,13 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
         "ru",
         "#66ff00"
     );
-    public RubePeople(PlayerControl player)
+    public Instigator(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
     {
-        ForRubePeople = new();
+        ForInstigator = new();
     }
 
         static OptionItem OptionSkillCooldown;
@@ -40,12 +40,12 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
     static OptionItem MaxCooldown;
     enum OptionName
     {
-        TimeStopsSkillCooldown,
-        TimeStopsSkillDuration,
+        NiceTimeStopsSkillCooldown,
+        NiceTimeStopsSkillDuration,
         ReduceCooldown,
         MaxCooldown,
     }
-   public static List<byte> ForRubePeople;
+   public static List<byte> ForInstigator;
     private long ProtectStartTime;
     private float Cooldown;
     public long UsePetCooldown;
@@ -64,7 +64,7 @@ public sealed class RubePeople : RoleBase,IRemoveWinner
     {
         ProtectStartTime = -1;
         Cooldown = OptionSkillCooldown.GetFloat();
-        ForRubePeople = new();
+        ForInstigator = new();
         if (Options.UsePets.GetBool()) UsePetCooldown = Utils.GetTimeStamp();
     }
     public override void ApplyGameOptions(IGameOptions opt)
@@ -79,19 +79,19 @@ public override void OnGameStart()
 }
 public override bool GetAbilityButtonText(out string text)
     {
-        text = GetString("RubePeopleVetnButtonText");
+        text = GetString("InstigatorVetnButtonText");
         return true;
     }
     public override bool GetPetButtonText(out string text)
     {
-        text = GetString("RubePeopleVetnButtonText");
+        text = GetString("InstigatorVetnButtonText");
         return !(UsePetCooldown != -1);
     }
     public void CheckWin(ref CustomWinner WinnerTeam, ref HashSet<byte> WinnerIds)
     {
-        if (ForRubePeople.Count != 0)
+        if (ForInstigator.Count != 0)
         {
-            foreach(var item in ForRubePeople)
+            foreach(var item in ForInstigator)
             {
                 if (WinnerIds.Contains(item))   CustomWinnerHolder.WinnerIds.Remove(item);
             }
@@ -108,7 +108,7 @@ public override bool GetAbilityButtonText(out string text)
         Player.SyncSettings();
         ProtectStartTime = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
-        Player.Notify(GetString("RubePeopleOnGuard"),2f);
+        Player.Notify(GetString("InstigatorOnGuard"),2f);
         return true;
     }
     public override void OnUsePet()
@@ -124,7 +124,7 @@ public override bool GetAbilityButtonText(out string text)
         Player.SyncSettings();
         ProtectStartTime = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
-        Player.Notify(GetString("RubePeopleOnGuard"), 2f);
+        Player.Notify(GetString("InstigatorOnGuard"), 2f);
         UsePetCooldown = Utils.GetTimeStamp();
 
     }
@@ -136,7 +136,7 @@ public override bool GetAbilityButtonText(out string text)
         {
             ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("TimeStopsOffGuard")));
+            player.Notify(string.Format(GetString("NiceTimeStopsOffGuard")));
         }
         if (UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
@@ -153,7 +153,7 @@ public override bool GetAbilityButtonText(out string text)
             var (killer, target) = info.AttemptTuple;
             target.RpcMurderPlayerV2(killer);
             killer.RpcMurderPlayerV2(target);
-            ForRubePeople.Add(killer.PlayerId);
+            ForInstigator.Add(killer.PlayerId);
             return false;
         }
         return true;

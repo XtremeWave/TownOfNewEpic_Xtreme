@@ -43,10 +43,12 @@ public sealed class Fireworker : RoleBase, IImpostor
 
     static OptionItem OptionFireworkerCount;
     static OptionItem OptionFireworkerRadius;
+    static OptionItem OptionFireworkerCanKill;
     enum OptionName
     {
         FireworkerMaxCount,
         FireworkerRadius,
+        FireworkerCanKill,
     }
 
     int FireworkerCount;
@@ -61,6 +63,7 @@ public sealed class Fireworker : RoleBase, IImpostor
             .SetValueFormat(OptionFormat.Pieces);
         OptionFireworkerRadius = FloatOptionItem.Create(RoleInfo, 11, OptionName.FireworkerRadius, new(0.5f, 5f, 0.5f), 2f, false)
             .SetValueFormat(OptionFormat.Multiplier);
+        OptionFireworkerCanKill = BooleanOptionItem.Create(RoleInfo, 13, OptionName.FireworkerCanKill, false, false);
     }
 
     public override void Add()
@@ -73,7 +76,7 @@ public sealed class Fireworker : RoleBase, IImpostor
     public bool CanUseKillButton()
     {
         if (!Player.IsAlive()) return false;
-        return (State & FireworkerState.CanUseKill) != 0;
+        return (State & FireworkerState.CanUseKill) != 0 || OptionFireworkerCanKill.GetBool();
     }
     public override void ApplyGameOptions(IGameOptions opt)
     {

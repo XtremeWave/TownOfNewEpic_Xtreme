@@ -16,6 +16,7 @@ class OnGameJoinedPatch
 {
     public static void Postfix(AmongUsClient __instance)
     {
+        
         while (!Options.IsLoaded) System.Threading.Tasks.Task.Delay(1);
         Logger.Info($"{__instance.GameId} 加入房间", "OnGameJoined");
         Main.playerVersion = new Dictionary<byte, PlayerVersion>();

@@ -1,7 +1,8 @@
-﻿/*using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using System.Collections.Generic;
 using static TONEX.SwapperHelper;
 
 namespace TONEX.Roles.Crewmate;
@@ -14,7 +15,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
             CustomRoles.NiceSwapper,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            20000,
+            75_1_1_0200,
             SetupOptionItem,
             "ng|正義賭怪|正义的赌怪|好赌|正义赌|正赌|挣亿的赌怪|挣亿赌怪",
             "#eede26"
@@ -27,25 +28,23 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
     { }
 
     public static OptionItem OptionSwapNums;
-    public static OptionItem OptionCanSwapCrew;
-    public static OptionItem OptionCanSwapAddons;
-    public static OptionItem OptionCanSwapVanilla;
+    public static OptionItem SwapperCanSelf;
+    public static OptionItem SwapperCanStartMetting;
     enum OptionName
     {
         SwapperCanSwapTimes,
-        GGCanSwapCrew,
-        GGCanSwapAdt,
-        GGCanSwapVanilla,
+        SwapperCanSelf,
+        SwapperCanStartMetting,
     }
 
     public int SwapLimit;
+    public static List<byte> SwapList;
     private static void SetupOptionItem()
     {
         OptionSwapNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanSwapTimes, new(1, 15, 1), 15, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionCanSwapCrew = BooleanOptionItem.Create(RoleInfo, 11, OptionName.GGCanSwapCrew, true, false);
-        OptionCanSwapAddons = BooleanOptionItem.Create(RoleInfo, 12, OptionName.GGCanSwapAdt, false, false);
-        OptionCanSwapVanilla = BooleanOptionItem.Create(RoleInfo, 13, OptionName.GGCanSwapVanilla, true, false);
+        SwapperCanStartMetting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SwapperCanStartMetting, true, false);
+        SwapperCanSelf = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SwapperCanSelf, false, false);
     }
     public override void Add()
     {
@@ -58,7 +57,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
             nameText = Utils.ColorString(RoleInfo.RoleColor, seen.PlayerId.ToString()) + " " + nameText;
         }
     }
-    public string ButtonName { get; private set; } = "Target";
+    
     public bool ShouldShowButton() => Player.IsAlive();
     public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
     public override bool GetGameStartSound(out string sound)
@@ -74,7 +73,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
     }
     public bool OnClickButtonLocal(PlayerControl target)
     {
-        ShowSwapPanel(target.PlayerId, MeetingHud.Instance);
+        Swap(Player,target, out var reason);
         return false;
     }
-}*/
+}

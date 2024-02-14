@@ -26,7 +26,14 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player.Is(role)) return;
-        Main.SetRolesList.Add((Utils.GetTrueRoleName(player.PlayerId, false), player));
+        if (!Main.SetRolesList.ContainsKey(player.PlayerId))
+        {
+            List<string> values = new();
+            values.Add(null);
+            Main.SetRolesList.Add(player.PlayerId, values);
+        }
+        Main.SetRolesList[player.PlayerId].Add(player.GetTrueRoleName());
+
         if (role < CustomRoles.NotAssigned)
         {
             player.GetRoleClass()?.Dispose();
@@ -643,10 +650,10 @@ static class ExtendedPlayerControl
     public static bool IsCrewKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
     public static bool IsCrewNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && !player.IsCrewKiller();
     public static bool IsNeutral(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral);
-    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is INeutralKilling;
+    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetRoleClass() is INeutralKilling;
     public static bool IsNeutralNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && !player.IsNeutralKiller();
-    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is IIndependent;
-    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is not IIndependent;
+    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetRoleClass() is IIndependent;
+    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetRoleClass() is not IIndependent;
     public static bool IsShapeshifting(this PlayerControl player) => Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl seen)
     {

@@ -8,13 +8,13 @@ using System.Collections.Generic;
 using TONEX.Roles.Neutral;
 
 namespace TONEX.Roles.Crewmate;
-public sealed class TimeStops : RoleBase
+public sealed class NiceTimeStops : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(TimeStops),
-            player => new TimeStops(player),
-            CustomRoles.TimeStops,
+            typeof(NiceTimeStops),
+            player => new NiceTimeStops(player),
+            CustomRoles.NiceTimeStops,
             () => Options.UsePets.GetBool() ? RoleTypes.Crewmate : RoleTypes.Engineer,
             CustomRoleTypes.Crewmate,
             15546396,
@@ -22,13 +22,13 @@ public sealed class TimeStops : RoleBase
             "shi|时停",
             "#f6f657"
         );
-    public TimeStops(PlayerControl player)
+    public NiceTimeStops(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
     {
-        TimeStopsstop = new();
+        NiceTimeStopsstop = new();
     }
 
     static OptionItem OptionSkillCooldown;
@@ -37,24 +37,24 @@ public sealed class TimeStops : RoleBase
     static OptionItem MaxCooldown;
     enum OptionName
     {
-        TimeStopsSkillCooldown,
-        TimeStopsSkillDuration,
+        NiceTimeStopsSkillCooldown,
+        NiceTimeStopsSkillDuration,
         ReduceCooldown,
         MaxCooldown,
     }
-    private List<byte> TimeStopsstop;
+    private List<byte> NiceTimeStopsstop;
     private long ProtectStartTime;
     private float Cooldown;
     public long UsePetCooldown;
     private static void SetupOptionItem()
     {
-        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.TimeStopsSkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
+        OptionSkillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.NiceTimeStopsSkillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
         ReduceCooldown = FloatOptionItem.Create(RoleInfo, 11, OptionName.ReduceCooldown, new(2.5f, 180f, 2.5f), 10f, false)
     .SetValueFormat(OptionFormat.Seconds);
         MaxCooldown = FloatOptionItem.Create(RoleInfo, 12, OptionName.MaxCooldown, new(2.5f, 250f, 2.5f), 60f, false)
   .SetValueFormat(OptionFormat.Seconds);
-        OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 13, OptionName.TimeStopsSkillDuration, new(2.5f, 180f, 2.5f), 20f, false)
+        OptionSkillDuration = FloatOptionItem.Create(RoleInfo, 13, OptionName.NiceTimeStopsSkillDuration, new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
         
     }
@@ -75,7 +75,7 @@ public sealed class TimeStops : RoleBase
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = GetString("TimeStopsVetnButtonText");
+        text = GetString("NiceTimeStopsVetnButtonText");
         return true;
     }
     public override bool GetAbilityButtonSprite(out string buttonName)
@@ -95,7 +95,7 @@ public sealed class TimeStops : RoleBase
     }
     public override bool GetPetButtonText(out string text)
     {
-        text = GetString("TimeStopsVetnButtonText");
+        text = GetString("NiceTimeStopsVetnButtonText");
         return !(UsePetCooldown != -1);
     }
     public void ReduceNowCooldown()
@@ -110,16 +110,16 @@ public sealed class TimeStops : RoleBase
         Player.RpcResetAbilityCooldown();
         ProtectStartTime = Utils.GetTimeStamp();
             if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
-            Player.Notify(GetString("TimeStopsOnGuard"));
+            Player.Notify(GetString("NiceTimeStopsOnGuard"));
         Player.ColorFlash(Utils.GetRoleColor(CustomRoles.SchrodingerCat));
         CustomSoundsManager.RPCPlayCustomSoundAll("TheWorld");
         foreach (var player in Main.AllAlivePlayerControls)
         {
             if (Player == player) continue;
             if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId)) continue;
-            NameNotifyManager.Notify(player, Utils.ColorString(Utils.GetRoleColor(CustomRoles.TimeStops), GetString("ForTimeStops")));
+            NameNotifyManager.Notify(player, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceTimeStops), GetString("ForNiceTimeStops")));
             var tmpSpeed1 = Main.AllPlayerSpeed[player.PlayerId];
-            TimeStopsstop.Add(player.PlayerId);
+            NiceTimeStopsstop.Add(player.PlayerId);
             Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
             Main.CantDoActList.Add(player.PlayerId);
             ExtendedPlayerControl.SendCantDoActPlayer(true);
@@ -130,7 +130,7 @@ public sealed class TimeStops : RoleBase
                 Main.CantDoActList.Remove(player.PlayerId);
                 ExtendedPlayerControl.SendCantDoActPlayer(false);
                 player.MarkDirtySettings();
-              TimeStopsstop.Remove(player.PlayerId);
+              NiceTimeStopsstop.Remove(player.PlayerId);
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
             }, OptionSkillDuration.GetFloat(), "Time Stop");
         }
@@ -144,7 +144,7 @@ public sealed class TimeStops : RoleBase
         {
             ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("TimeStopsOffGuard")));
+            player.Notify(string.Format(GetString("NiceTimeStopsOffGuard")));
         }
         if (Player.IsAlive() && UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
@@ -168,14 +168,14 @@ public sealed class TimeStops : RoleBase
         ProtectStartTime = Utils.GetTimeStamp();
         UsePetCooldown = Utils.GetTimeStamp();
         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
-        Player.Notify(GetString("TimeStopsOnGuard"));
+        Player.Notify(GetString("NiceTimeStopsOnGuard"));
         foreach (var player in Main.AllAlivePlayerControls)
         {
             if (Player == player) continue;
             if (!player.IsAlive() || Pelican.IsEaten(player.PlayerId)) continue;
-            NameNotifyManager.Notify(player, Utils.ColorString(Utils.GetRoleColor(CustomRoles.TimeStops), GetString("ForTimeStops")));
+            NameNotifyManager.Notify(player, Utils.ColorString(Utils.GetRoleColor(CustomRoles.NiceTimeStops), GetString("ForNiceTimeStops")));
             var tmpSpeed1 = Main.AllPlayerSpeed[player.PlayerId];
-            TimeStopsstop.Add(player.PlayerId);
+            NiceTimeStopsstop.Add(player.PlayerId);
             Main.AllPlayerSpeed[player.PlayerId] = Main.MinSpeed;
             Main.CantDoActList.Add(player.PlayerId);
             ExtendedPlayerControl.SendCantDoActPlayer(true);
@@ -186,14 +186,14 @@ public sealed class TimeStops : RoleBase
                 Main.CantDoActList.Remove(player.PlayerId);
                 ExtendedPlayerControl.SendCantDoActPlayer(false);
                 player.MarkDirtySettings();
-                TimeStopsstop.Remove(player.PlayerId);
+                NiceTimeStopsstop.Remove(player.PlayerId);
                 RPC.PlaySoundRPC(player.PlayerId, Sounds.TaskComplete);
             }, OptionSkillDuration.GetFloat(), "Time Stop");
         }
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
-        if (TimeStopsstop.Contains(reporter.PlayerId))    return false;
+        if (NiceTimeStopsstop.Contains(reporter.PlayerId))    return false;
         return true;
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)

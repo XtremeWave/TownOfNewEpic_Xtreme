@@ -5,6 +5,7 @@ using TONEX.Roles.Core;
 using static TONEX.Translator;
 using UnityEngine;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
@@ -35,7 +36,7 @@ public sealed class Vulture : RoleBase, IIndependent
     enum OptionName
     {
         VultureNeedEatLimit,
-            VultureEatTime,
+        VultureEatTime,
     }
 
     private static int EatLimit;

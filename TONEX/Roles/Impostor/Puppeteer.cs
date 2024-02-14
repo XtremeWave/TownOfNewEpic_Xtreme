@@ -9,20 +9,20 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Impostor;
-public sealed class Puppeteer : RoleBase, IImpostor
+public sealed class ControlFreak : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Puppeteer),
-            player => new Puppeteer(player),
-            CustomRoles.Puppeteer,
+            typeof(ControlFreak),
+            player => new ControlFreak(player),
+            CustomRoles.ControlFreak,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             2500,
             null,
             "pup|傀儡師|傀儡"
         );
-    public Puppeteer(PlayerControl player)
+    public ControlFreak(PlayerControl player)
     : base(
         RoleInfo,
         player
@@ -33,7 +33,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
     /// <summary>
     /// Key: ターゲットのPlayerId, Value: パペッティア
     /// </summary>
-    private static Dictionary<byte, Puppeteer> Puppets = new(15);
+    private static Dictionary<byte, ControlFreak> Puppets = new(15);
     public bool IsKiller { get; private set; } = false;
     public override void OnDestroy()
     {
@@ -68,14 +68,14 @@ public sealed class Puppeteer : RoleBase, IImpostor
     }
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
-        var (puppeteer, target) = info.AttemptTuple;
+        var (ControlFreak, target) = info.AttemptTuple;
 
         Puppets[target.PlayerId] = this;
         SendRPC(target.PlayerId, 1);
-        puppeteer.SetKillCooldownV2();
-        puppeteer.RPCPlayCustomSound("Line");
+        ControlFreak.SetKillCooldownV2();
+        ControlFreak.RPCPlayCustomSound("Line");
 
-        Utils.NotifyRoles(SpecifySeer: puppeteer);
+        Utils.NotifyRoles(SpecifySeer: ControlFreak);
         return false;
     }
     public override void OnReportDeadBody(PlayerControl _, GameData.PlayerInfo __)
@@ -87,8 +87,8 @@ public sealed class Puppeteer : RoleBase, IImpostor
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        if (Puppets.TryGetValue(puppet.PlayerId, out var puppeteer))
-            puppeteer.CheckPuppetKill(puppet);
+        if (Puppets.TryGetValue(puppet.PlayerId, out var ControlFreak))
+            ControlFreak.CheckPuppetKill(puppet);
     }
     private void CheckPuppetKill(PlayerControl puppet)
     {
@@ -138,7 +138,7 @@ public sealed class Puppeteer : RoleBase, IImpostor
     }
     public bool OverrideKillButtonText(out string text)
     {
-        text = GetString("PuppeteerOperateButtonText");
+        text = GetString("ControlFreakOperateButtonText");
         return true;
     }
 }

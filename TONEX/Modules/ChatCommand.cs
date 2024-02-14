@@ -30,6 +30,12 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         InitRoleCommands();
         AllCommands = new()
         {
+            new(["setrole"], CommandAccess.Debugger, mc =>
+            {
+
+                SetRoles(mc.Args, mc.Player.PlayerId);
+                return (MsgRecallMode.Block, null);
+            }),
             new(["dump"], CommandAccess.LocalMod, mc =>
             {
                 Utils.DumpLog();
@@ -315,6 +321,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         RoleCommands.Add(CustomRoles.Chameleon, new() { "ch", "变色龙","变色" });
         RoleCommands.Add(CustomRoles.Mini, new() { "mini", "迷你" });
         RoleCommands.Add(CustomRoles.Libertarian, new() { "li", "广播", "自主主义者" });
+        RoleCommands.Add(CustomRoles.Spiders, new() { "sd", "蜘蛛"});
     }
     public static void SendRolesInfo(string input, byte playerId)
     {
@@ -341,6 +348,28 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 Utils.SendMessage(AddonDescription.FullFormatHelpByRole(role) ??
                         // roleInfoがない役職
                         $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{role.GetRoleInfoWithRole()}", playerId);
+        }
+    }
+    public static void SetRoles(string input, byte playerId)
+    {
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.HotPotato"), playerId);
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            Utils.ShowActiveRoles(playerId);
+            return;
+        }
+        else if (!GetRoleByInputName(input, out var role))
+        {
+            Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+            return;
+        }
+        else
+        {
+            Utils.GetPlayerById(playerId).RpcSetCustomRole(role);
         }
     }
     public static void SpecifyRole(string input, byte playerId)

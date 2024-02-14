@@ -17,7 +17,7 @@ public sealed class Vigilante : RoleBase, IKiller
             21400,
             null,
             "vi|俠客",
-            "#f0e68c",
+            "#C90000",
             true,
             introSound: () => GetIntroSound(RoleTypes.Crewmate)
         );

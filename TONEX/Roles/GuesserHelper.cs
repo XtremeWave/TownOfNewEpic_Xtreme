@@ -11,6 +11,7 @@ using TONEX.Roles.Crewmate;
 using TONEX.Roles.Impostor;
 using UnityEngine;
 using static TONEX.Translator;
+using TONEX.Roles.AddOns.Common;
 
 namespace TONEX;
 public static class GuesserHelper
@@ -133,6 +134,11 @@ public static class GuesserHelper
         if (role == CustomRoles.GM || target.Is(CustomRoles.GM))
         {
             reason = GetString("GuessGM");
+            return false;
+        }
+        if (role == CustomRoles.Mini || target.Is(CustomRoles.Mini))
+        {
+            reason = GetString("GuessMini");
             return false;
         }
         if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && guesser.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessTaskDoneSnitch.GetBool())
@@ -451,6 +457,7 @@ public static class GuesserHelper
                 if (!NiceGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && role.IsVanilla()) continue;
                 if (role.IsTODO()) continue;
                 if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel or CustomRoles.HotPotato or CustomRoles.ColdPotato) continue;
+                if (role ==  CustomRoles.Mini) continue;
                 CreateRole(role);
             }
             void CreateRole(CustomRoles role)

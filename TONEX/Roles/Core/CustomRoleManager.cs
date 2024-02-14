@@ -11,6 +11,7 @@ using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.AddOns.Impostor;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Core;
@@ -160,7 +161,7 @@ public static class CustomRoleManager
         Bait.OnMurderPlayerOthers(info);
         Beartrap.OnMurderPlayerOthers(info);
         Avenger.OnMurderPlayerOthers(info);
-        Mini.OnMurderPlayerOthers(info);
+        
         //その他視点の処理があれば実行
         foreach (var onMurderPlayer in OnMurderPlayerOthers.ToArray())
         {
@@ -369,6 +370,9 @@ public static class CustomRoleManager
                 case CustomRoles.Signal:
                     Signal.Add(pc.PlayerId);
                     break;
+                case CustomRoles.Spiders:
+                    Spiders.Add(pc.PlayerId);
+                    break;
             }
         }
     }
@@ -528,7 +532,6 @@ public enum CustomRoles
     SerialKiller,
     ShapeMaster,
     EvilGuesser,
-    EvilSwapper,//TODO
     KillingMachine,
     Zombie,
     Sniper,
@@ -540,7 +543,7 @@ public enum CustomRoles
     Miner,
     Escapist,
     Mare,
-    Puppeteer,
+    ControlFreak,
     TimeThief,
     EvilTracker,
     AntiAdminer,
@@ -561,20 +564,29 @@ public enum CustomRoles
     Butcher,
     Hangman,
     Bard,
-    Swooper,
+    EvilInvisibler,
     CrewPostor,
     Penguin,
     Stealth,
     Messenger,
     Insider,
     Onmyoji,
-    Blackmailer,//TODO
     Gamblers,
     DoubleKiller,
     Medusa,
     Skinwalker,
     ViciousSeeker,
-    EvilGuardian,//TODO
+    EvilGuardian,//TODO 邪恶天使
+    EvilTimeStops, //TODO 邪恶的时停者
+    MirrorSpirit,//TODO 镜妖
+    Assaulter,//TODO 强袭者
+    MimicTeam,//TODO 模仿者团队
+    MimicKiller,//TODO 模仿者（杀手）
+    MimicAssistant,//TODO 模仿者（助手）
+    Blackmailer,//TODO 勒索者
+    EvilSwapper,
+    Disperser,//TODO 分散者
+
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -592,10 +604,9 @@ public enum CustomRoles
     Snitch,
     SpeedBooster,
     Dictator,
-    Doctor,
+    MedicalExaminer,
     Vigilante,
     NiceGuesser,
-    NiceSwapper,//TODO
     Transporter,
     TimeManager,
     Veteran,
@@ -610,12 +621,23 @@ public enum CustomRoles
     Medium,
     Observer,
     DoveOfPeace,
-    TimeStops,
+    NiceTimeStops,
     TimeMaster,
     Prophet,
-    RubePeople,
+    Instigator,
     Adventurer,
     Unyielding,
+    Perfumer, //TODO 香水师
+    Captain,// TODO 舰长
+    VirtueGuider, //TODO 善导者，TOHEX的舰长
+    NiceTracker,//TODO 正义的追踪者
+    NiceInvisibler,//TODO 影行者（正义隐身）
+    NiceSwapper,//TODO 正义的换票师
+    Hunter,//TODO 猎人
+    SpecterSlayer, //TODO 借魂杀手，TOHEX恶魔猎手
+    Alien, //TODO 外星人
+    Spy,//TODO 卧底
+
     //Neutral
     Arsonist,
     Jester,
@@ -625,17 +647,17 @@ public enum CustomRoles
     Terrorist,
     Executioner,
     Jackal,
-    Innocent, //TODO
+    Innocent, //TODO 冤罪师
     Pelican,
-    Revolutionist, //TODO
+    Revolutionist, //TODO 革命家
     Hater,
     Konan, //TODO
     Demon,
-    Stalker, //TODO
+    Stalker, //TODO 潜藏者
     Workaholic,
-    Collector, //TODO
-    Provocateur, //TODO
-    Sunnyboy, //TODO
+    Collector, //TODO 集票者
+    Provocateur, //TODO 自爆卡车
+    Sunnyboy, //TODO 阳光开朗大男孩
     BloodKnight,
     Follower,
     Succubus,
@@ -650,10 +672,24 @@ public enum CustomRoles
     Non_Villain,
     Lawyer,
     Prosecutors,
-    PVPboss,//TODO
+    PVPboss,//TODO PvP大佬
+    Rebels,
+    Admirer,//TODO 暗恋者
+    Akujo, //TODO 魅魔
+    Puppeteer,//TODO 傀儡师
+    Changger,//TODO 连环交换师
+    Amnesiac,//TODO 失忆者
+    Plaguebearer,//TODO 瘟疫之源
+    GodOfPlagues,//TODO 万疫之神
+    Yandere,//TODO 病娇
+    PoliticalStrategists,//TODO 纵横家
+    Imitator,//TODO 效颦者
+    Challenger,//TODO 挑战者
+
     //GameMode
     HotPotato,
     ColdPotato,
+
     //GM
     GM,
 
@@ -688,6 +724,13 @@ public enum CustomRoles
     Mini,
     Libertarian,
     Signal,
+    Spiders,
+    Professional,//TODO 专业赌怪
+    Luckless,//TODO 倒霉蛋
+    FateFavoro,//TODO 命运眷顾
+    Nihility,//TODO 虚无
+    Diseased,//TODO 患者
+
 }
 public enum CustomRoleTypes
 {

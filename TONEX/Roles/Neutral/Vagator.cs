@@ -31,10 +31,6 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
             true,
             true,
             countType: CountTypes.FAFL
-#if RELEASE
-,
-            Hidden: true
-#endif
         );
     public Vagator(PlayerControl player)
     : base(
@@ -53,7 +49,7 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
         Feeble = new(15);
     }
 
-    #region 参数
+    #region 全局变量
     public static int ElementPowerCount;
     public static int NormalKillTimesCount;
     public static int KillTimesTotalCount;
@@ -72,7 +68,7 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
     #region RPC相关
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetVagor);
+        using var sender = CreateSender(CustomRPC.SetVagator);
         sender.Writer.Write(ElementPowerCount);
         sender.Writer.Write(NormalKillTimesCount);
         sender.Writer.Write(KillTimesTotalCount);
@@ -94,7 +90,7 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
     }
     public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType == CustomRPC.SetVagor)
+        if (rpcType == CustomRPC.SetVagator)
         {
             ElementPowerCount = reader.ReadInt32();
             NormalKillTimesCount = reader.ReadInt32();
@@ -192,7 +188,7 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
         //seeおよびseenが自分である場合以外は関係なし
         if (!Is(seer) || !Is(seen)) return "";
 
-        return $"{GetString("VagorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}";
+        return $"{GetString("VagatorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagatorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagatorElementPowerCount")}:{ElementPowerCount}";
 
     }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
@@ -200,7 +196,7 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
         seen ??= seer;
         //seeおよびseenが自分である場合以外は関係なし
         if (seer != seen || seer.IsModClient()) return "";
-        return $"\n<color=#e6adoa>{GetString("VagorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagorElementPowerCount")}:{ElementPowerCount}</color>";
+        return $"\n<color=#e6adoa>{GetString("VagatorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagatorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagatorElementPowerCount")}:{ElementPowerCount}</color>";
 
     }
     public override void OnUsePet()
@@ -275,11 +271,11 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
                         var ProtectStartTime = Utils.GetTimeStamp();
                         if (!Player.IsModClient()) Player.RpcProtectedMurderPlayer(Player);
                         Player.Notify(GetString("BeGeo"));
-                        List<byte> TimeStopsstop = new();
+                        List<byte> NiceTimeStopsstop = new();
                         if (!pc.IsAlive() || Pelican.IsEaten(pc.PlayerId)) continue;
                         NameNotifyManager.Notify(pc, Utils.ColorString(Utils.GetRoleColor(CustomRoles.Vagator), GetString("ForZhongLi")));
                         var tmpSpeed1 = Main.AllPlayerSpeed[pc.PlayerId];
-                        TimeStopsstop.Add(pc.PlayerId);
+                        NiceTimeStopsstop.Add(pc.PlayerId);
                         Main.AllPlayerSpeed[pc.PlayerId] = Main.MinSpeed;
                         ReportDeadBodyPatch.CanReport[pc.PlayerId] = false;
                         pc.MarkDirtySettings();
@@ -288,7 +284,7 @@ public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
                             Main.AllPlayerSpeed[pc.PlayerId] = Main.AllPlayerSpeed[pc.PlayerId] - Main.MinSpeed + tmpSpeed1;
                             ReportDeadBodyPatch.CanReport[pc.PlayerId] = true;
                             pc.MarkDirtySettings();
-                            TimeStopsstop.Remove(pc.PlayerId);
+                            NiceTimeStopsstop.Remove(pc.PlayerId);
                             RPC.PlaySoundRPC(pc.PlayerId, Sounds.TaskComplete);
                         }, 5f, "ZhongLi ");
                     }

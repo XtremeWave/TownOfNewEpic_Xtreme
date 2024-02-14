@@ -136,7 +136,7 @@ public sealed class FortuneTeller : RoleBase
                 CustomRoles.Warlock or
                 CustomRoles.Hacker or
                 CustomRoles.Mafia or
-                CustomRoles.Doctor or
+                CustomRoles.MedicalExaminer or
                 CustomRoles.Transporter or
                 CustomRoles.Veteran or
                 CustomRoles.FortuneTeller or
@@ -147,7 +147,7 @@ public sealed class FortuneTeller : RoleBase
                 => "Strong",
 
                 CustomRoles.Witch or
-                CustomRoles.Puppeteer or
+                CustomRoles.ControlFreak or
                 CustomRoles.ShapeMaster or
                 CustomRoles.Paranoia or
                 CustomRoles.Psychic or
@@ -185,7 +185,7 @@ public sealed class FortuneTeller : RoleBase
 
                 CustomRoles.Glitch or
                 CustomRoles.Concealer or
-                CustomRoles.Swooper
+                CustomRoles.EvilInvisibler
                 => "Glitch",
 
                 CustomRoles.Succubus

@@ -157,6 +157,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
                  target.RpcSetCustomRole(CustomRoles.Sidekick);
              else
                  target.RpcSetCustomRole(CustomRoles.Whoops);
+            
              /*Player.RpcMurderPlayerV2(target);
             target.Revive();
             
@@ -184,6 +185,7 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
             target.Data.Role.CanBeKilled = true;
             AntiBlackout.SendGameData("SetSidekick");*/
         }
+       
 
         Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
         target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));

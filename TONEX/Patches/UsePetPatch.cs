@@ -42,7 +42,7 @@ class TryPetPatch
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard || !Options.UsePets.GetBool()) return;
         var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
         if (cancel)
         {
@@ -58,7 +58,7 @@ class ExternalRpcPetPatch
 {
     public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard || !Options.UsePets.GetBool()) return;
         var rpcType = callId == 51 ? RpcCalls.Pet : (RpcCalls)callId;
         if (rpcType != RpcCalls.Pet) return;
 

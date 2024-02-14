@@ -6,21 +6,21 @@ using static TONEX.Translator;
 using System.Collections.Generic;
 
 namespace TONEX.Roles.Crewmate;
-public sealed class Doctor : RoleBase, IDeathReasonSeeable
+public sealed class MedicalExaminer : RoleBase, IDeathReasonSeeable
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Doctor),
-            player => new Doctor(player),
-            CustomRoles.Doctor,
+            typeof(MedicalExaminer),
+            player => new MedicalExaminer(player),
+            CustomRoles.MedicalExaminer,
             () => RoleTypes.Scientist,
             CustomRoleTypes.Crewmate,
             21100,
             SetupOptionItem,
             "doc|法醫",
-            "#80ffdd"
+            "#00a4ff"
         );
-    public Doctor(PlayerControl player)
+    public MedicalExaminer(PlayerControl player)
     : base(
         RoleInfo,
         player
@@ -34,13 +34,13 @@ public sealed class Doctor : RoleBase, IDeathReasonSeeable
     static OptionItem OptionKnowKiller;
     enum OptionName
     {
-        DoctorTaskCompletedBatteryCharge,
+        MedicalExaminerTaskCompletedBatteryCharge,
         DetectiveCanknowKiller,
     }
     private static float TaskCompletedBatteryCharge;
     private static void SetupOptionItem()
     {
-        OptionTaskCompletedBatteryCharge = FloatOptionItem.Create(RoleInfo, 10, OptionName.DoctorTaskCompletedBatteryCharge, new(0f, 10f, 1f), 5f, false)
+        OptionTaskCompletedBatteryCharge = FloatOptionItem.Create(RoleInfo, 10, OptionName.MedicalExaminerTaskCompletedBatteryCharge, new(0f, 10f, 1f), 5f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionKnowKiller = BooleanOptionItem.Create(RoleInfo, 11, OptionName.DetectiveCanknowKiller, true, false);
     }
@@ -74,10 +74,10 @@ public sealed class Doctor : RoleBase, IDeathReasonSeeable
     private static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (!info.IsSuicide || target.Is(CustomRoles.Doctor)) return true;
+        if (!info.IsSuicide || target.Is(CustomRoles.MedicalExaminer)) return true;
         foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId))
         {
-            if (pc.Is(CustomRoles.Doctor) && info.IsSuicide)
+            if (pc.Is(CustomRoles.MedicalExaminer) && info.IsSuicide)
             {
                 if (pc.Is(CustomRoles.Madmate) && !killer.GetCustomRole().IsImpostorTeam())
                     Logger.Info($"{pc.GetRealName()} 是个叛徒，所以他选择无视杀人现场", "Bodyguard.OnCheckMurderPlayerOthers_After");

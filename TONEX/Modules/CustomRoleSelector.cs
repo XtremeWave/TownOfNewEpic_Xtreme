@@ -113,60 +113,6 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            if (sp < 50 && !rolesToAssign.Contains(CustomRoles.Non_Villain) && readyNeutralNum < optNeutralNum)
-            {
-                var shouldExecute = true;
-                if (NeutralRateList.Count > 0)
-                {
-                    var remove = NeutralRateList[rd.Next(0, NeutralOnList.Count)];
-                    NeutralRateList.Remove(remove);
-                }
-                else if (NeutralOnList.Count > 0)
-                {
-                    var remove = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
-                    NeutralOnList.Remove(remove);
-                }
-                else
-                {
-                    shouldExecute = false;
-                }
-                if (shouldExecute)
-                {
-                    rolesToAssign.Add(CustomRoles.Non_Villain);
-                    readyRoleNum++;
-                    readyNeutralNum++;
-                }
-                sp = UnityEngine.Random.Range(0, 100);
-            }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-
-            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagator) && readyNKNum < optNKNum && Options.UsePets.GetBool())
-            {
-                var shouldExecute = true;
-                if (NKRateList.Count > 0)
-                {
-                    var remove = NKRateList[rd.Next(0, NKRateList.Count)];
-                    NKRateList.Remove(remove);
-                }
-                else if (NKOnList.Count > 0)
-                {
-                    var remove = NKOnList[rd.Next(0, NKOnList.Count)];
-                    NKOnList.Remove(remove);
-                }
-                else
-                {
-                    shouldExecute = false;
-                }
-                if (shouldExecute)
-                {
-                    rolesToAssign.Add(CustomRoles.Vagator);
-                    readyRoleNum++;
-                    readyNKNum++;
-                }
-                sp = UnityEngine.Random.Range(0, 100);
-            }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-
             /*if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
             {
                 var shouldExecute = true;
@@ -225,7 +171,9 @@ internal static class CustomRoleSelector
         while (NKOnList.Count > 0 && optNKNum > 0)
         {
             var select = NKOnList[rd.Next(0, NKOnList.Count)];
+            
             NKOnList.Remove(select);
+            if (select is CustomRoles.Vagator && !Options.UsePets.GetBool()) continue;
             rolesToAssign.Add(select);
             readyRoleNum++;
             readyNKNum += select.GetAssignCount();
@@ -239,6 +187,7 @@ internal static class CustomRoleSelector
             while (NKRateList.Count > 0 && optNKNum > 0)
             {
                 var select = NKRateList[rd.Next(0, NKRateList.Count)];
+                if (select is CustomRoles.Vagator && !Options.UsePets.GetBool()) continue;
                 NKRateList.Remove(select);
                 rolesToAssign.Add(select);
                 readyRoleNum++;

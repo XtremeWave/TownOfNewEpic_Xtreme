@@ -7,6 +7,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using UnityEngine;
 using static TONEX.Translator;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using Hazel;
 using System.IO;
 using System.Reflection;

@@ -18,7 +18,7 @@ public sealed class CrewPostor : RoleBase, IImpostor
             CustomRoleTypes.Impostor,
             4800,
             SetupOptionItem,
-            "ca|舰长",
+            "ca|cp",
             experimental: true
         );
     public CrewPostor(PlayerControl player)

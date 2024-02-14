@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
-using TONEX.Roles.Impostor;
 
 namespace TONEX.Modules;
 
@@ -34,21 +33,22 @@ public class MessageControl
         MsgRecallMode recallMode = MsgRecallMode.None;
         // Check if it is a role command
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
+        //IsCommand = Player.GetRoleClass()?.OnPlayerSendMessage(player, Message, out recallMode) ?? false;
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
         CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
+
         RecallMode = recallMode;
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
+
         if (!IsCommand)
         {
-
-
-            // Not a role command, check for command listw
+            // Not a role command, check for command list
             foreach (var command in ChatCommand.AllCommands)
             {
                 if (command.Access switch
                 {
                     CommandAccess.All => false,
-                    CommandAccess.LocalMod => !IsFromSelf,
+                    CommandAccess.LocalMod => !IsFromMod,
                     CommandAccess.Host => !AmongUsClient.Instance.AmHost || !IsFromSelf,
                     CommandAccess.Debugger => !DebugModeManager.AmDebugger,
                     _ => true,

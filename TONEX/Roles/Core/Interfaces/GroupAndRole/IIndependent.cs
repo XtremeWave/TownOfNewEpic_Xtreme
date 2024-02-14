@@ -1,4 +1,4 @@
-namespace TONEX.Roles.Core.Interfaces;
+namespace TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 /// <summary>
 /// 中立杀手的接口

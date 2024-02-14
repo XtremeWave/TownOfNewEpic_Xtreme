@@ -31,6 +31,12 @@ internal class ChangeRoleSettings
                 Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
             }
             Main.SetRolesList = new();
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                List<string> values = new();
+                values.Add(null);
+                Main.SetRolesList.Add(pc.PlayerId, values);
+            }
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();
             Main.AllPlayerSpeed = new();
@@ -68,6 +74,7 @@ internal class ChangeRoleSettings
             Main.CantDoActList = new();
             //名前の記録
             RPC.SyncAllPlayerNames();
+            HudSpritePatch.IsEnd = false ;
 
             //var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             //if (invalidColor.Any())

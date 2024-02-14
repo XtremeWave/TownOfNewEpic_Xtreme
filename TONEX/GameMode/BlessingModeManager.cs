@@ -33,15 +33,6 @@ internal static class BlessingModeManager
     public static List<byte> DigitalLifeList;
     //设置11
 
-    [GameModuleInitializer]
-    public static void Init()
-    {
-        if (Options.CurrentGameMode != CustomGameMode.HotPotato) return;
-        BoomTimes = Boom.GetInt() + 9;
-        HotPotatoMax = HotQuan.GetInt();
-        IsAliveCold = 0;
-        IsAliveHot = 0;
-    }
 
  
 }

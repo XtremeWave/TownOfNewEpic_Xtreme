@@ -17,15 +17,15 @@ Thank you for using TOHE!
 - Fixed bug that Executioner may not change role after their target being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
 - Fixed bug that the player swallowed by the Pelican may not return to the map after the pelican being killed by Pelican, guessed by Guesser, killed by Deceiver, cursed by Witch
 - Fixed bug that Ninja kill cooldown resets to mark cooldown after assassination instead of default kill cooldown
-- Fixed bug that Swooper is still considered invisible after skill ends
-- Fixed bug that host sometimes does not respond when clicking the vent button as a Swooper
+- Fixed bug that EvilInvisibler is still considered EvilInvisibler after skill ends
+- Fixed bug that host sometimes does not respond when clicking the vent button as a EvilInvisibler
 - Fixed bug that Concealer's skills don't expire
 - Fixed bug that After the Pelican exits the game, some players' role may be revealed
 - Fixed bug that Both the Madmate prefix and the Madmate text are displayed in the kill log
 
 ## Changing
 - Reduced font size of host name suffix to prevent obscuring message
-- Swooper is no longer an experimental role
+- EvilInvisibler is no longer an experimental role
 - When searching for a lobby, display different colors for rooms on different platforms (PC blue, phone green, console game red)
 - Prevent question mark language lobby from appearing when searching game room
 - Minor tweaks to the task panel on the left side of the game
@@ -34,7 +34,7 @@ Thank you for using TOHE!
 - The option to auto start at full lobby is retained after exiting
 
 ## Deletion
-- Removed the unnecessary shield-animation when the Swooper's invisibility ends
+- Removed the unnecessary shield-animation when the EvilInvisibler's invisibility ends
 
 ## New Feature
 - Block shapeshifting during meeting

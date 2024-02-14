@@ -44,12 +44,14 @@ public sealed class Sniper : RoleBase, IImpostor
     static OptionItem SniperPrecisionShooting;
     static OptionItem SniperAimAssist;
     static OptionItem SniperAimAssistOnshot;
+    static OptionItem SniperCanKill;
     enum OptionName
     {
         SniperBulletCount,
         SniperPrecisionShooting,
         SniperAimAssist,
-        SniperAimAssistOneshot
+        SniperAimAssistOneshot,
+        SniperCanKill
     }
     Vector3 SnipeBasePosition;
     Vector3 LastPosition;
@@ -73,6 +75,7 @@ public sealed class Sniper : RoleBase, IImpostor
         SniperPrecisionShooting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SniperPrecisionShooting, false, false);
         SniperAimAssist = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SniperAimAssist, true, false);
         SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperAimAssistOneshot, false, false, SniperAimAssist);
+        SniperCanKill = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperCanKill, false, false);
     }
     public override void Add()
     {
@@ -115,7 +118,7 @@ public sealed class Sniper : RoleBase, IImpostor
     }
     public bool CanUseKillButton()
     {
-        return Player.IsAlive() && BulletCount <= 0;
+        return Player.IsAlive() && (BulletCount <= 0 || SniperCanKill.GetBool());
     }
     /// <summary>
     /// 狙撃の場合死因設定

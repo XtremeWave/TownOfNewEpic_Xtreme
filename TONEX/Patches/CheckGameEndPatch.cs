@@ -105,12 +105,12 @@ class GameEndChecker
                         removeWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
                 }
-                //RubePeople 胜利时移除玩家ID了
-                if (CustomRoles.RubePeople.IsExist() && RubePeople.ForRubePeople.Count != 0)
+                //Instigator 胜利时移除玩家ID了
+                if (CustomRoles.Instigator.IsExist() && Instigator.ForInstigator.Count != 0)
                 {
                     foreach (var pc in Main.AllPlayerControls)
                     {
-                        if (RubePeople.ForRubePeople.Contains(pc.PlayerId))
+                        if (Instigator.ForInstigator.Contains(pc.PlayerId))
                         {
                             CustomWinnerHolder.WinnerIds.Remove(pc.PlayerId);
                         }
@@ -171,7 +171,7 @@ class GameEndChecker
         var sender = new CustomRpcSender("EndGameSender", SendOption.Reliable, true);
         sender.StartMessage(-1); // 5: GameData
         MessageWriter writer = sender.stream;
-
+        HudSpritePatch.IsEnd = true;
         //ゴーストロール化
         List<byte> ReviveRequiredPlayerIds = new();
         var winner = CustomWinnerHolder.WinnerTeam;
@@ -325,7 +325,7 @@ class GameEndChecker
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.BloodKnight);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.BloodKnight);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && BK == 0 && Crew <= SC) //魅魔胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && BK == 0 && Crew <= SC) //魅惑者胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Succubus);

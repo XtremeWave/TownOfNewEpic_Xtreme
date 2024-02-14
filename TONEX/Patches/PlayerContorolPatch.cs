@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TONEX.Modules;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
+using TONEX.Roles.AddOns.Impostor;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Impostor;
@@ -287,6 +288,12 @@ class ReportDeadBodyPatch
         }
 
         if (__instance.Is(CustomRoles.Oblivious) && target != null) return false;
+        PlayerControl targetV2 = target.Object;
+        if (targetV2.GetRealKiller().Is(CustomRoles.Spiders))
+        {
+            Main.AllPlayerSpeed[__instance.PlayerId] = Spiders.OptionSpeed.GetFloat();
+            __instance.MarkDirtySettings();
+        }
 
         foreach (var role in CustomRoleManager.AllActiveRoles.Values)
         {
@@ -527,7 +534,7 @@ class FixedUpdatePatch
                 if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
                     RealName = $"<size=0>{RealName}</size> ";
 
-                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
+                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.MedicalExaminer), Utils.GetVitalText(target.PlayerId))})" : "";
                 //Mark・Suffixの適用
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 
@@ -636,7 +643,7 @@ class CoEnterVentPatch
         Logger.Info($"{__instance.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
         var user = __instance.myPlayer;
-        if (user.CantDoAnyAct() || !user.CanUseSkill() && user.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.TimeStops or CustomRoles.TimeMaster or CustomRoles.RubePeople or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
+        if (user.CantDoAnyAct() || !user.CanUseSkill() && user.GetCustomRole() is CustomRoles.EvilInvisibler or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.NiceTimeStops or CustomRoles.TimeMaster or CustomRoles.Instigator or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
             writer.WritePacked(127);

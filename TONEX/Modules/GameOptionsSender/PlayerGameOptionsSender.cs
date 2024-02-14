@@ -115,7 +115,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 case CustomRoles.Mini:
                     if ((player.GetRoleClass() as IKiller)?.IsKiller ?? false)
                     {
-                        if (Mini.Age < 18)
+                        if (Mini.Age[player.PlayerId] < 18)
                             opt.SetFloat(FloatOptionNames.KillCooldown, Mini.OptionKidKillCoolDown.GetFloat());
                         else
                             opt.SetFloat(FloatOptionNames.KillCooldown, Mini.OptionAdultKillCoolDown.GetFloat());

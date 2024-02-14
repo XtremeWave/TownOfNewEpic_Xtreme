@@ -27,7 +27,7 @@ null,
             countType: CountTypes.None
 #if RELEASE
 ,
-            Hidden: true
+            ctop: true
 #endif
         );
     public Non_Villain(PlayerControl player)

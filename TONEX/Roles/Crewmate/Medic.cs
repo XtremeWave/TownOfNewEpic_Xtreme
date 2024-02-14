@@ -21,7 +21,7 @@ public sealed class Medic : RoleBase, IKiller
             22100,
             SetupOptionItem,
             "me|醫生",
-            "#00a4ff",
+            "#80ffdd",
             true
         );
     public Medic(PlayerControl player)

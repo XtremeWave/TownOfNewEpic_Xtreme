@@ -89,13 +89,13 @@ public enum CustomRPC
     SetMorticianArrow,
     Judge,
     Guess,
-    SetSwooperTimer,
+    SetEvilInvisiblerTimer,
     SetBKTimer,
     SyncFollowerTargetAndTimes,
-    //魅魔
+    //魅惑者
     SetSuccubusCharmLimit,
     //傀儡
-    SyncPuppeteerList,
+    SyncControlFreakList,
     //术士
     SyncWarlock,
     //逃逸
@@ -132,7 +132,7 @@ public enum CustomRPC
     //冒险家
     AdventurerSabotage,
     //异世闲游
-    SetVagor,
+    SetVagator,
     AddFeeble,
     RemoveFeeble,
     //'不演反派'

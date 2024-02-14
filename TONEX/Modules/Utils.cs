@@ -543,7 +543,7 @@ public static class Utils
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
-            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Doctor);
+            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.MedicalExaminer);
             if (state.DeathReason is CustomDeathReason.Disconnected or CustomDeathReason.Vote) color = new Color32(255, 255, 255, 60);
             deathReason = ColorString(color, deathReason);
         }
@@ -1095,7 +1095,7 @@ public static class Utils
                 //seerの役職名とSelfTaskTextとseerのプレイヤー名とSelfMarkを合成
                 var (enabled, text) = GetRoleNameAndProgressTextData(seer);
                 string SelfRoleName = enabled ? $"<size={fontSize}>{text}</size>" : "";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
+                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.MedicalExaminer), GetVitalText(seer.PlayerId))})" : "";
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
                 if (Pelican.IsEaten(seer.PlayerId))
@@ -1185,7 +1185,7 @@ public static class Utils
 
                     string TargetDeathReason = "";
                     if (seer.KnowDeathReason(target))
-                        TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
+                        TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.MedicalExaminer), GetVitalText(target.PlayerId))})";
 
                     if (((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding) && !isForMeeting)
                         TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
@@ -1346,8 +1346,7 @@ public static class Utils
             if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
             {
                 builder.AppendFormat("<pos={0}em>");
-                builder.Append($" {oldRoleName}{GetSubRolesText(id)} =>" + GetTrueRoleName(id, false).RemoveColorTags());
-                builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
+                builder.Append(oldRoleName + pc.GetTrueRoleName());
                 return builder.ToString();
             }
             builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
@@ -1375,8 +1374,7 @@ public static class Utils
             if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
             {
                 builder.AppendFormat("<pos={0}em>", pos);
-                builder.Append($"  {oldRoleName}{GetSubRolesText(id)} => " + GetTrueRoleName(id, false));
-                builder.Append(GetSubRolesText(id));
+                builder.Append(oldRoleName + pc.GetTrueRoleName());
                 builder.Append("</pos>");
                 return builder.ToString();
             }
@@ -1389,12 +1387,18 @@ public static class Utils
     }
     private static string GetOldRoleName(PlayerControl pc)
     {
-        foreach (var role in Main.SetRolesList)
+        foreach (var kvp in Main.SetRolesList)
         {
-            if (role.Item2.PlayerId == pc.PlayerId || role.Item2.PlayerId.Equals(pc.PlayerId))
-                return role.Item1;
+            StringBuilder sb = new();
+            if (kvp.Key == pc.PlayerId && kvp.Value.Count > 0)
+                foreach (var role in kvp.Value)
+                {
+                    if (role == "" || role == null) continue;
+                    sb.Append($"{role} =>");
+                }
+            return sb.ToString();
         }
-        Logger.Info($"失败", "LoadImage");
+        Logger.Info($"无", "RoleName");
         return null;
     }
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", string.Empty);

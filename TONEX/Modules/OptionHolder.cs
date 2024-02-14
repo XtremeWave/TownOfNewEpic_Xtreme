@@ -657,6 +657,7 @@ public static class Options
         LastImpostor.SetupCustomOption();
         TicketsStealer.SetupCustomOption();
         Mimic.SetupCustomOption();
+        Spiders.SetupCustomOption();
 
         #endregion
 
@@ -782,12 +783,14 @@ public static class Options
         #region 游戏设置
         HotPotatoManager.SetupCustomOption();
 
+        // 更多游戏模式
         TextOptionItem.Create(3_020_000, "MenuTitle.GameMode", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
-        BlessingMode = BooleanOptionItem.Create(3_020_001, "BlessingMode", true, TabGroup.GameSettings, false)
+        BlessingMode = BooleanOptionItem.Create(3_1001_001, "BlessingMode", true, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue));
+
         // 驱逐相关设定
         TextOptionItem.Create(3_100_001, "MenuTitle.Ejections", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)

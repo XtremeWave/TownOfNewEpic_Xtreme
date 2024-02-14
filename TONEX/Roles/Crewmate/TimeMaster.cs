@@ -133,7 +133,7 @@ public sealed class TimeMaster : RoleBase
         {
             ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("TimeStopsOffGuard")));
+            player.Notify(string.Format(GetString("NiceTimeStopsOffGuard")));
         }
         if (UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {
