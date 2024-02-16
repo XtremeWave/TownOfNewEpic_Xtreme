@@ -1158,6 +1158,8 @@ RebelsSkillDuration: "起义持续时间"
 SpidersSpeed: "缠绕蛛丝后的速度"
 FireworkerCanKill: "烟花商人在烟花放完前可以击杀"
 SniperCanKill: "狙击手在子弹用完前可以击杀"
+WhoopsCanRecruit: "狈可以任务完成后通过投票招募"
+WhoopsTasksCount: "狈的任务数量"
 
 # 随机出生点 / Random Spawn Locations
 Junction: "三岔路"
@@ -1560,7 +1562,7 @@ MediumshipTitle: "【 ★ 冥界之声 ★ 】"
 MafiaRevengeTitle: "【 ★ 特供情报 ★ 】"
 OnPlayerJoinMsgTitle: "【 ★ {0} 您好！★ 】"
 BlackmailerNewsTitle: "【 ⚠ 紧急消息 ⚠ 】"
-
+SwapTitle: "【 ★ 计票异常 ★ 】"
 # 单位 / Units
 Format.Players: "{0}人"
 Format.Seconds: "{0}秒"

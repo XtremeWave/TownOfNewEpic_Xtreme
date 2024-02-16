@@ -59,6 +59,8 @@ public enum CustomRPC
     //TONEX
     ColorFlash,
     CantDoAnyActPlayer,
+    IsEnd,
+
     //GameMode
     SyncHpNameNotify,
 
@@ -144,7 +146,10 @@ public enum CustomRPC
     ForNVCAAList,
     ForNVOvercomeList,
     ForNVFarAheadList,
-    ForNVDFList,    
+    ForNVDFList,
+    //换票
+    NiceSwapperSync,
+    EvilSwapperSync,
 }
 public enum Sounds
 {
@@ -296,6 +301,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetDeathReason:
                 RPC.GetDeathReason(reader);
+                break;
+            case CustomRPC.IsEnd:
+                HudSpritePatch.IsEnd = reader.ReadBoolean();
                 break;
             case CustomRPC.EndGame:
                 RPC.EndGame(reader);
@@ -453,6 +461,12 @@ internal static class RPC
         int divideBy = amount / 10;
         for (var i = 0; i <= 10; i++)
             SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, targetId);
+    }
+    public static void SyncEndRPC(bool isend)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.IsEnd, SendOption.Reliable, -1);
+        writer.Write(isend);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncCustomSettingsRPCforOneOption(OptionItem option)
     {

@@ -7,6 +7,7 @@ using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Crewmate;
 using TONEX.Roles.Impostor;
 using UnityEngine;
+using static Rewired.Utils.Classes.Utility.ObjectInstanceTracker;
 
 namespace TONEX;
 
@@ -76,14 +77,16 @@ public class MeetingButtonManager
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
             if (pc == null || !meetingButton.ShouldShowButtonFor(pc)) continue;
-            if (PlayerControl.LocalPlayer == pc && (pc.Is(CustomRoles.EvilSwapper)|| pc.Is(CustomRoles.NiceSwapper) && !NiceSwapper.SwapperCanSelf.GetBool())) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "Custom Meeting Button";
             targetBox.transform.localPosition = new Vector3(-0.95f, 0.03f, -1.31f);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
+            if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper))
+            renderer.sprite = (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Contains(pc.PlayerId)
+               || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Contains(pc.PlayerId)) ? CustomButton.GetSprite("SwapYes") : CustomButton.GetSprite("SwapNo");
+            else
             renderer.sprite =  CustomButton.GetSprite(meetingButton.ButtonName);
-            renderer.sprite = (NiceSwapper.SwapList.Contains(pc.PlayerId) || EvilSwapper.SwapList.Contains(pc.PlayerId)) ? CustomButton.GetSprite("SwapYes"): CustomButton.GetSprite("SwapNo");
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick = new();
             button.OnClick.AddListener((Action)(() =>
@@ -97,6 +100,9 @@ public class MeetingButtonManager
                         writer.Write(pc.PlayerId);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }
+                    if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper))
+                        renderer.sprite = (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Contains(pc.PlayerId)
+                           || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Contains(pc.PlayerId)) ? CustomButton.GetSprite("SwapYes") : CustomButton.GetSprite("SwapNo");
                 }
             }));
         }

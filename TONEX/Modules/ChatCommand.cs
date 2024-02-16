@@ -46,6 +46,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 StringBuilder sb = new();
                 foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key))
                     sb.Append($"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, sb.ToString());
             }),
             new(["win", "winner"], CommandAccess.All, mc =>
@@ -53,6 +54,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 string text = GetString("NoInfoExists");
                 if (Main.winnerNameList.Any())
                     text = "Winner: " + string.Join(",", Main.winnerNameList);
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["level"], CommandAccess.Host, mc =>
@@ -61,6 +63,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (int.TryParse(mc.Args, out int level) && level is >= 1 and <= 999)
                 {
                     text = string.Format(GetString("Message.SetLevel"), level);
+                    mc.SendToList.Add(mc.Player.PlayerId);
                     mc.Player.RpcSetLevel(Convert.ToUInt32(level) - 1);
                 }
                 return (MsgRecallMode.Block, text);
@@ -75,6 +78,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             {
                 string text = mc.Args.Length is > 10 or < 1 ? GetString("Message.AllowNameLength") : null;
                 if (text == null) Main.HostNickName = mc.Args;
+                mc.SendToList.Add(mc.Player.PlayerId);
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["hn", "hidename"], CommandAccess.Host, mc =>
@@ -144,6 +149,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
                 writer.Write(true);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["m", "myrole"], CommandAccess.All, mc =>
@@ -156,6 +162,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         // roleInfoがない役職
                         GetString(role.ToString()) + mc.Player.GetRoleInfo(true);
                 }
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["t", "template"], CommandAccess.LocalMod, mc =>
@@ -172,6 +179,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     Main.MessageWait.Value = sec;
                     text = string.Format(GetString("Message.SetToSeconds"), sec);
                 }
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["exe", "execute"], CommandAccess.Host, mc =>
@@ -191,6 +199,10 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         text = target.AmOwner
                             ? Utils.ColorString(Color.red, GetString("HostKillSelfByCommand"))
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
+                    }
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        mc.SendToList.Add(pc.PlayerId);
                     }
                 }
                 return (MsgRecallMode.Block, text);
@@ -212,6 +224,10 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
                     }
                 }
+                 foreach (var pc in Main.AllPlayerControls)
+                    {
+                        mc.SendToList.Add(pc.PlayerId);
+                    }
                 return (MsgRecallMode.Block, text);
             }),
             new(["color", "colour"], Options.PlayerCanSetColor.GetBool()?CommandAccess.All:CommandAccess.Host, mc =>
@@ -227,11 +243,13 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         text = string.Format(GetString("Message.SetColor"), mc.Args);
                     }
                 }
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["qt", "quit"], CommandAccess.All, mc =>
             {
                 string text = GetString("Message.CanNotUseByHost");
+                mc.SendToList.Add(mc.Player.PlayerId);
                 if (!mc.IsFromSelf)
                 {
                     var cid = mc.Player.PlayerId.ToString();
@@ -241,10 +259,15 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         string name = mc.Player.GetRealName();
                         text = string.Format(GetString("Message.PlayerQuitForever"), name);
                         Utils.KickPlayer(mc.Player.GetClientId(), true, "VoluntarilyQuit");
+                        foreach (var pc in Main.AllPlayerControls)
+                    {
+                        mc.SendToList.Add(pc.PlayerId);
+                    }
                     }
                     else
                     {
                         text = string.Format(GetString("SureUse.quit"), cid);
+                        mc.SendToList.Add(mc.Player.PlayerId);
                     }
                 }
                 return (MsgRecallMode.Block, text);
@@ -254,6 +277,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 string text = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
                     text += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                 mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["end", "endgame"], CommandAccess.Host, mc =>

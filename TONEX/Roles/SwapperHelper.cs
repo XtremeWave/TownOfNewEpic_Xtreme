@@ -124,17 +124,35 @@ public static class SwapperHelper
             reason = GetString("EGSwapMax");
             return false;
         }
-        if ((swapper.GetRoleClass() is EvilSwapper|| swapper.GetRoleClass() is NiceSwapper) && swapper == target)
+        if ((swapper.GetRoleClass() is EvilSwapper|| swapper.GetRoleClass() is NiceSwapper && !NiceSwapper.SwapperCanSelf.GetBool()) && swapper == target)
         {
             reason = GetString("CantSwapSelf");
             return false;
         }
+        
         if (swapper.Is(CustomRoles.NiceSwapper))
         {
-            if (NiceSwapper.SwapList.Contains(target.PlayerId))
-                NiceSwapper.SwapList.Remove(target.PlayerId);
+            if ((PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Contains(target.PlayerId))
+                (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Remove(target.PlayerId);
+            else if  ((PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Count <2)
+                    (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Add(target.PlayerId);
             else
-                NiceSwapper.SwapList.Add(target.PlayerId);
+            {
+                reason = GetString("ChooseMax");
+                return false;
+            }
+        }
+        else if (swapper.Is(CustomRoles.NiceSwapper))
+        {
+            if ((PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Contains(target.PlayerId))
+                (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Remove(target.PlayerId);
+            else if ((PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Count < 2)
+                (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Add(target.PlayerId);
+            else
+            {
+                reason = GetString("ChooseMax");
+                return false;
+            }
         }
         Logger.Info($"{swapper.GetNameWithRole()} 添加了 {target.GetNameWithRole()}", "Swapper");
 
@@ -142,8 +160,8 @@ public static class SwapperHelper
 
         Logger.Info($"赌场事件：{target.GetNameWithRole()} 死亡", "Swapper");
 
-        if (swapper.Is(CustomRoles.NiceSwapper)) (swapper.GetRoleClass() as NiceSwapper).SwapLimit--;
-        if (swapper.Is(CustomRoles.EvilSwapper)) (swapper.GetRoleClass() as EvilSwapper).SwapLimit--;
+        if (swapper.Is(CustomRoles.NiceSwapper)) { (swapper.GetRoleClass() as NiceSwapper).SwapLimit--; (swapper.GetRoleClass() as NiceSwapper).SendRPC(); }
+        if (swapper.Is(CustomRoles.EvilSwapper)) { (swapper.GetRoleClass() as EvilSwapper).SwapLimit--; (swapper.GetRoleClass() as EvilSwapper).SendRPC(); }
 
         CustomSoundsManager.RPCPlayCustomSoundAll("Gunfire");
 

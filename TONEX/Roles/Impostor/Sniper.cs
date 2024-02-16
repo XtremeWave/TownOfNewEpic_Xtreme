@@ -75,7 +75,7 @@ public sealed class Sniper : RoleBase, IImpostor
         SniperPrecisionShooting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SniperPrecisionShooting, false, false);
         SniperAimAssist = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SniperAimAssist, true, false);
         SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperAimAssistOneshot, false, false, SniperAimAssist);
-        SniperCanKill = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperCanKill, false, false);
+        SniperCanKill = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SniperCanKill, false, false);
     }
     public override void Add()
     {

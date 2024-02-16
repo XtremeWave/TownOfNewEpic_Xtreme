@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.Core;
 using TONEX.Roles.Impostor;
+using TONEX.Roles.Neutral;
 
 namespace TONEX;
 
@@ -77,6 +78,12 @@ class RpcSetTasksPatch
             hasCommonTasks = false;
             NumLongTasks = 0;
             NumShortTasks = Options.MadSnitchTasks.GetInt();
+        }
+        if (pc.Is(CustomRoles.Whoops))
+        {
+            hasCommonTasks = false;
+            NumLongTasks = 0;
+            NumShortTasks = Jackal.OptionWhoopsTasksCount.GetInt();
         }
 
         //管理员和摆烂人没有任务

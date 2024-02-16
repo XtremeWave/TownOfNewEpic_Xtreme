@@ -14,6 +14,7 @@ public class MessageControl
     public bool HasValidArgs { get; set; }
 
     public PlayerControl Player { get; set; }
+    public List<byte> SendToList{ get; set; }
     public bool IsAlive { get => Player.IsAlive(); }
     public bool IsFromMod { get => Player.IsModClient(); }
     public bool IsFromSelf { get => Player.AmOwner; }
@@ -63,7 +64,9 @@ public class MessageControl
                 Logger.Info($"Command: /{keyword}, Args: {Args}", "ChatControl");
 
                 (RecallMode, string msg) = command.Command(this);
-                if (!string.IsNullOrEmpty(msg)) Utils.SendMessage(msg, Player.PlayerId);
+                if (!string.IsNullOrEmpty(msg)) 
+                    foreach ( var pid in SendToList)
+                       Utils.SendMessage(msg, pid);
                 IsCommand = true;
                 return;
             }

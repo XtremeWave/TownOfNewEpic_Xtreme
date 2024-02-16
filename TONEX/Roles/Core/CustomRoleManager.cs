@@ -586,6 +586,7 @@ public enum CustomRoles
     Blackmailer,//TODO 勒索者
     EvilSwapper,
     Disperser,//TODO 分散者
+    EvilPianist,//TODO 邪恶的钢琴家
 
     //Crewmate(Vanilla)
     Engineer,
@@ -637,6 +638,9 @@ public enum CustomRoles
     SpecterSlayer, //TODO 借魂杀手，TOHEX恶魔猎手
     Alien, //TODO 外星人
     Spy,//TODO 卧底
+    NicePianist,//TODO 正义的钢琴家
+    Sloth,//TODO 树懒
+    Bees,//TODO 蜜蜂
 
     //Neutral
     Arsonist,
@@ -651,7 +655,7 @@ public enum CustomRoles
     Pelican,
     Revolutionist, //TODO 革命家
     Hater,
-    Konan, //TODO
+    Konan, //TODO 柯南
     Demon,
     Stalker, //TODO 潜藏者
     Workaholic,
@@ -669,7 +673,7 @@ public enum CustomRoles
     Despair,
     RewardOfficer,
     Vagator,
-    Non_Villain,
+    Non_Villain,//不演反派 1.0限定
     Lawyer,
     Prosecutors,
     PVPboss,//TODO PvP大佬
@@ -685,6 +689,9 @@ public enum CustomRoles
     PoliticalStrategists,//TODO 纵横家
     Imitator,//TODO 效颦者
     Challenger,//TODO 挑战者
+    Martyr,//TODO 先烈,1.1限定
+    NightWolf,//TODO 月下狼人
+    Moonshadow,//TODO 月影,1.4限定
 
     //GameMode
     HotPotato,
@@ -727,9 +734,11 @@ public enum CustomRoles
     Spiders,
     Professional,//TODO 专业赌怪
     Luckless,//TODO 倒霉蛋
-    FateFavoro,//TODO 命运眷顾
+    FateFavor,//TODO 命运眷顾者
     Nihility,//TODO 虚无
     Diseased,//TODO 患者
+    IncorruptibleOfficial,//TODO 清廉之官
+    VIP,//TODO VIP
 
 }
 public enum CustomRoleTypes

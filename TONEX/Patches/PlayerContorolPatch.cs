@@ -263,8 +263,10 @@ class ReportDeadBodyPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
         if (GameStates.IsMeeting) return false;
+        Logger.Info("1", "test");
         if (Options.DisableMeeting.GetBool()) return false;
         if (Options.CurrentGameMode == CustomGameMode.HotPotato) return false;
+        if (CanReport != null)
         if (!CanReport[__instance.PlayerId] || __instance.CantDoAnyAct())
         {
             WaitReport[__instance.PlayerId].Add(target);
@@ -286,13 +288,15 @@ class ReportDeadBodyPatch
                 return false;
             }
         }
-
-        if (__instance.Is(CustomRoles.Oblivious) && target != null) return false;
-        PlayerControl targetV2 = target.Object;
-        if (targetV2.GetRealKiller().Is(CustomRoles.Spiders))
+        //对于仅仅是报告尸体的处理
+        if (target != null)
         {
-            Main.AllPlayerSpeed[__instance.PlayerId] = Spiders.OptionSpeed.GetFloat();
-            __instance.MarkDirtySettings();
+            if (__instance.Is(CustomRoles.Oblivious)) return false;
+            if (target.Object.GetRealKiller().Is(CustomRoles.Spiders))
+            {
+                Main.AllPlayerSpeed[__instance.PlayerId] = Spiders.OptionSpeed.GetFloat();
+                __instance.MarkDirtySettings();
+            }
         }
 
         foreach (var role in CustomRoleManager.AllActiveRoles.Values)

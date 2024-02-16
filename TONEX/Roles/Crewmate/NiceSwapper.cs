@@ -4,6 +4,10 @@ using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using System.Collections.Generic;
 using static TONEX.SwapperHelper;
+using static UnityEngine.GraphicsBuffer;
+using Hazel;
+using static Rewired.Utils.Classes.Utility.ObjectInstanceTracker;
+using TONEX.Roles.Impostor;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class NiceSwapper : RoleBase, IMeetingButton
@@ -17,7 +21,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
             CustomRoleTypes.Crewmate,
             75_1_1_0200,
             SetupOptionItem,
-            "ng|正義賭怪|正义的赌怪|好赌|正义赌|正赌|挣亿的赌怪|挣亿赌怪",
+            "ng|正義换票|正义的换票|好换票|正义换票|正换票|挣亿的换票|挣亿换票",
             "#eede26"
         );
     public NiceSwapper(PlayerControl player)
@@ -25,7 +29,10 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
         RoleInfo,
         player
     )
-    { }
+    {
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+        SwapList = new();
+    }
 
     public static OptionItem OptionSwapNums;
     public static OptionItem SwapperCanSelf;
@@ -38,7 +45,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
     }
 
     public int SwapLimit;
-    public static List<byte> SwapList;
+    public List<byte> SwapList;
     private static void SetupOptionItem()
     {
         OptionSwapNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanSwapTimes, new(1, 15, 1), 15, false)
@@ -59,7 +66,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
     }
     
     public bool ShouldShowButton() => Player.IsAlive();
-    public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
+    public bool ShouldShowButtonFor(PlayerControl target) => !SwapperCanSelf.GetBool() && target != Player || target.IsAlive() && SwapperCanSelf.GetBool();
     public override bool GetGameStartSound(out string sound)
     {
         sound = "Gunfire";
@@ -74,6 +81,53 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
     public bool OnClickButtonLocal(PlayerControl target)
     {
         Swap(Player,target, out var reason);
+        if (reason != null)
+            Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + Translator.GetString(reason));
         return false;
+    }
+    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
+    {
+        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
+        var baseVote = (votedForId, numVotes, doVote);
+        if (!isIntentional || sourceVotedForId >= 253 || SwapList.Contains(sourceVotedForId) || !Player.IsAlive() || SwapList.Count !=2)
+        {
+            return baseVote;
+        }
+        if (sourceVotedForId == SwapList[0])
+        {
+            votedForId = SwapList[1];
+        }
+        else if (sourceVotedForId == SwapList[1])
+        {
+            votedForId = SwapList[0];
+        }
+        return (votedForId, numVotes, false);
+    }
+    public override void AfterMeetingTasks()
+    {
+    
+        SwapList.Clear();
+        SendRPC(true);
+    }
+    public void SendRPC(bool cle = false)
+    {
+        using var sender = CreateSender(CustomRPC.NiceSwapperSync);
+        sender.Writer.Write(SwapLimit);
+        sender.Writer.Write(cle);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    {
+        if (rpcType != CustomRPC.NiceSwapperSync) return;
+        SwapLimit = reader.ReadInt32();
+        var cle = reader.ReadBoolean();
+        if (cle)
+            SwapList.Clear();
+    }
+    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+
+        if ((seer.GetRoleClass() as NiceSwapper).SwapList.Contains(seen.PlayerId)) return Utils.ColorString(RoleInfo.RoleColor, "▲"); ;
+        return "";
     }
 }

@@ -172,6 +172,8 @@ class GameEndChecker
         sender.StartMessage(-1); // 5: GameData
         MessageWriter writer = sender.stream;
         HudSpritePatch.IsEnd = true;
+        RPC.SyncEndRPC(true);
+
         //ゴーストロール化
         List<byte> ReviveRequiredPlayerIds = new();
         var winner = CustomWinnerHolder.WinnerTeam;

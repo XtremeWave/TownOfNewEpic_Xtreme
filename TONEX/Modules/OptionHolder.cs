@@ -638,6 +638,7 @@ public static class Options
         Rambler.SetupCustomOption() ;
         Chameleon.SetupCustomOption();
         Mini.SetupCustomOption();
+        Signal.SetupCustomOption();
         Libertarian.SetupCustomOption();
 
         // 船员专属附加

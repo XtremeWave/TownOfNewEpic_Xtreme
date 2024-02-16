@@ -58,6 +58,8 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     public static OptionItem OptionSidekickCanBeJackal;
     public static OptionItem OptionSidekickCanVent;
     public static OptionItem OptionSidekickKillCoolDown;
+    public static OptionItem OptionWhoopsCanRecruit;
+    public static OptionItem OptionWhoopsTasksCount;
     enum OptionName
     {
         JackalCanWinBySabotageWhenNoImpAlive,
@@ -70,6 +72,8 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
         SidekickCanBeJackal,
         SidekickCanVent,
         SidekickKillCoolDown,
+        WhoopsCanRecruit,
+        WhoopsTasksCount,
     }
     public enum SwitchTrigger
     {
@@ -103,6 +107,8 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
         OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanVent, true, false, OptionJackalCanSaveSidekick);
         OptionSidekickCanBeJackal = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SidekickCanBeJackal, true, false, OptionJackalCanSaveSidekick);
         OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 22, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
+        OptionWhoopsCanRecruit = BooleanOptionItem.Create(RoleInfo, 23, OptionName.WhoopsCanRecruit, true, false, OptionJackalCanSaveSidekick);
+        OptionWhoopsTasksCount = IntegerOptionItem.Create(RoleInfo, 24, OptionName.WhoopsTasksCount, new(1, 99, 1), 3, false, OptionWhoopsTasksCount);
     }
     public override void Add()
     {

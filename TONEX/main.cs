@@ -270,7 +270,8 @@ public class Main : BasePlugin
                 {CustomRoles.Wolfmate,"#00b4eb" },
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
-                {CustomRoles.Mini,"ffffff" },
+                {CustomRoles.Signal,"#F39C12" },
+                {CustomRoles.Mini,"#ffffff" },
                 {CustomRoles.Libertarian,"#33CC99" },
                 {CustomRoles.Spiders, "#ff1919"},
             };

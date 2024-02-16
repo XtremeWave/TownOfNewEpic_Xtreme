@@ -1142,6 +1142,8 @@ RebelsSkillDuration: "Rebellion Duration"
 SpidersSpeed: "speed after entangling spider silk"
 FireworkerCanKill: "Can Use Kill Button Before The Fireworks Display"
 SniperCanKill: "Can Use Kill Button Before Use All Bullets"
+WhoopsCanRecruit: "狈可以任务完成后通过投票招募"
+WhoopsTasksCount: "狈的任务数量"
 # 随机出生点 / Random Spawn Locations
 Junction: "Junction"
 OfficeLeft: "Office Left"
@@ -1528,7 +1530,7 @@ MediumshipTitle: "【★ Voice of the Underworld ★】"
 MafiaRevengeTitle: "【 ★ NEWS ★ 】"
 OnPlayerJoinMsgTitle: "【 ★ {0} Welcome! ★ 】"
 BlackmailerNewsTitle: "【 ⚠ Emergency Message ⚠ 】"
-
+SwapTitle: "【 ★ Message about Swapping ★ 】"
 # 单位 / Units
 Format.Players: "{0}"
 Format.Seconds: "{0}s"

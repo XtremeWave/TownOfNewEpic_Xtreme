@@ -5,6 +5,7 @@ using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.SwapperHelper;
+using Hazel;
 
 namespace TONEX.Roles.Impostor;
 public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
@@ -18,14 +19,17 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
             CustomRoleTypes.Impostor,
             75_1_1_0300,
             SetupOptionItem,
-            "eg|邪惡賭怪|邪恶的赌怪|坏赌|邪恶赌|恶赌|赌怪"
+            "eg|邪惡换票|邪恶的换票|坏换票|邪恶换票|恶换票|换票"
         );
     public EvilSwapper(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
-    { }
+    {
+        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
+        SwapList = new();
+    }
 
     public static OptionItem OptionGuessNums;
     public static OptionItem SwapperCanStartMetting;
@@ -36,7 +40,7 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     }
 
     public int SwapLimit;
-    public static List<byte> SwapList;
+    public List<byte> SwapList;
     private static void SetupOptionItem()
     {
         OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanSwapTimes, new(1, 15, 1), 15, false)
@@ -55,7 +59,7 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
         }
     }
     public bool ShouldShowButton() => Player.IsAlive();
-    public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
+    public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive() && target != Player;
     public override bool GetGameStartSound(out string sound)
     {
         sound = "Gunfire";
@@ -69,14 +73,54 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     }
     public bool OnClickButtonLocal(PlayerControl target)
     {
-        Swap(Player,target, out var reason);
+        Swap(Player, target, out var reason);
+        if (reason != null)
+        Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + Translator.GetString(reason));
         return false;
     }
-    /*public override bool ModifyVote(byte voter, byte target)
+    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
     {
-        
-        if (SwapList.Contains(target))
-            
+        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
+        var baseVote = (votedForId, numVotes, doVote);
+        if (!isIntentional || sourceVotedForId >= 253 || SwapList.Contains(sourceVotedForId) || !Player.IsAlive() || SwapList.Count != 2)
+        {
+            return baseVote;
+        }
+        if (sourceVotedForId == SwapList[0])
+        {
+            votedForId = SwapList[1];
+        }
+        else if (sourceVotedForId == SwapList[1])
+        {
+            votedForId = SwapList[0];
+        }
+        return (votedForId, numVotes, false);
+    }
+    public override void AfterMeetingTasks()
+    {
 
-    }*/
+        SwapList.Clear();
+        SendRPC(true);
+    }
+    public void SendRPC(bool cle = false)
+    {
+        using var sender = CreateSender(CustomRPC.NiceSwapperSync);
+        sender.Writer.Write(SwapLimit);
+        sender.Writer.Write(cle);
+    }
+
+    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    {
+        if (rpcType != CustomRPC.NiceSwapperSync) return;
+        SwapLimit = reader.ReadInt32();
+        var cle = reader.ReadBoolean();
+        if (cle)
+            SwapList.Clear();
+    }
+    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
+    {
+
+        if ((seer.GetRoleClass() as EvilSwapper).SwapList.Contains(seen.PlayerId)) return Utils.ColorString(RoleInfo.RoleColor, "▲"); ;
+        return "";
+    }
 }

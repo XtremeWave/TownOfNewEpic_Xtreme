@@ -75,6 +75,7 @@ internal class ChangeRoleSettings
             //名前の記録
             RPC.SyncAllPlayerNames();
             HudSpritePatch.IsEnd = false ;
+            RPC.SyncEndRPC(false);
 
             //var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             //if (invalidColor.Any())
