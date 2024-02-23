@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using UnityEngine;
 using static TONEX.Options;
 
 namespace TONEX.Roles.Impostor;

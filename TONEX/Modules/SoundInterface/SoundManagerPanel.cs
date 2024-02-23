@@ -8,7 +8,6 @@ using static TONEX.IntSoundManager;
 using static TONEX.Translator;
 using Object = UnityEngine.Object;
 using System.IO;
-using TONEX;
 
 namespace TONEX.Modules.SoundInterface;
 
@@ -17,7 +16,6 @@ public static class SoundManagerPanel
     public static SpriteRenderer CustomBackground { get; private set; }
     public static GameObject Slider { get; private set; }
     public static Dictionary<string, GameObject> Items { get; private set; }
-    private static bool IsDownloading = false;
 
     private static int numItems = 0;
     public static void Hide()
@@ -115,66 +113,66 @@ public static class SoundManagerPanel
             if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("delete");
             else if (AllTONEX.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
-            button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("download");
+                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("download");
             else if (!AllTONEX.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
             {
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("NoFound");
             }
-                if (IsDownloading)
-                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("cancel");
+                
             var renderer = button.GetComponent<SpriteRenderer>();
             renderer.color =( File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json")) ? (AllTONEX.Contains(sound)?Color.red:Palette.DisabledGrey) : Color.green;
 
             var rollover = button.GetComponent<ButtonRolloverHandler>();
             rollover.OutColor = (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json")) ? (AllTONEX.Contains(sound) ? Color.red : Palette.DisabledGrey) : Color.green;
-            if (IsDownloading)
-            {
-                renderer.color = rollover.OutColor = Color.yellow;
-            }
             var passiveButton = button.GetComponent<PassiveButton>();
             passiveButton.OnClick = new();
             passiveButton.OnClick.AddListener(new Action(() =>
             {
-                if (IsDownloading)
+
+
+                if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
                 {
-                    renderer.color = rollover.OutColor = Color.red;
-                }
-                else
-                { 
-                    if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
+                    try
                     {
-                        try
-                        {
-                            DeleteSoundInName(sound);
-                            DeleteSoundInFile(sound);
-                            ReloadTag(sound);
-                            RefreshTagList();
-                            SoundPanel.RefreshTagList();
-                            //CustomPopup.Show(GetString("deletemusicPopupTitle"), string.Format(GetString("deletemusicPopupTitleDone"), sound), new() { (GetString(StringNames.Okay), null) });
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.Error($"{ex}", "Delete");
-                          //  CustomPopup.Show(GetString("deletemusicPopupTitle"), GetString("deletemusicPopupTitleFailed"), new() { (GetString(StringNames.Okay), null) });
-                        }
-                        
-                    }
-                    else
-                    {
-                        renderer.color = rollover.OutColor = Color.yellow;
-                        MusicDownloader.StartDownload(sound);
+                        DeleteSoundInName(sound);
+                        DeleteSoundInFile(sound);
                         ReloadTag(sound);
                         RefreshTagList();
                         SoundPanel.RefreshTagList();
+                        //CustomPopup.Show(GetString("deletemusicPopupTitle"), string.Format(GetString("deletemusicPopupTitleDone"), sound), new() { (GetString(StringNames.Okay), null) });
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.Error($"{ex}", "Delete");
+                        //  CustomPopup.Show(GetString("deletemusicPopupTitle"), GetString("deletemusicPopupTitleFailed"), new() { (GetString(StringNames.Okay), null) });
+                    }
+
+                }
+                else
+                {
+                
+                    renderer.color = rollover.OutColor = Color.yellow;
+                    button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("downloading");
+                    button.GetComponent<PassiveButton>().enabled = false;
+                    var task = MusicDownloader.StartDownload(sound);
+                    task.ContinueWith(t => 
+                    {
                         if (!MusicDownloader.succeed)
                         {
-                            //       CustomPopup.Show(GetString("downloadmusicPopupTitle"), GetString("downloadmusicPopupTitleFailed"), new() { (GetString(StringNames.Okay), null) });
                             Logger.Error("DownloadFailed", "downloadsounds");
                         }
-                     //   else
-                      //      CustomPopup.Show(GetString("downloadmusicPopupTitle"), GetString("downloadmusicPopupTitleDone"), new() { (GetString(StringNames.Okay), null) });
-                    }
+                        new LateTask(() =>
+                        {
+                            ReloadTag(sound);
+                            RefreshTagList();
+                            SoundPanel.RefreshTagList();
+                        },0.1f);
+                    });
+                
+                    //   else
+                    //      CustomPopup.Show(GetString("downloadmusicPopupTitle"), GetString("downloadmusicPopupTitleDone"), new() { (GetString(StringNames.Okay), null) });
                 }
+                
             }));
             var previewText = Object.Instantiate(button.transform.GetChild(0).GetComponent<TextMeshPro>(), button.transform);
             previewText.transform.SetLocalX(1.9f);

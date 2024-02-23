@@ -633,7 +633,7 @@ public enum CustomRoles
     VirtueGuider, //TODO 善导者，TOHEX的舰长
     NiceTracker,//TODO 正义的追踪者
     NiceInvisibler,//TODO 影行者（正义隐身）
-    NiceSwapper,//TODO 正义的换票师
+    NiceSwapper,
     Hunter,//TODO 猎人
     SpecterSlayer, //TODO 借魂杀手，TOHEX恶魔猎手
     Alien, //TODO 外星人
@@ -641,7 +641,7 @@ public enum CustomRoles
     NicePianist,//TODO 正义的钢琴家
     Sloth,//TODO 树懒
     Bees,//TODO 蜜蜂
-
+    Imitator,//TODO 效颦者
     //Neutral
     Arsonist,
     Jester,
@@ -687,7 +687,7 @@ public enum CustomRoles
     GodOfPlagues,//TODO 万疫之神
     Yandere,//TODO 病娇
     PoliticalStrategists,//TODO 纵横家
-    Imitator,//TODO 效颦者
+
     Challenger,//TODO 挑战者
     Martyr,//TODO 先烈,1.1限定
     NightWolf,//TODO 月下狼人
@@ -739,6 +739,7 @@ public enum CustomRoles
     Diseased,//TODO 患者
     IncorruptibleOfficial,//TODO 清廉之官
     VIP,//TODO VIP
+    Believer,//TODO 信徒
 
 }
 public enum CustomRoleTypes

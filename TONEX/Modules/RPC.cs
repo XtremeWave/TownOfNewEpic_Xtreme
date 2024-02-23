@@ -150,6 +150,12 @@ public enum CustomRPC
     //换票
     NiceSwapperSync,
     EvilSwapperSync,
+    //先烈
+    SetMartyrTarget,
+    //瘟疫
+    SyncPlaguePlayers,
+    //傀儡
+    SetBeKillLimit,
 }
 public enum Sounds
 {

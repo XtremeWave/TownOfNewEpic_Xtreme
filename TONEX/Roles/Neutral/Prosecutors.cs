@@ -18,7 +18,7 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
             CustomRoles.Prosecutors,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_6_1_0,
+            94_1_0_0300,
             null,
             "pro",
             "#788514",

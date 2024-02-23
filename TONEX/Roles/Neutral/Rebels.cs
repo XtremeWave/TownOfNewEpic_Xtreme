@@ -16,7 +16,7 @@ public sealed class Rebels : RoleBase, IOverrideWinner, IIndependent
             CustomRoles.Rebels,
          () => Options.UsePets.GetBool() ? RoleTypes.Crewmate : RoleTypes.Engineer,
             CustomRoleTypes.Neutral,
-            94_1_1_0500,
+            94_1_1_0300,
             SetupOptionItem,
             "re",
             "#339900"

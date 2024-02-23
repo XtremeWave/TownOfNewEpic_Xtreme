@@ -55,7 +55,7 @@ public sealed class Cleaner : RoleBase, IImpostor
     public override string GetReportButtonText() => Translator.GetString("CleanerReportButtonText");
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
-        if (BodiesCleanedUp.Contains(target.PlayerId))
+        if (target != null && BodiesCleanedUp.Contains(target.PlayerId))
         {
             reporter.Notify(Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("ReportCleanedBodies")));
             Logger.Info($"{target.Object.GetNameWithRole()} 的尸体已被清理，无法被报告", "Cleaner.OnCheckReportDeadBody");

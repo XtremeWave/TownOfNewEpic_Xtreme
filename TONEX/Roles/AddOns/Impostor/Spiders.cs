@@ -7,7 +7,7 @@ using static TONEX.Options;
 namespace TONEX.Roles.AddOns.Impostor;
 public static class Spiders
 {
-    private static readonly int Id = 94_1_1_0600;
+    private static readonly int Id = 94_1_1_0100;
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Spiders);
     private static List<byte> playerIdList = new();
     public static OptionItem OptionSpeed;

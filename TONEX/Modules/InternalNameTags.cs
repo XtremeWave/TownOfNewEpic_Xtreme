@@ -431,5 +431,41 @@ public static class InternalNameTags
                 }
             }
         },
+        {
+            "caretholy#1519", //一只小黑懋，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"可爱 色欲 技术 绘画于一身的小猫",
+                    Gradient = new(new Color32(171,253,255,255), new Color32(88, 252, 255, 255), new Color32(1, 250, 255, 255)),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "elfalpha#5174", //心语，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"xindyu",
+                    TextColor = new Color32(255, 192, 203, 255),
+                    SizePercentage = 80
+                }
+            }
+        },
+        {
+            "shystripe#2541", //心语，TONEX
+            new()
+            {
+                UpperText = new()
+                {
+                    Text = $"xindyu",
+                    TextColor = new Color32(255, 192, 203, 255),
+                    SizePercentage = 80
+                }
+            }
+        },
     };
 }

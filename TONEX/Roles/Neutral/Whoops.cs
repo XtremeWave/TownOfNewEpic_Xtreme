@@ -17,7 +17,7 @@ public sealed class Whoops : RoleBase
             CustomRoles.Whoops,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Neutral,
-            94_4_1_0,
+            94_1_0_0400,
             null,
             "wh|狈",
             "#00b4eb",

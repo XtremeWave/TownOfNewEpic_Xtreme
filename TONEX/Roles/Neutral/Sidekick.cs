@@ -8,7 +8,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent, ISchrodingerCatOwner
+public sealed class Sidekick : RoleBase, IKiller, IIndependent, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -17,7 +17,7 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent,
             CustomRoles.Sidekick,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_5_1_0,
+            94_1_0_0500,
             null,
             "si",
             "#00b4eb",

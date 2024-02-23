@@ -16,7 +16,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
             CustomRoles.Blackmailer,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            94_7_1_1,
+            94_1_1_0000,
             SetupOptionItem,
             "bl|勒索",
             experimental: true

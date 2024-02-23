@@ -266,8 +266,7 @@ class ReportDeadBodyPatch
         Logger.Info("1", "test");
         if (Options.DisableMeeting.GetBool()) return false;
         if (Options.CurrentGameMode == CustomGameMode.HotPotato) return false;
-        if (CanReport != null)
-        if (!CanReport[__instance.PlayerId] || __instance.CantDoAnyAct())
+        if (__instance.CantDoAnyAct())
         {
             WaitReport[__instance.PlayerId].Add(target);
             Logger.Warn($"{__instance.GetNameWithRole()}:通報禁止中のため可能になるまで待機します", "ReportDeadBody");

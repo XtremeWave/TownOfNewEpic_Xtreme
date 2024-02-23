@@ -134,8 +134,6 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
-            if (Options.UsePets.GetBool())
-            {
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (!pc.Is(CustomRoles.GM))
@@ -149,7 +147,6 @@ internal class ChangeRoleSettings
                         sender.SendMessage();
                     }
                 }
-            }
         }
         catch (Exception ex)
         {

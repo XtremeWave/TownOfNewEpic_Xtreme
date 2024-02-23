@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vagator : RoleBase, INeutralKilling, IKiller, IIndependent
+public sealed class Vagator : RoleBase, IKiller, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

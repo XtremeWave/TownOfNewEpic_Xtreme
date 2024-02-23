@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -15,7 +15,7 @@ public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchroding
            CustomRoles.BloodKnight,
            () => RoleTypes.Impostor,
            CustomRoleTypes.Neutral,
-           50923,
+           509230,
            SetupOptionItem,
            "bn|ÊÈÑªòTÊ¿|ÑªÆï|ÆïÊ¿",
            "#630000",
@@ -81,7 +81,7 @@ public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchroding
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionProtectDuration.GetFloat() < Utils.GetTimeStamp())
+        if (ProtectStartTime != 0 && ProtectStartTime + (long)OptionProtectDuration.GetFloat() < Utils.GetTimeStamp())
         {
             ProtectStartTime = 0;
             player.Notify(GetString("BKProtectOut"));

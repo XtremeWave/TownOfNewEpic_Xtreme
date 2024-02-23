@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndependent
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

@@ -6,6 +6,7 @@ using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.SwapperHelper;
 using Hazel;
+using static TONEX.Modules.MeetingVoteManager;
 
 namespace TONEX.Roles.Impostor;
 public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
@@ -78,23 +79,13 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
         Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + Translator.GetString(reason));
         return false;
     }
-    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
+    public override void AfterVoter(PlayerControl votedFor, PlayerControl voter)
     {
-        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
-        var baseVote = (votedForId, numVotes, doVote);
-        if (!isIntentional || sourceVotedForId >= 253 || SwapList.Contains(sourceVotedForId) || !Player.IsAlive() || SwapList.Count != 2)
-        {
-            return baseVote;
-        }
-        if (sourceVotedForId == SwapList[0])
-        {
-            votedForId = SwapList[1];
-        }
-        else if (sourceVotedForId == SwapList[1])
-        {
-            votedForId = SwapList[0];
-        }
-        return (votedForId, numVotes, false);
+        if (votedFor == null || !Player.IsAlive() || SwapList.Count != 2) return;
+
+        if (votedFor.PlayerId == SwapList[0]) Instance?.SetVote(voter.PlayerId, SwapList[1]);
+
+        if (votedFor.PlayerId == SwapList[1]) Instance?.SetVote(voter.PlayerId, SwapList[0]);
     }
     public override void AfterMeetingTasks()
     {
@@ -104,14 +95,14 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     }
     public void SendRPC(bool cle = false)
     {
-        using var sender = CreateSender(CustomRPC.NiceSwapperSync);
+        using var sender = CreateSender(CustomRPC.EvilSwapperSync);
         sender.Writer.Write(SwapLimit);
         sender.Writer.Write(cle);
     }
 
     public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType != CustomRPC.NiceSwapperSync) return;
+        if (rpcType != CustomRPC.EvilSwapperSync) return;
         SwapLimit = reader.ReadInt32();
         var cle = reader.ReadBoolean();
         if (cle)

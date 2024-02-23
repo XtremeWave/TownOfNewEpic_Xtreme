@@ -5,9 +5,11 @@ using System.Text;
 using TONEX.Modules;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
+using TONEX.Roles.Crewmate;
 using UnityEngine;
 using YamlDotNet.Core;
 using static TONEX.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX;
 
@@ -64,7 +66,9 @@ public static class MeetingHudPatch
             }
 
             MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
-            return true;
+            foreach (var role in CustomRoleManager.AllActiveRoles.Values) 
+                role.AfterVoter(voted, voter);
+           return true;
         }
     }
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]

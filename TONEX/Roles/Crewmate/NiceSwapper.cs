@@ -6,8 +6,7 @@ using System.Collections.Generic;
 using static TONEX.SwapperHelper;
 using static UnityEngine.GraphicsBuffer;
 using Hazel;
-using static Rewired.Utils.Classes.Utility.ObjectInstanceTracker;
-using TONEX.Roles.Impostor;
+using static TONEX.Modules.MeetingVoteManager;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class NiceSwapper : RoleBase, IMeetingButton
@@ -22,7 +21,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
             75_1_1_0200,
             SetupOptionItem,
             "ng|正義换票|正义的换票|好换票|正义换票|正换票|挣亿的换票|挣亿换票",
-            "#eede26"
+            "#7C3756"
         );
     public NiceSwapper(PlayerControl player)
     : base(
@@ -30,7 +29,6 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
         player
     )
     {
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
         SwapList = new();
     }
 
@@ -85,23 +83,15 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
             Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + Translator.GetString(reason));
         return false;
     }
-    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
+    public IReadOnlyDictionary<byte, VoteData> AllVotes => allVotes;
+    private Dictionary<byte, VoteData> allVotes = new(15);
+    public override void AfterVoter(PlayerControl votedFor, PlayerControl voter)
     {
-        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
-        var baseVote = (votedForId, numVotes, doVote);
-        if (!isIntentional || sourceVotedForId >= 253 || SwapList.Contains(sourceVotedForId) || !Player.IsAlive() || SwapList.Count !=2)
-        {
-            return baseVote;
-        }
-        if (sourceVotedForId == SwapList[0])
-        {
-            votedForId = SwapList[1];
-        }
-        else if (sourceVotedForId == SwapList[1])
-        {
-            votedForId = SwapList[0];
-        }
-        return (votedForId, numVotes, false);
+        if (votedFor == null || !Player.IsAlive() || SwapList.Count != 2) return;
+
+        if (votedFor.PlayerId == SwapList[0])Instance?.SetVote(voter.PlayerId, SwapList[1]);
+
+        if (votedFor.PlayerId == SwapList[1])Instance?.SetVote(voter.PlayerId, SwapList[0]);
     }
     public override void AfterMeetingTasks()
     {
@@ -124,10 +114,5 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
         if (cle)
             SwapList.Clear();
     }
-    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-    {
-
-        if ((seer.GetRoleClass() as NiceSwapper).SwapList.Contains(seen.PlayerId)) return Utils.ColorString(RoleInfo.RoleColor, "▲"); ;
-        return "";
-    }
+    
 }

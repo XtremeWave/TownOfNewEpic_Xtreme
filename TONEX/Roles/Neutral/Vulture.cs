@@ -126,31 +126,35 @@ public sealed class Vulture : RoleBase, IIndependent
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
-        if (ForVulture.Contains(target.PlayerId))
+        Logger.Info("1", "test");
+        if (target != null && ForVulture.Contains(target.PlayerId))
         {
             reporter.Notify(Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("ReportEatBodies")));
             Logger.Info($"{target.Object.GetNameWithRole()} 的尸体已被吞噬，无法被报告", "Cleaner.OnCheckReportDeadBody");
             return false;
         }
+        Logger.Info("2", "test");
         if (!Is(reporter) || target == null) return true;
-        if( reporter.PlayerId ==  Player.PlayerId )
+        
+        if (EatTime != -1)
         {
-            if (EatTime != -1)
-            {
-                var cooldown = EatTime + (long)OptionEatTime.GetFloat() - Utils.GetTimeStamp();
-               Player.Notify(string.Format(GetString("ShowEatCooldown"), cooldown, 1f));
-                return false;
-            }
+            var cooldown = EatTime + (long)OptionEatTime.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowEatCooldown"), cooldown, 1f));
+            return false;
+        }
+        Logger.Info("3", "test");
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         ForVulture.Add(target.PlayerId);
         EatLimit -= 1;
+        Logger.Info("4", "test");
         EatTime = Utils.GetTimeStamp();
-       Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
+        Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
+        Logger.Info("5", "test");
         SendRPCLimit();
-        if (EatLimit >= OptionEatLimitPerMeeting.GetInt()) Win();
-        }
+        if (EatLimit <=0) Win();
 
-            return false;
+
+        return false;
     }
     public void Win()
     {

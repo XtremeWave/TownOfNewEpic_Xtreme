@@ -395,6 +395,10 @@ public enum CustomWinner
     Lawyer = CustomRoles.Lawyer,
     Rebels = CustomRoles.Rebels,
     Mini = CustomRoles.Mini,
+    Martyr = CustomRoles.Martyr,
+    NightWolf = CustomRoles.NightWolf,
+    GodOfPlagues = CustomRoles.GodOfPlagues,
+    Puppeteer = CustomRoles.Puppeteer,
 }
 public enum SuffixModes
 {

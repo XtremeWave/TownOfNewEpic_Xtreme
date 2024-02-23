@@ -383,10 +383,10 @@ public static class Utils
 
                     || (seer.Is(CustomRoles.Charmed) && seen.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool())
 
-               || (seer.Is(CustomRoles.Wolfmate) && seen.Is(CustomRoles.Wolfmate))
-          || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Sidekick))
-          || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Whoops))
-            || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Sidekick))
+                    || (seer.Is(CustomRoles.Wolfmate) && seen.Is(CustomRoles.Wolfmate))
+                    || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Sidekick))
+                    || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Whoops))
+                    || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Sidekick))
                     || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Whoops));
 
         var (roleColor, roleText) = GetTrueRoleNameData(seen.PlayerId, seer == seen || !seer.IsAlive());
@@ -635,6 +635,7 @@ public static class Utils
             (pc.Is(CustomRoles.NiceGuesser) && !Options.NGuesserCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Snitch) && !Options.SnitchCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Judge) && !Options.JudgeCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.NiceSwapper) && !Options.NSwapperCanBeMadmate.GetBool()) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Egoist)
             );

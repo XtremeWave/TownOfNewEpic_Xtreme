@@ -268,9 +268,19 @@ public abstract class RoleBase : IDisposable
     /// 如果返回 false，本次投票将被忽略，玩家可以再次投票<br/>
     /// 如果不想忽略投票操作本身，也不希望计票，请使用 <see cref="ModifyVote"/> 并将 doVote 设置为 false
     /// </summary>
-    /// <param name="votedForId">投票给</param>
+    /// <param name="votedFor">投票给</param>
     /// <returns>如果返回 false，则假装什么都没发生，除了投票者本身谁也不知道本次投票，并且投票者可以重新投票</returns>
     public virtual bool CheckVoteAsVoter(PlayerControl votedFor) => true;
+
+    /// <summary>
+    /// 在玩家投票时之后触发，此时还未计票<br/>
+    /// 通常用作在玩家投票后替换投票目标等用途（例如换票师）<br/>
+    /// 如果不想忽略投票操作本身，也不希望计票，请使用 <see cref="ModifyVote"/> 并将 doVote 设置为 false
+    /// </summary>
+    /// <param name="votedFor">被投票的玩家</param>
+    /// <param name="voter">投票玩家</param>
+    public virtual void AfterVoter(PlayerControl votedFor, PlayerControl voter)
+    { }
 
     /// <summary>
     /// 玩家投票并确定计票时调用，并可以在此处修改投票<br/>

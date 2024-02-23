@@ -86,6 +86,11 @@ class GameEndChecker
                      .Where(pc => pc.Is(CustomRoles.Vagator) )
                      .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
                     break;
+                case CustomWinner.Martyr:
+                    Main.AllPlayerControls
+                     .Where(pc => pc.Is(CustomRoles.Martyr) || pc == Martyr.TargetId)
+                     .Do(pc => CustomWinnerHolder.WinnerIds.Add(pc.PlayerId));
+                    break;
             }
             if (CustomWinnerHolder.WinnerTeam is not CustomWinner.Draw and not CustomWinner.None and not CustomWinner.Error)
             {
@@ -281,6 +286,9 @@ class GameEndChecker
             int BK = Utils.AlivePlayersCount(CountTypes.BloodKnight);
             int SC = Utils.AlivePlayersCount(CountTypes.Succubus);
             int FAFL = Utils.AlivePlayersCount(CountTypes.FAFL);
+            int MA = Martyr.CanKill ? Utils.AlivePlayersCount(CountTypes.Martyr) : 0;
+            int NW = Utils.AlivePlayersCount(CountTypes.NightWolf); 
+            int GO = Utils.AlivePlayersCount(CountTypes.GodOfPlagues); 
 
             foreach (var dualPc in Main.AllAlivePlayerControls.Where(p => p.Is(CustomRoles.Schizophrenic)))
             {
@@ -299,45 +307,63 @@ class GameEndChecker
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Lovers);
             }
-            else if (JK == 0 && PL == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= Imp) //内鬼胜利
+            else if (JK == 0 && PL == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= Imp && GO == 0 && MA == 0 && NW == 0) //内鬼胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Impostor);
             }
-            else if (Imp == 0 && PL == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= JK) //豺狼胜利
+            else if (Imp == 0 && PL == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= JK && GO == 0 && MA == 0 && NW == 0) //豺狼胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Jackal);
             }
-            else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= PL) //鹈鹕胜利
+            else if (Imp == 0 && JK == 0 && DM == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= PL && MA == 0 && NW == 0) //鹈鹕胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Pelican);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Pelican);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= DM) //玩家胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && BK == 0 && FAFL == 0 && SC == 0 && Crew <= DM && GO == 0 && MA == 0 && NW == 0) //玩家胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Demon);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.Demon);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && SC == 0 && Crew <= BK) //嗜血骑士胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && SC == 0 && Crew <= BK && GO == 0 && MA == 0 && NW == 0) //嗜血骑士胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.BloodKnight);
                 CustomWinnerHolder.WinnerRoles.Add(CustomRoles.BloodKnight);
             }
-            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && BK == 0 && Crew <= SC) //魅惑者胜利
+            else if (Imp == 0 && JK == 0 && PL == 0 && DM == 0 && FAFL == 0 && BK == 0 && Crew <= SC && GO == 0 && MA == 0 && NW == 0) //魅惑者胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Succubus);
             }
-            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0 && Crew <= FAFL) //异世阵营胜利
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0 && Crew <= FAFL && GO == 0 && MA == 0 && NW == 0) //异世阵营胜利
             {
                 reason = GameOverReason.ImpostorByKill;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.FAFL);
             }
-            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && FAFL == 0 && DM == 0 && SC == 0) //船员胜利
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0 && Crew <= MA && GO == 0 && Martyr.CanKill && NW == 0) //先烈胜利
+            {
+                reason = GameOverReason.ImpostorByKill;
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Martyr);
+
+            } 
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0 && MA == 0 && GO == 0 && Crew <= NW) //月下狼人胜利
+            {
+                reason = GameOverReason.ImpostorByKill;
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.NightWolf);
+                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.NightWolf);
+            }
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && DM == 0 && SC == 0 && MA == 0 && Crew <= GO) //瘟神胜利
+            {
+                reason = GameOverReason.ImpostorByKill;
+                CustomWinnerHolder.ResetAndSetWinner(CustomWinner.GodOfPlagues);
+                CustomWinnerHolder.WinnerRoles.Add(CustomRoles.GodOfPlagues);
+            }
+            else if (JK == 0 && PL == 0 && Imp == 0 && BK == 0 && FAFL == 0 && DM == 0 && SC == 0 && MA == 0 && NW == 0 && GO == 0) //船员胜利
             {
                 reason = GameOverReason.HumansByVote;
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Crewmate);

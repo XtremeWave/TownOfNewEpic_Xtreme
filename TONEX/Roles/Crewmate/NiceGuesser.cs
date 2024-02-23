@@ -30,12 +30,16 @@ public sealed class NiceGuesser : RoleBase, IMeetingButton
     public static OptionItem OptionCanGuessCrew;
     public static OptionItem OptionCanGuessAddons;
     public static OptionItem OptionCanGuessVanilla;
+    public static OptionItem OptionJustShowExist;
+    public static OptionItem OptionIgnoreMedicShield;
     enum OptionName
     {
         GuesserCanGuessTimes,
         GGCanGuessCrew,
         GGCanGuessAdt,
         GGCanGuessVanilla,
+        JustShowExist,
+        IgnoreMedicShield,
     }
 
     public int GuessLimit;
@@ -46,6 +50,8 @@ public sealed class NiceGuesser : RoleBase, IMeetingButton
         OptionCanGuessCrew = BooleanOptionItem.Create(RoleInfo, 11, OptionName.GGCanGuessCrew, true, false);
         OptionCanGuessAddons = BooleanOptionItem.Create(RoleInfo, 12, OptionName.GGCanGuessAdt, false, false);
         OptionCanGuessVanilla = BooleanOptionItem.Create(RoleInfo, 13, OptionName.GGCanGuessVanilla, true, false);
+        OptionJustShowExist = BooleanOptionItem.Create(RoleInfo, 14, OptionName.JustShowExist, false, false);
+        OptionIgnoreMedicShield = BooleanOptionItem.Create(RoleInfo, 15, OptionName.IgnoreMedicShield, true, false);
     }
     public override void Add()
     {

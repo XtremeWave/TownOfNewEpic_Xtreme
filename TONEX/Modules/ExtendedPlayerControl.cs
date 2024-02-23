@@ -650,7 +650,7 @@ static class ExtendedPlayerControl
     public static bool IsCrewKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
     public static bool IsCrewNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && !player.IsCrewKiller();
     public static bool IsNeutral(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral);
-    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetRoleClass() is INeutralKilling;
+    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetCustomRole().GetRoleInfo().IsNK;
     public static bool IsNeutralNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && !player.IsNeutralKiller();
     public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetRoleClass() is IIndependent;
     public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player.GetRoleClass() is not IIndependent;

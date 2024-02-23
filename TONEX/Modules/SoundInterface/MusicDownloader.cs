@@ -32,7 +32,7 @@ public class MusicDownloader
     public static string downloadUrl_website2 = "";
     public static bool succeed = false;
 
-    public static void StartDownload(string sound, string url = "waitToSelect")
+    public static async Task StartDownload(string sound, string url = "waitToSelect")
     {
         succeed = false;
         if (!Directory.Exists(@"./TONEX_Data/Sounds"))
@@ -66,28 +66,20 @@ public class MusicDownloader
         {
 
             string filePath = DownloadFileTempPath;
-
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
-
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse())
-            using (Stream streamResponse = response.GetResponseStream())
-            using (Stream streamFile = File.Create(filePath))
-            {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-
-                while ((bytesRead = streamResponse.Read(buffer, 0, buffer.Length)) > 0)
-                {
-                    streamFile.Write(buffer, 0, bytesRead);
-                }
-            }
+            using var client = new HttpClientDownloadWithProgress(url, filePath);
+            client.ProgressChanged += OnDownloadProgressChanged;
+            Thread.Sleep(100);
+            await client.StartDownload();
             succeed = true;
             Logger.Info($"Succeed in {url}", "DownloadSound");
         }
         catch (Exception ex)
         {
             Logger.Error($"Failed to download\n{ex.Message}", "DownloadSound", false);
-            File.Delete(DownloadFileTempPath);
+            if (!string.IsNullOrEmpty(DownloadFileTempPath))
+            {
+                File.Delete(DownloadFileTempPath);
+            }
         }
         if (!succeed)
         {
@@ -103,12 +95,15 @@ public class MusicDownloader
             }
             
         }
-        
     }
     private static bool IsValidUrl(string url)
     {
         string pattern = @"^(https?|ftp)://[^\s/$.?#].[^\s]*$";
         return Regex.IsMatch(url, pattern);
     }
-
+    private static void OnDownloadProgressChanged(long? totalFileSize, long totalBytesDownloaded, double? progressPercentage)
+    {
+        string msg = $"{GetString("updateInProgress")}\n{totalFileSize / 1000}KB / {totalBytesDownloaded / 1000}KB  -  {(int)progressPercentage}%";
+        Logger.Info(msg, "DownloadDLL");
+    }
 }

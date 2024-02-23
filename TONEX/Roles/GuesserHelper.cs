@@ -136,9 +136,15 @@ public static class GuesserHelper
             reason = GetString("GuessGM");
             return false;
         }
-        if (role == CustomRoles.Mini || target.Is(CustomRoles.Mini))
+        if (role == CustomRoles.Mini )
         {
             reason = GetString("GuessMini");
+            return false;
+        }
+        if (Medic.InProtect(target.PlayerId))
+        {
+            if (guesser.GetRoleClass() is NiceGuesser ngClass2 && !NiceGuesser.OptionIgnoreMedicShield.GetBool() || guesser.GetRoleClass() is EvilGuesser egClass2 && !EvilGuesser.OptionIgnoreMedicShield.GetBool())
+            reason = GetString("GuessShield");
             return false;
         }
         if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && guesser.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessTaskDoneSnitch.GetBool())
@@ -455,6 +461,8 @@ public static class GuesserHelper
             {
                 if (!EvilGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && role.IsVanilla()) continue;
                 if (!NiceGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && role.IsVanilla()) continue;
+                if (!NiceGuesser.OptionIgnoreMedicShield.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && !role.IsExist()) continue;
+                if (!EvilGuesser.OptionIgnoreMedicShield.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && !role.IsExist()) continue;
                 if (role.IsTODO()) continue;
                 if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel or CustomRoles.HotPotato or CustomRoles.ColdPotato) continue;
                 if (role ==  CustomRoles.Mini) continue;
