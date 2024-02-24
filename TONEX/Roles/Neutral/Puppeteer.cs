@@ -20,10 +20,10 @@ public sealed class Puppeteer : RoleBase, IKiller
             CustomRoles.Puppeteer,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_1_1_0120,
+            94_1_1_0600,
             SetupOptionItem,
             "pu|傀偶",
-            "#cc6666",
+            "#800080",
             true
         );
     public Puppeteer(PlayerControl player)
@@ -38,12 +38,10 @@ public sealed class Puppeteer : RoleBase, IKiller
 
     static OptionItem OptionKillCooldown;
     static OptionItem OptionBeKillLimit;
-    static OptionItem OptionDuration;
     enum OptionName
     {
        PuooeteerKillCooldown,
         BeKillLimit,
-        SetPlayerDuration
     }
     Vector2 MyLastPos;
     public int BeKillLimit;
@@ -59,8 +57,6 @@ public sealed class Puppeteer : RoleBase, IKiller
             .SetValueFormat(OptionFormat.Seconds);
         OptionBeKillLimit = IntegerOptionItem.Create(RoleInfo, 11, OptionName.BeKillLimit, new(1, 99, 1), 3, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionDuration = FloatOptionItem.Create(RoleInfo, 12, OptionName.SetPlayerDuration, new(2.5f, 180f, 2.5f), 20f, false)
-            .SetValueFormat(OptionFormat.Seconds);
     }
     public override void Add()
     {
@@ -109,7 +105,9 @@ public sealed class Puppeteer : RoleBase, IKiller
             killer.SetKillCooldownV2();
             BeKillLimit--;
             SendRPC_SyncLimit();
+            target.RpcTeleport(MyLastPos);
             if (BeKillLimit <= 0) Win();
+            
             return false;
         }
         return true;
@@ -136,20 +134,18 @@ public sealed class Puppeteer : RoleBase, IKiller
             MyLastPos = Player.GetTruePosition();
         }
     }
-    public override void OnFixedUpdate(PlayerControl player)
+    public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
-        if (!AmongUsClient.Instance.AmHost) return;
-        var now = Utils.GetTimeStamp();
-        if (Player.IsAlive() && Timer + (long)OptionDuration.GetFloat() < now && Timer != -1)
-        {
-            CanKill = true;
-            Timer = -1;  
-            Player.RpcTeleport(MyLastPos);
-            Player.MarkDirtySettings();
-            Main.AllPlayerNames[Player.PlayerId] = Name;
-            var outfit = Skins;
-            Player.SetOutFitStatic(outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId);
-            Player.MarkDirtySettings();
-        }
+
+        CanKill = true;
+        Timer = -1;
+        Player.RpcTeleport(MyLastPos);
+        Player.MarkDirtySettings();
+        Main.AllPlayerNames[Player.PlayerId] = Name;
+        var outfit = Skins;
+        Player.SetOutFitStatic(outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId);
+        Player.MarkDirtySettings();
+        return true;
+
     }
 }

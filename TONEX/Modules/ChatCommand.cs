@@ -30,7 +30,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         InitRoleCommands();
         AllCommands = new()
         {
-            new(["setrole"], CommandAccess.Debugger, mc =>
+            new(["sr"], CommandAccess.Debugger, mc =>
             {
 
                 SetRoles(mc.Args, mc.Player.PlayerId);

@@ -274,7 +274,7 @@ public static class MeetingHudPatch
         foreach (var playerId in playerIds)
         {
             //Loversの後追い
-            if (CustomRoles.Lovers.IsExist(true) && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
+            if (CustomRoles.Lovers.IsExistCountDeath() && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
                 FixedUpdatePatch.LoversSuicide(playerId, true);
         }
     }

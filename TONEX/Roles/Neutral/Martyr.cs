@@ -52,6 +52,7 @@ public sealed class Martyr : RoleBase, IAdditionalWinner,IKiller
     public static PlayerControl TargetId;
     public static bool CanKill;
     public static bool HasProtect;
+    public bool IsNK { get; private set; } = CanKill;
     public static List<PlayerControl> player;
     private static void SetupOptionItem()
     {
@@ -83,7 +84,7 @@ public sealed class Martyr : RoleBase, IAdditionalWinner,IKiller
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
     public bool CanUseSabotageButton() => OptionCanUseSabotage.GetBool();
-    public bool CanUseKillButton() => CanKill;
+    public bool CanUseKillButton() => CanKill && Player.IsAlive();
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(OptionHasImpostorVision.GetBool());
     public void SendRPC()
     {
@@ -101,26 +102,36 @@ public sealed class Martyr : RoleBase, IAdditionalWinner,IKiller
     {
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
-        if(target.Is(CustomRoles.Martyr)) CanKill = false;
         if (target.PlayerId == TargetId.PlayerId)
         {
-             foreach (var pc in Main.AllAlivePlayerControls.Where(x => x.PlayerId != target.PlayerId && player.Contains(x)))
+             foreach (var pc in Main.AllPlayerControls.Where(x => x.PlayerId != target.PlayerId && player.Contains(x)))
              {
-                if (HasProtect)
+                if (pc.IsAlive())
                 {
-                    pc.RpcTeleport(target.transform.position);
-                    killer.RpcTeleport(pc.transform.position);
-                    killer.RpcMurderPlayerV2(pc);
-                    killer.ResetKillCooldown();
-                    killer.SetKillCooldownV2();
-                    return false;
+                    if (HasProtect)
+                    {
+                        pc.RpcTeleport(target.transform.position);
+                        killer.RpcTeleport(pc.transform.position);
+                        killer.RpcMurderPlayerV2(pc);
+                        killer.ResetKillCooldown();
+                        killer.SetKillCooldownV2();
+                        return false;
+                    }
+                    else
+                    {
+                        CanKill = true;
+                        pc.ResetKillCooldown();
+                        pc.SetKillCooldownV2();
+                        pc.RpcSetCustomRole(CustomRoles.Martyr);
+                    }
                 }
-                else 
+                else
                 {
-                    CanKill = true;
-                    pc.ResetKillCooldown();
-                    pc.SetKillCooldownV2();
-                    pc.RpcSetCustomRole(CustomRoles.Martyr);
+                    if (HasProtect)
+                    {
+                        HasProtect = false;
+                        return false;
+                    }
                 }
 
             }

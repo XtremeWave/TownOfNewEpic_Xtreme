@@ -156,7 +156,7 @@ class IntroCutscenePatch
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
                 break;
             case CustomRoleTypes.Neutral:
-                if (PlayerControl.LocalPlayer.GetRoleClass() is not IIndependent independent)
+                if (PlayerControl.LocalPlayer.GetRoleClass() is not IIndependent independent && !PlayerControl.LocalPlayer.GetCustomRole().IsNeutralKilling())
                 {
                     __instance.TeamTitle.text = GetString("TeamNeutral");
                     __instance.TeamTitle.color  = new Color32(255, 171, 27, byte.MaxValue);

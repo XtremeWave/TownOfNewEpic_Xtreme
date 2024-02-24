@@ -8,16 +8,16 @@ using static UnityEngine.GraphicsBuffer;
 using System.Collections.Generic;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
-namespace TONEX.Roles.Neutral;
-public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
+namespace TONEX.Roles.Crewmate;
+public sealed class Deputy : RoleBase, IKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Prosecutors),
-            player => new Prosecutors(player),
-            CustomRoles.Prosecutors,
+            typeof(Deputy),
+            player => new Deputy(player),
+            CustomRoles.Deputy,
             () => RoleTypes.Impostor,
-            CustomRoleTypes.Neutral,
+            CustomRoleTypes.Crewmate,
             94_1_0_0300,
             null,
             "pro",
@@ -25,7 +25,7 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
             true,
             ctop: true
         );
-    public Prosecutors(PlayerControl player)
+    public Deputy(PlayerControl player)
     : base(
         RoleInfo,
         player,
@@ -33,42 +33,38 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
     )
     {
         CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
-        ForProsecutors = new();
+        ForDeputy = new();
     }
     public bool IsKiller { get; private set; } = false;
-    private int ProsecutorsLimit;
-    public static List<byte> ForProsecutors;
+    private int DeputyLimit;
+    public static List<byte> ForDeputy;
     public override void Add()
     {
-        ProsecutorsLimit = Lawyer.OptionSkillLimit.GetInt();
+        
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetProsectorsLimit);
-        sender.Writer.Write(ProsecutorsLimit);
+        using var sender = CreateSender(CustomRPC.SetDeputyLimit);
+        sender.Writer.Write(DeputyLimit);
     }
     public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType != CustomRPC.SetProsectorsLimit) return;
-        ProsecutorsLimit = reader.ReadInt32();
+        if (rpcType != CustomRPC.SetDeputyLimit) return;
+        DeputyLimit = reader.ReadInt32();
     }
-    public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)
-    {
-        return Player.IsAlive();
-    }
-    public float CalculateKillCooldown() => CanUseKillButton() ? Lawyer.OptionSkillCooldown.GetFloat() : 255f;
-    public bool CanUseKillButton() => Player.IsAlive() && ProsecutorsLimit >= 1;
+    //public float CalculateKillCooldown() => CanUseKillButton() ? Lawyer.OptionSkillCooldown.GetFloat() : 255f;
+    public bool CanUseKillButton() => Player.IsAlive() && DeputyLimit >= 1;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (ProsecutorsLimit >= 1)
+        if (DeputyLimit >= 1)
         {
-            ProsecutorsLimit -= 1;
+            DeputyLimit -= 1;
             SendRPC();
-            ForProsecutors.Add(target.PlayerId);
+            ForDeputy.Add(target.PlayerId);
         }
         info.CanKill = false;
         return false;
@@ -77,9 +73,9 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
     {
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
-        if (ForProsecutors.Contains(killer.PlayerId)) return false;
+        if (ForDeputy.Contains(killer.PlayerId)) return false;
         return true;
     }
-    public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({ProsecutorsLimit})");
-    public override void OnStartMeeting() => ForProsecutors.Clear();
+    public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({DeputyLimit})");
+    public override void OnStartMeeting() => ForDeputy.Clear();
 }

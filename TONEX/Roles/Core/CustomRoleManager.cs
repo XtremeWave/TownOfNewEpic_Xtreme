@@ -641,7 +641,8 @@ public enum CustomRoles
     NicePianist,//TODO 正义的钢琴家
     Sloth,//TODO 树懒
     Bees,//TODO 蜜蜂
-    Imitator,//TODO 效颦者
+    CopyCat,//TODO 效颦者
+    Deputy,
     //Neutral
     Arsonist,
     Jester,

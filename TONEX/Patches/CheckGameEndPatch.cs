@@ -135,11 +135,11 @@ class GameEndChecker
                         }
                     }
                 }
-                if (CustomRoles.Non_Villain.IsExist() && Non_Villain.DigitalLifeList.Count <=0) 
-                    foreach (var pc in Non_Villain.DigitalLifeList)
-                    {
-                            CustomWinnerHolder.WinnerIds.Add(pc);
-                    }
+                //if (CustomRoles.Non_Villain.IsExist() && Non_Villain.DigitalLifeList.Count <=0) 
+                 //   foreach (var pc in Non_Villain.DigitalLifeList)
+                   // {
+                     //       CustomWinnerHolder.WinnerIds.Add(pc);
+                   // }
                 
 
                 // 第三方共同胜利

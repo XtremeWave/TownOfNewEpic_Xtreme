@@ -77,7 +77,7 @@ ctop:true
     {
         if (ProtectStartTime == -1)
         {
-            Logger.Info("awa", "awa");
+            Logger.Info("非狂暴状态，击杀被阻塞", "Night _瓜（划掉）Wolf");
             return false;
         }
         return true;
@@ -92,8 +92,6 @@ ctop:true
             ProtectStartTime = Utils.GetTimeStamp();
             Cooldown = Utils.GetTimeStamp();
             Main.AllPlayerSpeed[Player.PlayerId] = OptionSpeed.GetFloat();
-            Main.CantDoActList.Add(Player.PlayerId);
-            ExtendedPlayerControl.SendCantDoActPlayer(true);
             Player.MarkDirtySettings();
             return false;
         }
@@ -108,8 +106,6 @@ ctop:true
             ProtectStartTime = Utils.GetTimeStamp();
             Cooldown = Utils.GetTimeStamp();
             Main.AllPlayerSpeed[Player.PlayerId] = OptionSpeed.GetFloat();
-            Main.CantDoActList.Add(Player.PlayerId);
-            ExtendedPlayerControl.SendCantDoActPlayer(true);
             Player.MarkDirtySettings();
         }
     }
@@ -119,8 +115,6 @@ ctop:true
         {
             ProtectStartTime = -1;
             Main.AllPlayerSpeed[Player.PlayerId] = Speed;
-            Main.CantDoActList.Remove(Player.PlayerId);
-            ExtendedPlayerControl.SendCantDoActPlayer(false);
             Player.MarkDirtySettings();
             Player.Notify(GetString("NWProtectOut"));
         }
@@ -129,5 +123,9 @@ ctop:true
             Cooldown = -1;
             Player.Notify(GetString("NWReady"));
         }
+    }
+    public override void OnSecondsUpdate(PlayerControl player, long now)
+    {
+        Logger.Info($"{ProtectStartTime}", "test");
     }
 }

@@ -13,12 +13,13 @@ public static class AntiBlackout
     ///是否覆盖放逐处理
     ///</summary>
     public static bool OverrideExiledPlayer => Options.NoGameEnd.GetBool()
-        || CustomRoles.Jackal.IsExist(true)
-        || CustomRoles.Pelican.IsExist(true)
-        || CustomRoles.Demon.IsExist(true)
-        || CustomRoles.BloodKnight.IsExist(true)
-        || CustomRoles.Succubus.IsExist(true)
-        || CustomRoles.Vagator.IsExist(true);
+      //  || CustomRoles.Jackal.IsExistCountDeath()
+      //  || CustomRoles.Pelican.IsExistCountDeath()
+      //  || CustomRoles.Demon.IsExistCountDeath()
+      //  || CustomRoles.BloodKnight.IsExistCountDeath()
+      //  || CustomRoles.Succubus.IsExistCountDeath()
+      //  || CustomRoles.Vagator.IsExistCountDeath()
+        ;
 
     public static bool IsCached { get; private set; } = false;
     private static Dictionary<byte, (bool isDead, bool Disconnected)> isDeadCache = new();

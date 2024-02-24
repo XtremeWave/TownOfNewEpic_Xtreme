@@ -47,6 +47,10 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     private static OptionItem MadCanKillCrew;
     private static OptionItem MadCanKillImp;
     private static OptionItem MadCanKillNeutral;
+    public static OptionItem HasDeputy;
+    public static OptionItem DeputySkillLimit;
+    public static OptionItem DeputySkillCooldown;
+    public static OptionItem DeputyCanBecomeSheriff;
     enum OptionName
     {
         SheriffMisfireKillsTarget,
@@ -70,7 +74,10 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     {
             "SheriffCanKillAll", "SheriffCanKillSeparately"
     };
-
+    public static readonly string[] DeputyStart =
+    {
+            "RoleOffNoColor", "RoleRateNoColor","RoleOnNoColor"
+    };
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Crew;
 
     private static void SetupOptionItem()

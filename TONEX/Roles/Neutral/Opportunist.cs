@@ -19,19 +19,21 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
            SetupOptionItem,
             "op|投機者|投机",
             "#00ff00",
-           true,
-           OptionCanKill.GetBool()
+           true
+           
         );
     public Opportunist(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
-    { }
+    {
+        
+    }
     private static OptionItem OptionKillCooldown;
-    private static OptionItem OptionCanKill;
+    public static OptionItem OptionCanKill;
     public static OptionItem OptionCanVent;
-
+    public bool IsNK { get; private set; } = OptionCanKill.GetBool();
 
     private static void SetupOptionItem()
     {

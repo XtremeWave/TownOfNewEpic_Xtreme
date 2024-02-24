@@ -14,7 +14,7 @@ public class MessageControl
     public bool HasValidArgs { get; set; }
 
     public PlayerControl Player { get; set; }
-    public List<byte> SendToList{ get; set; }
+    public List<byte> SendToList { get; set; } = new();
     public bool IsAlive { get => Player.IsAlive(); }
     public bool IsFromMod { get => Player.IsModClient(); }
     public bool IsFromSelf { get => Player.AmOwner; }

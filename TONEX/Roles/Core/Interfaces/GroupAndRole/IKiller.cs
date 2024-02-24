@@ -17,10 +17,17 @@ public interface IKiller
     public bool IsKiller => CanKill;
 
     /// <summary>
+    /// 是否中立杀手
+    /// 默认：返回 false
+    /// </summary>
+    /// <returns>true：是</returns>
+    public bool IsNK => false;
+    /// <summary>
     /// 是否可以使用击杀按键
     /// 默认：返回 <see cref="CanKill"/> 的值
     /// </summary>
     /// <returns>true：可以使用击杀按键</returns>
+
     public bool CanUseKillButton() => CanKill;
     /// <summary>
     /// 计算击杀冷却时间<br/>

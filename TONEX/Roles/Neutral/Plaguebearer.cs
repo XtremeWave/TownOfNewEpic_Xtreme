@@ -1,5 +1,6 @@
 ﻿using AmongUs.GameOptions;
 using Hazel;
+using MS.Internal.Xml.XPath;
 using System.Collections.Generic;
 using System.Linq;
 using TONEX.Modules;
@@ -19,10 +20,11 @@ public sealed class Plaguebearer : RoleBase, IKiller, IIndependent
             CustomRoles.Plaguebearer,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_1_1_01000,
+            94_1_1_0400,
             SetupOptionItem,
             "pl|瘟疫",
-            "#CCCCCC",
+            "#fffcbe",
+            true,
             true
         );
     public Plaguebearer(PlayerControl player)
@@ -94,6 +96,13 @@ public sealed class Plaguebearer : RoleBase, IKiller, IIndependent
                 killer.SetKillCooldownV2();
         }
         return false;
+    }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        if (Main.AllAlivePlayerControls.ToList().Count - 1 == PlaguePlayers.Count)
+        {
+            Player.RpcSetCustomRole(CustomRoles.GodOfPlagues);
+        }
     }
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {

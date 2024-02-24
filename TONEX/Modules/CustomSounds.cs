@@ -1,5 +1,7 @@
-﻿using Hazel;
+﻿using AmongUs.HTTP;
+using Hazel;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -8,6 +10,15 @@ namespace TONEX.Modules;
 
 public static class CustomSoundsManager
 {
+    public static Dictionary<string, string> formatMap = new()
+    {
+    { ".wav", ".flac" },
+    { ".flac", ".aiff" },
+    { ".aiff", ".mp3" },
+    { ".mp3", ".aac" },
+    { ".aac", ".ogg" },
+    { ".ogg", ".m4a" }
+};
     public static void RPCPlayCustomSound(this PlayerControl pc , string sound, int playmode=0, bool force = false)
     {
         if (pc == null || pc.AmOwner)
@@ -31,17 +42,28 @@ public static class CustomSoundsManager
     public static void ReceiveRPC(MessageReader reader) => Play(reader.ReadString(), 0);
 
 
-    private static readonly string SOUNDS_PATH = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/";
+    public static readonly string SOUNDS_PATH = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/";
     public static void Play(string sound, int playmode = 0)
     {
         if (!Constants.ShouldPlaySfx() || !Main.EnableCustomSoundEffect.Value) return;
         var path = SOUNDS_PATH + sound + ".wav";
+        Retry:
         if (!Directory.Exists(SOUNDS_PATH)) Directory.CreateDirectory(SOUNDS_PATH);
         DirectoryInfo folder = new(SOUNDS_PATH);
         if ((folder.Attributes & FileAttributes.Hidden) != FileAttributes.Hidden)
             folder.Attributes = FileAttributes.Hidden;
         if (!File.Exists(path))
         {
+            Logger.Warn($"未找到{path}", "CustomSoundsManager.Play");
+            string originalFormat = Path.GetExtension(path);
+            if (formatMap.ContainsKey(originalFormat))
+            {
+                string newFormat = formatMap[originalFormat];
+                path = path.Replace(originalFormat, newFormat);
+                
+                goto Retry;
+            }
+
             var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("TONEX.Resources.Sounds." + sound + ".wav");
             if (stream == null)
             {

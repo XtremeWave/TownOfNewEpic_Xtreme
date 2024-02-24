@@ -30,9 +30,18 @@ public abstract class RoleDescription
             builder.AppendFormat("<size={0}> ({1}, {2})\n", BodySize, Translator.GetString($"Team{roleTeam}"), Translator.GetString("BaseOn") + Translator.GetString(RoleInfo.BaseRoleType.Invoke().ToString()));
             builder.AppendFormat("<size={0}>{1}\n", BodySize, Description);
             // 职业设定
+            var rn = RoleInfo.RoleName;
+            if (rn is CustomRoles.Prosecutors)
+                RoleInfo.RoleName = CustomRoles.Lawyer;
+            else if (rn is CustomRoles.MimicKiller or CustomRoles.MimicAssistant)
+                RoleInfo.RoleName = CustomRoles.Mimic;
+            else if (rn is CustomRoles.Plaguebearer)
+                RoleInfo.RoleName = CustomRoles.GodOfPlagues;
+            else if (rn is CustomRoles.Sidekick or CustomRoles.Whoops)
+                RoleInfo.RoleName = CustomRoles.Jackal;
             if (Options.CustomRoleSpawnChances.TryGetValue(RoleInfo.RoleName, out var opt))
                 Utils.ShowChildrenSettings(opt, ref builder, forChat: true);
-
+            RoleInfo.RoleName = rn;
             return builder.ToString();
         }
     }

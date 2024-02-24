@@ -156,6 +156,10 @@ public enum CustomRPC
     SyncPlaguePlayers,
     //傀儡
     SetBeKillLimit,
+    //捕快
+    SetDeputyLimit,
+    //起诉
+    SetProsectorsLimit,
 }
 public enum Sounds
 {
