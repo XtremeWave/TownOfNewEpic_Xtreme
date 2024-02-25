@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static TONEX.IntSoundManager;
+using static TONEX.AudioManager;
 using static TONEX.Translator;
 using Object = UnityEngine.Object;
-using System.IO;
+
+using Il2CppSystem.IO;
+using AmongUs.HTTP;
 
 namespace TONEX.Modules.SoundInterface;
 
@@ -101,8 +103,10 @@ public static class SoundManagerPanel
         Items?.Values?.Do(Object.Destroy);
         Items = new();
 
-        foreach (var sound in AllFiles)
+        foreach (var soundp in AllFiles)
         {
+            var sound = soundp.Key;
+            var sounddown = soundp.Value;
             numItems++;
             var button = Object.Instantiate(buttonPrefab, scroller.Inner);
             button.transform.localPosition = new(-1f, 1.6f - 0.6f * numItems, -10.5f);
@@ -110,27 +114,64 @@ public static class SoundManagerPanel
             button.name = "Name Tag Item For " + sound;
             Object.Destroy(button.GetComponent<UIScrollbarHelper>());
             Object.Destroy(button.GetComponent<NumberButton>());
-            if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
+            var path = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/Sounds/{sound}.wav";
+            int i = 0;
+            while (!File.Exists(path))
+            {
+                i++;
+                Logger.Error($"{path} No Found", "SoundsManagerPanel");
+                string matchingKey = formatMap.Keys.FirstOrDefault(key => path.Contains(key));
+                if (matchingKey!=null)
+                {
+                    string newFormat = formatMap[matchingKey];
+                    path = path.Replace(matchingKey, newFormat);
+                    Logger.Warn($"{path} Founded", "SoundsManagerPanel");
+                    break;
+                }
+                if (i == formatMap.Count)
+                {
+                    Logger.Error($"{path} Cannot Be Finded", "SoundsManagerPanel");
+                    break; 
+                }
+            }
+            var renderer = button.GetComponent<SpriteRenderer>();
+            var rollover = button.GetComponent<ButtonRolloverHandler>();
+            if (File.Exists(path) || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/SoundNames/{sound}.json"))
+            {
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("delete");
-            else if (AllTONEX.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+                rollover.OutColor = renderer.color = AllTONEX.ContainsKey(sound) ? Color.red : Palette.Purple;
+            }
+            else if (AllTONEX.ContainsKey(sound) && !File.Exists(path))
+            {
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("download");
-            else if (!AllTONEX.Contains(sound) && !File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+                rollover.OutColor = renderer.color = Color.green;
+            }
+            else if (!AllTONEX.ContainsKey(sound) && !File.Exists(path))
             {
                 button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("NoFound");
             }
-                
-            var renderer = button.GetComponent<SpriteRenderer>();
-            renderer.color =( File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json")) ? (AllTONEX.Contains(sound)?Color.red:Palette.DisabledGrey) : Color.green;
+            
 
-            var rollover = button.GetComponent<ButtonRolloverHandler>();
-            rollover.OutColor = (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json")) ? (AllTONEX.Contains(sound) ? Color.red : Palette.DisabledGrey) : Color.green;
+            
+            
+            if (sounddown)
+            {
+                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("downloading");
+                renderer.color = rollover.OutColor = Color.yellow;
+                button.GetComponent<PassiveButton>().enabled = false;
+            }
+            if (sound== "StarFallsWithHeavenCrumbles_V2" || sound == "RejoiceThisSEASONRespectThisWORLD")
+            {
+                renderer.color = rollover.OutColor = Palette.DisabledGrey;
+                button.GetComponent<PassiveButton>().enabled = false;
+            }
             var passiveButton = button.GetComponent<PassiveButton>();
             passiveButton.OnClick = new();
             passiveButton.OnClick.AddListener(new Action(() =>
             {
 
 
-                if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{sound}.json"))
+                if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/Sounds/{sound}.wav") || File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/SoundNames/{sound}.json"))
                 {
                     try
                     {
@@ -139,7 +180,7 @@ public static class SoundManagerPanel
                         ReloadTag(sound);
                         RefreshTagList();
                         SoundPanel.RefreshTagList();
-                        //CustomPopup.Show(GetString("deletemusicPopupTitle"), string.Format(GetString("deletemusicPopupTitleDone"), sound), new() { (GetString(StringNames.Okay), null) });
+                        //CustomPopup.Show(GetString("deletemusicPopupTitle"), string.Format(Ge tString("deletemusicPopupTitleDone"), sound), new() { (GetString(StringNames.Okay), null) });
                     }
                     catch (Exception ex)
                     {
@@ -150,19 +191,27 @@ public static class SoundManagerPanel
                 }
                 else
                 {
-                
+                    
                     renderer.color = rollover.OutColor = Color.yellow;
                     button.transform.GetChild(0).GetComponent<TextMeshPro>().text = GetString("downloading");
                     button.GetComponent<PassiveButton>().enabled = false;
+                    if (TONEXOfficialMusic.ContainsKey(sound))
+                        TONEXOfficialMusic[sound] = true;
+                    if (TONEXSounds.ContainsKey(sound))
+                        TONEXSounds[sound] = true;
                     var task = MusicDownloader.StartDownload(sound);
                     task.ContinueWith(t => 
                     {
                         if (!MusicDownloader.succeed)
                         {
-                            Logger.Error("DownloadFailed", "downloadsounds");
+                            Logger.Error("DownloadFailed", "DownloadSound");
                         }
                         new LateTask(() =>
                         {
+                            if (TONEXOfficialMusic.ContainsKey(sound))
+                                TONEXOfficialMusic[sound] = false;
+                            if (TONEXSounds.ContainsKey(sound))
+                                TONEXSounds[sound] = false;
                             ReloadTag(sound);
                             RefreshTagList();
                             SoundPanel.RefreshTagList();
@@ -179,7 +228,7 @@ public static class SoundManagerPanel
             previewText.fontSize = 1f;
             string preview ="???";
             if (sound != null)
-                preview = TONEXMusic.Contains(sound)? GetString($"{sound}"):sound + ".wav";
+                preview = TONEXMusic.ContainsKey(sound)? GetString($"{sound}"):sound + ".wav";
             previewText.text = preview;
             Items.Add(sound, button);
         }
@@ -189,11 +238,11 @@ public static class SoundManagerPanel
     }
     public static void DeleteSoundInName(string soundname)
     {
-        if (AllTONEX.Contains(soundname)) return;
+        if (AllTONEX.ContainsKey(soundname)) return;
         try
         {
 
-            var path = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/SoundNames/{soundname}.json";
+            var path = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/SoundNames/{soundname}.json";
             Logger.Info($"{soundname} Deleted", "DeleteSound");
                 File.Delete(path);
             
@@ -208,7 +257,7 @@ public static class SoundManagerPanel
     {
         try
         {
-            var path2 = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav";
+            var path2 = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/Sounds/{sound}.wav";
             Logger.Info($"{Path.GetFileName(path2)} Deleted", "DeleteSound");
             File.Delete(path2);
         }
@@ -218,4 +267,13 @@ public static class SoundManagerPanel
         }
         return;
     }
+    public static Dictionary<string, string> formatMap = new()
+    {
+    { ".wav", ".flac" },
+    { ".flac", ".aiff" },
+    { ".aiff", ".mp3" },
+    { ".mp3", ".aac" },
+    { ".aac", ".ogg" },
+    { ".ogg", ".m4a" }
+};
 }

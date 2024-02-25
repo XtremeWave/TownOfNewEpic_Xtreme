@@ -38,8 +38,8 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.4";
-    public const string PluginShowVersion = "1.1_20240223";
+    public const string PluginVersion = "1.0.5";
+    public const string PluginShowVersion = "1.1_20240225";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -199,12 +199,12 @@ public class Main : BasePlugin
             TONEX.Logger.Disable("Pet");
             //TONEX.Logger.Disable("SetScanner");
             TONEX.Logger.Disable("test");
+            TONEX.Logger.Disable("ver");
             TONEX.Logger.Disable("ForNVBeKilled");
             TONEX.Logger.Disable("ForNVCAAList");
             TONEX.Logger.Disable("ForNVDFList");
             TONEX.Logger.Disable("ForNvFarAheadList");
             TONEX.Logger.Disable("ForNVMoney");
-            TONEX.Logger.Disable("Pet");
             TONEX.Logger.Disable("RpcTeleport");
         }
         //TONEX.Logger.isDetail = true;
@@ -275,6 +275,7 @@ public class Main : BasePlugin
                 {CustomRoles.Mini,"#ffffff" },
                 {CustomRoles.Libertarian,"#33CC99" },
                 {CustomRoles.Spiders, "#ff1919"},
+                {CustomRoles.Diseased,"#c0c0c0" },
             };
             var type = typeof(RoleBase);
             var roleClassArray =

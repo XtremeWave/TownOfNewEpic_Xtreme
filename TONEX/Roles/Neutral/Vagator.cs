@@ -24,7 +24,7 @@ public sealed class Vagator : RoleBase, IKiller, IIndependent
             CustomRoles.Vagator,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            7565_1_1_1,
+            75_1_1_0100,
             null,
             "Zhongli|Vagator|帝君|闲游",
              "#E6AD0A",

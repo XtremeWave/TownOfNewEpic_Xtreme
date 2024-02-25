@@ -594,5 +594,6 @@ public abstract class RoleBase : IDisposable
         ShapeshiftCooldown,
         SkillDuration,
         SkillCooldown,
+        SkillLimit,
     }
 }

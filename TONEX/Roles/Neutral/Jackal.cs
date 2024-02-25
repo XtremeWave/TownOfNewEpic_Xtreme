@@ -103,12 +103,13 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndepende
             .SetValueFormat(OptionFormat.Times);
         OptionJackalCanSaveSidekick = BooleanOptionItem.Create(RoleInfo, 17, OptionName.CanSaveSidekick, true, false , OptionItemCanSidekick);
         OptionSidekickCanKill = BooleanOptionItem.Create(RoleInfo, 18, OptionName.SidekickCanKill, false, false, OptionJackalCanSaveSidekick);
-        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false);
+        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false, OptionJackalCanSaveSidekick).SetValueFormat(OptionFormat.Seconds);
         OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanVent, true, false, OptionJackalCanSaveSidekick);
         OptionSidekickCanBeJackal = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SidekickCanBeJackal, true, false, OptionJackalCanSaveSidekick);
-        OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 22, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
-        OptionWhoopsCanRecruit = BooleanOptionItem.Create(RoleInfo, 23, OptionName.WhoopsCanRecruit, true, false, OptionJackalCanSaveSidekick);
-        OptionWhoopsTasksCount = IntegerOptionItem.Create(RoleInfo, 24, OptionName.WhoopsTasksCount, new(1, 99, 1), 3, false, OptionWhoopsTasksCount);
+        
+        OptionWhoopsCanRecruit = BooleanOptionItem.Create(RoleInfo, 22, OptionName.WhoopsCanRecruit, true, false, OptionJackalCanSaveSidekick);
+        OptionWhoopsTasksCount = IntegerOptionItem.Create(RoleInfo, 23, OptionName.WhoopsTasksCount, new(1, 99, 1), 3, false, OptionWhoopsCanRecruit);
+        OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 24, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
     }
     public override void Add()
     {
@@ -226,9 +227,9 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndepende
     {
         //seenが省略の場合seer
         seen ??= seer;
-        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
-        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
-        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
+        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
+        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
         else
         return "";
     }

@@ -804,20 +804,44 @@ public static class Utils
             return;
         }
         var sb = new StringBuilder(GetString("Roles")).Append(':');
+        var sb1 = new StringBuilder(GetString("Roles")).Append(':');
+        var sb2 = new StringBuilder(GetString("Roles")).Append(':');
+        var sb3 = new StringBuilder(GetString("Roles")).Append(':');
+        var sb4 = new StringBuilder(GetString("Roles")).Append(':');
         sb.AppendFormat("\n{0}:{1}", GetRoleName(CustomRoles.GM), Options.EnableGM.GetString().RemoveHtmlTags());
         int headCount = -1;
         foreach (CustomRoles role in CustomRolesHelper.AllStandardRoles)
         {
             headCount++;
             if (role.IsImpostor() && headCount == 0) sb.Append("\n\n● " + GetString("TabGroup.ImpostorRoles"));
-            else if (role.IsCrewmate() && headCount == 1) sb.Append("\n\n● " + GetString("TabGroup.CrewmateRoles"));
-            else if (role.IsNeutral() && headCount == 2) sb.Append("\n\n● " + GetString("TabGroup.NeutralRoles"));
-            else if (role.IsAddon() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
+            else if (role.IsCrewmate() && headCount == 1) sb1.Append("\n\n● " + GetString("TabGroup.CrewmateRoles"));
+            else if (role.IsNeutral() && headCount == 2) sb2.Append("\n\n● " + GetString("TabGroup.NeutralRoles"));
+            else if (role.IsAddon() && headCount == 3) sb3.Append("\n\n● " + GetString("TabGroup.Addons"));
             else headCount--;
 
-            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+            if (role.IsEnable())
+            {
+                switch (role.GetCustomRoleTypes())
+                {
+                    case CustomRoleTypes.Impostor:
+                        sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                    case CustomRoleTypes.Crewmate:
+                        sb1.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                    case CustomRoleTypes.Neutral:
+                        sb2.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                    case CustomRoleTypes.Addon:
+                        sb3.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                }
+            }
         }
         SendMessage(sb.ToString(), PlayerId);
+        SendMessage(sb1.ToString(), PlayerId);
+        SendMessage(sb2.ToString(), PlayerId);
+        SendMessage(sb3.ToString(), PlayerId);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
     {
@@ -962,6 +986,7 @@ public static class Utils
             + $"\n  ○ /m {GetString("Command.myrole")}"
             + $"\n  ○ /l {GetString("Command.lastresult")}"
             + $"\n  ○ /win {GetString("Command.winner")}"
+            + $"\n  ○ /eje {GetString("Command.GetLatestEje")}"
             + "\n\n" + "<color=#12bee4>" + GetString("CommandOtherList")
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"

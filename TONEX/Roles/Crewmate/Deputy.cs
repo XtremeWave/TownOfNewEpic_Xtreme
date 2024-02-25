@@ -7,6 +7,7 @@ using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 using System.Collections.Generic;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using TONEX.Roles.Neutral;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Deputy : RoleBase, IKiller
@@ -18,10 +19,10 @@ public sealed class Deputy : RoleBase, IKiller
             CustomRoles.Deputy,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Crewmate,
-            94_1_0_0300,
+            75_1_1_0400,
             null,
-            "pro",
-            "#788514",
+            "捕快",
+            "#f8cd46",
             true,
             ctop: true
         );
@@ -34,25 +35,39 @@ public sealed class Deputy : RoleBase, IKiller
     {
         CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
         ForDeputy = new();
+        DeputyLimit = Sheriff.DeputySkillLimit.GetInt();
     }
     public bool IsKiller { get; private set; } = false;
     private int DeputyLimit;
     public static List<byte> ForDeputy;
-    public override void Add()
-    {
-        
-    }
-    private void SendRPC()
+    private void SendRPC(bool clear = false)
     {
         using var sender = CreateSender(CustomRPC.SetDeputyLimit);
         sender.Writer.Write(DeputyLimit);
+        sender.Writer.Write(clear);
+        if (!clear)
+            foreach (var pc in ForDeputy)
+                sender.Writer.Write(pc);
+
     }
     public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
         if (rpcType != CustomRPC.SetDeputyLimit) return;
         DeputyLimit = reader.ReadInt32();
+        var clear = reader.ReadBoolean();
+        if (clear)
+            ForDeputy.Clear();
+        else
+        for (int i = 0; i < ForDeputy.Count; i++)
+        {
+            var id = reader.ReadByte();
+            if (!ForDeputy.Contains(id))
+            {
+                ForDeputy.Add(id);
+            }
+        }
     }
-    //public float CalculateKillCooldown() => CanUseKillButton() ? Lawyer.OptionSkillCooldown.GetFloat() : 255f;
+    public float CalculateKillCooldown() => CanUseKillButton() ? Sheriff.DeputySkillCooldown.GetFloat() : 255f;
     public bool CanUseKillButton() => Player.IsAlive() && DeputyLimit >= 1;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
@@ -63,8 +78,9 @@ public sealed class Deputy : RoleBase, IKiller
         if (DeputyLimit >= 1)
         {
             DeputyLimit -= 1;
-            SendRPC();
+
             ForDeputy.Add(target.PlayerId);
+            SendRPC();
         }
         info.CanKill = false;
         return false;
@@ -76,6 +92,40 @@ public sealed class Deputy : RoleBase, IKiller
         if (ForDeputy.Contains(killer.PlayerId)) return false;
         return true;
     }
+    public override void OnPlayerDeath(PlayerControl player, CustomDeathReason deathReason, bool isOnMeeting)
+    {
+        var target = player;
+
+        if (target.Is(CustomRoles.Sheriff) && Player.Is(CustomRoles.Deputy) && Sheriff.DeputyCanBecomeSheriff.GetBool())
+        {
+            Player.Notify(GetString("BeSheriff"));
+            Player.RpcProtectedMurderPlayer();
+            Player.RpcSetCustomRole(CustomRoles.Sheriff);
+        }
+
+    }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({DeputyLimit})");
-    public override void OnStartMeeting() => ForDeputy.Clear();
+    public override void OnStartMeeting()
+    {
+        ForDeputy.Clear();
+        SendRPC(true);
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
+    {
+        //seenが省略の場合seer
+        seen ??= seer;
+        if (seen.Is(CustomRoles.Sheriff) && Sheriff.DeputyKnowSheriff.GetBool()) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Deputy), "△");
+        else
+            return "";
+    }
+    public bool OverrideKillButtonText(out string text)
+    { 
+        text = GetString("DeputyText");
+        return true;
+    }
+    public bool OverrideKillButtonSprite(out string buttonName)
+    {
+        buttonName = "Deputy";
+        return true;
+    }
 }

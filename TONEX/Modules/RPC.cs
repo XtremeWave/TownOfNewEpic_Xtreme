@@ -160,6 +160,13 @@ public enum CustomRPC
     SetDeputyLimit,
     //起诉
     SetProsectorsLimit,
+    //借魂
+    SpecterSlayerKill,
+    //猎人
+    HunterKill,
+    SetHunterList,
+    //患者,
+    ForDiseased,
 }
 public enum Sounds
 {
@@ -433,6 +440,9 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.ViciousSeekerKill:
                 ViciousSeeker.ReceiveRPC_Limit(reader,rpcType);
+                break;
+            case CustomRPC.SetHunterList:
+                Hunter.ReceiveRPC_SyncList(reader);
                 break;
             default:
                 CustomRoleManager.DispatchRpc(reader, rpcType);

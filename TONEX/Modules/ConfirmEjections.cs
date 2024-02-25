@@ -10,7 +10,7 @@ namespace TONEX;
 public static class ConfirmEjections
 {
     // 参考：https://github.com/music-discussion/TownOfHost-TheOtherRoles
-
+    public static string LatestEjec = null;
     public static void Apply(GameData.PlayerInfo exiledPlayer, bool decidedWinner, List<string> winDescriptionText)
     {
         if (!AmongUsClient.Instance.AmHost) return;
@@ -76,7 +76,7 @@ public static class ConfirmEjections
         }
 
     EndOfSession:
-
+        LatestEjec = text;
         text += "<size=0>";
         _ = new LateTask(() =>
         {
@@ -94,5 +94,38 @@ public static class ConfirmEjections
                 Main.DoBlockNameChange = false;
             }
         }, 11.5f, "Change Exiled Player Name Back");
+    }
+    public static void GetLatest()
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        
+
+
+        string text = string.Empty;
+        int impNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Impostor) || p.Is(CustomRoles.Madmate));
+        int neutralNum = Main.AllAlivePlayerControls.Count(p => p.Is(CustomRoleTypes.Neutral) || p.Is(CustomRoles.Charmed) || p.Is(CustomRoles.Wolfmate));
+
+        if (CustomRoles.Bard.IsExist()) // 吟游诗人创作
+        {
+            try { text = ModUpdater.Get("https://v1.hitokoto.cn/?encode=text"); }
+            catch { text = GetString("ByBardGetFailed"); }
+            text += "\n\t\t——" + GetString("ByBard");
+            goto EndOfSession;
+        }
+        
+
+        if (Options.ShowImpRemainOnEject.GetBool())
+        {
+            text += "\n";
+            string comma = neutralNum > 0 ? "，" : "";
+            if (impNum == 0) text += GetString("NoImpRemain") + comma;
+            else text += string.Format(GetString("ImpRemain"), impNum) + comma;
+            if (Options.ShowNKRemainOnEject.GetBool() && neutralNum > 0)
+                text += string.Format(GetString("NeutralRemain"), neutralNum);
+        }
+
+    EndOfSession:
+        LatestEjec = text;
+        
     }
 }

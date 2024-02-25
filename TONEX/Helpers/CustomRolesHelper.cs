@@ -15,7 +15,7 @@ static class CustomRolesHelper
     /// <summary>すべての属性</summary>
     public static readonly CustomRoles[] AllAddOns = EnumHelper.GetAllValues<CustomRoles>().Where(role => role > CustomRoles.NotAssigned).ToArray();
     /// <summary>スタンダードモードで出現できるすべての役職</summary>
-    public static readonly CustomRoles[] AllStandardRoles = AllRoles.ToArray();
+    public static readonly CustomRoles[] AllStandardRoles = AllRoles.Concat(AllAddOns).ToList().ToArray();
     public static readonly CustomRoleTypes[] AllRoleTypes = EnumHelper.GetAllValues<CustomRoleTypes>();
 
     public static bool IsImpostor(this CustomRoles role)
@@ -72,8 +72,6 @@ static class CustomRolesHelper
     CustomRoles.VirtueGuider or //TODO 善导者，TOHEX的舰长
     CustomRoles.NiceTracker or//TODO 正义的追踪者
     CustomRoles.NiceInvisibler or//TODO 影行者（正义隐身）
-    CustomRoles.Hunter or//TODO 猎人
-    CustomRoles.SpecterSlayer or //TODO 借魂杀手，TOHEX恶魔猎手
     CustomRoles.Alien or //TODO 外星人
     CustomRoles.Spy or//TODO 卧底
     CustomRoles.NicePianist or//TODO 正义的钢琴家

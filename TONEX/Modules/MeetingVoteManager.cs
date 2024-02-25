@@ -161,6 +161,8 @@ public class MeetingVoteManager
             }
             ConfirmEjections.Apply(result.Exiled, DecidedWinner, WinDescriptionText);
         }
+        else
+        ConfirmEjections.GetLatest();
         Destroy();
     }
     /// <summary>

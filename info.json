@@ -7,11 +7,12 @@
   "minVer": "latest",
   "creation": "1",
   "allowStart": "true",
+  "CanUpdate": "true",
 
   "md5": "126c7cee2de7330967bbad27d412f25d",
 
   "announcement": {
-    "SChinese": "感谢您对TONEX的支持！",
+    "SChinese": "清明安康",
     "English": "Create/join public lobbies is temporarily falut\nThis change is due to a server-side update that makes modded public lobbies unavailable for vanilla.\nPrivate lobbies are not affected.\nCurrently, this change is NOT permanent."
   },
 

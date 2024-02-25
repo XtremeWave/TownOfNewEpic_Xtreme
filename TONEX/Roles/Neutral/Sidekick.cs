@@ -47,7 +47,8 @@ public sealed class Sidekick : RoleBase, IKiller, IIndependent, ISchrodingerCatO
         
             if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick) && Jackal.OptionSidekickCanBeJackal.GetBool())
             {
-                Player.Notify(GetString("BeJackal")); 
+                Player.Notify(GetString("BeJackal"));
+            Player.RpcProtectedMurderPlayer();
                 Player.RpcSetCustomRole(CustomRoles.Jackal);
             }
        

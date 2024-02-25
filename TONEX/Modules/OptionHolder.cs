@@ -649,6 +649,7 @@ public static class Options
         Mini.SetupCustomOption();
         Signal.SetupCustomOption();
         Libertarian.SetupCustomOption();
+        Diseased.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
@@ -837,7 +838,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableHiddenRoles = BooleanOptionItem.Create(3_001_002, "DisableHiddenRoles", true, TabGroup.GameSettings, false)
+        DisableHiddenRoles = BooleanOptionItem.Create(3_001_002, "DisableHiddenRoles", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableTaskWin = BooleanOptionItem.Create(3_001_003, "DisableTaskWin", false, TabGroup.GameSettings, false)

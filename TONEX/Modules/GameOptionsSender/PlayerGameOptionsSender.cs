@@ -128,13 +128,22 @@ public class PlayerGameOptionsSender : GameOptionsSender
             }
         }
 
-        // 为迷惑者的凶手
+        // 为迷幻者的凶手
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
             player.RpcSetCustomRole(CustomRoles.Bewilder);
+            Utils.NotifyRoles(player);
+        }
+
+        // 为患者的凶手
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Diseased) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
+        {
+            opt.SetVision(false);
+            float KILL = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown;
+            opt.SetFloat(FloatOptionNames.KillCooldown, KILL * Diseased.OptionVistion.GetFloat());
             Utils.NotifyRoles(player);
         }
 

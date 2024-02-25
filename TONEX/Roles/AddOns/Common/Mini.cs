@@ -57,10 +57,14 @@ public static class Mini
     public static void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
     {
         if (rpcType != CustomRPC.MiniAge) return;
-        var pc = reader.ReadByte();
-        var age = reader.ReadInt32();
-        Age.TryAdd(pc, age);
-        Age[pc] = age;
+        
+        for (int i = 0; 1 < Age.Count; i++)
+        {
+            var pc = reader.ReadByte();
+            var age = reader.ReadInt32();
+            Age.TryAdd(pc, age);
+            Age[pc] = age;
+        }
     }
     public static bool IsEnable => playerIdList.Count > 0;
     public static bool IsThisRole(byte playerId) => playerIdList.Contains(playerId);

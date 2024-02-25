@@ -14,7 +14,7 @@ public sealed class Adventurer : RoleBase
             CustomRoles.Adventurer,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            94_3_1_0,
+            94_1_0_0300,
             SetupOptionItem,
             "ad|探险家",
             "#185abd"

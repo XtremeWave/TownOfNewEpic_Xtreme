@@ -101,8 +101,9 @@ public class MeetingButtonManager
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }
                     if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper))
-                        renderer.sprite = (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Contains(pc.PlayerId)
-                           || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Contains(pc.PlayerId)) ? CustomButton.GetSprite("SwapYes") : CustomButton.GetSprite("SwapNo");
+                        renderer.sprite = (renderer.sprite == CustomButton.GetSprite("SwapYes")) ? CustomButton.GetSprite("SwapNo") : CustomButton.GetSprite("SwapYes");
+
+
                 }
             }));
         }

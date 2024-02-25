@@ -13,7 +13,7 @@ public sealed class Jester : RoleBase, IIndependent
             typeof(Jester),
             player => new Jester(player),
             CustomRoles.Jester,
-            () => RoleTypes.Crewmate,
+            () => CanVent.GetBool()? RoleTypes.Engineer:RoleTypes.Crewmate,
             CustomRoleTypes.Neutral,
             50000,
             SetupOptionItem,
@@ -27,6 +27,7 @@ public sealed class Jester : RoleBase, IIndependent
     )
     { }
     static OptionItem OptionCanUseButton;
+    static OptionItem CanVent;
     enum OptionName
     {
         JesterCanUseButton
@@ -34,6 +35,12 @@ public sealed class Jester : RoleBase, IIndependent
     private static void SetupOptionItem()
     {
         OptionCanUseButton = BooleanOptionItem.Create(RoleInfo, 10, OptionName.JesterCanUseButton, false, false);
+        CanVent = BooleanOptionItem.Create(RoleInfo, 11, GeneralOption.CanVent, false, false);
+    }
+    public override void ApplyGameOptions(IGameOptions opt)
+    {
+        AURoleOptions.EngineerCooldown = 0;
+        AURoleOptions.EngineerInVentMaxTime = 0;
     }
     public override Action CheckExile(GameData.PlayerInfo exiled, ref bool DecidedWinner, ref List<string> WinDescriptionText)
     {

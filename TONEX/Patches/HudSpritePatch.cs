@@ -102,7 +102,7 @@ class HudSpritePatch
                         newChatButton = CustomButton.GetSprite("ChatImp");
                         break;
                     case CustomRoleTypes.Neutral:
-                        if (player.GetRoleClass() is not IIndependent && !player.GetCustomRole().IsNeutralKilling())
+                        if (player.GetRoleClass() is not IIndependent && !player.IsNeutralEvil())
                             newChatButton = CustomButton.GetSprite("ChatN");
                         else
                             newChatButton = CustomButton.GetSprite("ChatEvilN");

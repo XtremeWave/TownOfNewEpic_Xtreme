@@ -19,7 +19,7 @@ public sealed class Non_Villain : RoleBase, IKiller, IAdditionalWinner
             CustomRoles.Non_Villain,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            7565_2_1_0,
+            75_1_0_0200,
 null,
             "恭喜发财|刘德华|商场|Non_Villain|不演反派",
              "#FF0000",

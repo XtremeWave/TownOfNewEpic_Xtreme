@@ -165,6 +165,19 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
+            new(["eje", "ejection","ejections"], CommandAccess.All, mc =>
+            {
+                string text = GetString("Message.CanNotUseInLobby");
+                if (GameStates.IsInGame)
+                {
+                    if(ConfirmEjections.LatestEjec==null)
+                        text = GetString("Message.NonLatestEje");
+                    else
+                    text = ConfirmEjections.LatestEjec;
+                }
+                mc.SendToList.Add(mc.Player.PlayerId);
+                return (MsgRecallMode.Block, text);
+            }),
             new(["t", "template"], CommandAccess.LocalMod, mc =>
             {
                 if (mc.HasValidArgs) TemplateManager.SendTemplate(mc.Args);
@@ -346,6 +359,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         RoleCommands.Add(CustomRoles.Mini, new() { "mini", "迷你" });
         RoleCommands.Add(CustomRoles.Libertarian, new() { "li", "广播", "自主主义者" });
         RoleCommands.Add(CustomRoles.Spiders, new() { "sd", "蜘蛛"});
+        RoleCommands.Add(CustomRoles.Diseased, new() { "dis", "患者", "病人" });
     }
     public static void SendRolesInfo(string input, byte playerId)
     {

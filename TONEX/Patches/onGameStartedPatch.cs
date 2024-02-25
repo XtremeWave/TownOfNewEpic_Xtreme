@@ -76,7 +76,7 @@ internal class ChangeRoleSettings
             RPC.SyncAllPlayerNames();
             HudSpritePatch.IsEnd = false ;
             RPC.SyncEndRPC(false);
-
+            ConfirmEjections.LatestEjec = null;
             //var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             //if (invalidColor.Any())
             //{
@@ -139,12 +139,16 @@ internal class ChangeRoleSettings
                     if (!pc.Is(CustomRoles.GM))
                     {
                         var sender = CustomRpcSender.Create(name: $"PetsPatch.RpcSetPet)");
+                    if (pc.Data.DefaultOutfit.PetId == null)
+                    {
                         pc.SetPet("pet_Crewmate");
                         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
                         .Write("pet_Crewmate")
                         .EndRpc();
-                        pc.CanPet();
                         sender.SendMessage();
+                    }
+                        pc.CanPet();
+                        
                     }
                 }
         }

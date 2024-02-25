@@ -6,7 +6,7 @@ namespace TONEX.Modules;
 
 public static class OptionSaver
 {
-    private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TONEX_DATA/SaveData/");
+    private static readonly DirectoryInfo SaveDataDirectoryInfo = new("./TONEX_Data/SaveData/");
     private static readonly FileInfo OptionSaverFileInfo = new($"{SaveDataDirectoryInfo.FullName}/Options.json");
     private static readonly LogHandler logger = Logger.Handler(nameof(OptionSaver));
 

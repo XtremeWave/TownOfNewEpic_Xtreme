@@ -121,6 +121,11 @@ public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
         text = GetString("Infected");
         return true;
     }
+    public bool OverrideKillButtonSprite(out string buttonName)
+    {
+        buttonName = "InfectButton";
+        return true;
+    }
     public bool CanUseSabotageButton() => false;
     public override string GetProgressText(bool comms = false)
     {

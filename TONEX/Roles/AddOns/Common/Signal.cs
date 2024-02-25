@@ -9,7 +9,7 @@ using static TONEX.Options;
 namespace TONEX.Roles.AddOns.Common;
 public static class Signal
 {
-    private static readonly int Id = 7565_3_1_0;
+    private static readonly int Id = 75_1_0_0300;
     private static Color RoleColor = Utils.GetRoleColor(CustomRoles.Signal);
     private static List<byte> playerIdList = new();
     public static Dictionary<byte, Vector2> Signalbacktrack = new();

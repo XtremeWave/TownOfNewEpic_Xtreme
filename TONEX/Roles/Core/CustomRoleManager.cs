@@ -373,6 +373,9 @@ public static class CustomRoleManager
                 case CustomRoles.Spiders:
                     Spiders.Add(pc.PlayerId);
                     break;
+                case CustomRoles.Diseased:
+                    Diseased.Add(pc.PlayerId);
+                    break;
             }
         }
     }
@@ -634,8 +637,8 @@ public enum CustomRoles
     NiceTracker,//TODO 正义的追踪者
     NiceInvisibler,//TODO 影行者（正义隐身）
     NiceSwapper,
-    Hunter,//TODO 猎人
-    SpecterSlayer, //TODO 借魂杀手，TOHEX恶魔猎手
+    Hunter,
+    SpecterSlayer,
     Alien, //TODO 外星人
     Spy,//TODO 卧底
     NicePianist,//TODO 正义的钢琴家
@@ -690,8 +693,8 @@ public enum CustomRoles
     PoliticalStrategists,//TODO 纵横家
 
     Challenger,//TODO 挑战者
-    Martyr,//TODO 先烈,1.1限定
-    NightWolf,//TODO 月下狼人
+    Martyr,
+    NightWolf,
     Moonshadow,//TODO 月影,1.4限定
 
     //GameMode

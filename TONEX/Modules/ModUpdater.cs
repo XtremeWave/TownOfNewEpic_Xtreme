@@ -58,6 +58,7 @@ public class ModUpdater
 
     public static Version latestVersion = null;
     public static string showVer = "";
+    public static bool CanUpdate = false;
     public static string verHead = "";
     public static string verDate = "";
     public static string verTestName = "";
@@ -92,7 +93,7 @@ public class ModUpdater
         MainMenuManagerPatch.PlayButton.SetActive(!MainMenuManagerPatch.UpdateButton.activeSelf);
         var buttonText = MainMenuManagerPatch.UpdateButton.transform.FindChild("FontPlacer").GetChild(0).GetComponent<TextMeshPro>();
         Logger.Info(showVer, "ver");
-        buttonText.text = $"{GetString("updateButton")}\nv{showVer?.ToString() ?? "???"}";
+        buttonText.text = $"{(CanUpdate? GetString("updateButton"): GetString("updateNotice"))}\nv{showVer?.ToString() ?? " ???"}";
         Logger.Info(showVer.ToString(), "ver");
     }
     public static void Retry()
@@ -200,6 +201,7 @@ public class ModUpdater
             var vertestname = (verTestName == "") ? "" : $"_{verTestName}";
             var vertesttext = (verTestNum == "") ? "" : $"{vertestname}_{verTestNum}";
             showVer = $"{verHead}_{verDate}{vertesttext}";
+            CanUpdate = bool.Parse(new(data["CanUpdate"]?.ToString()));
             Logger.Info(showVer, "ver");
             var minVer = data["minVer"]?.ToString();
             minimumVersion = minVer.ToLower() == "latest" ? latestVersion : new(minVer);
@@ -291,7 +293,6 @@ public class ModUpdater
 
         Logger.Msg("Start Downlaod From: " + url, "DownloadDLL");
         Logger.Msg("Save To: " + DownloadFileTempPath, "DownloadDLL");
-        var succeed = false;
         try
         {
             using var client = new HttpClientDownloadWithProgress(url, DownloadFileTempPath);
@@ -315,7 +316,6 @@ public class ModUpdater
                 var fileName = Assembly.GetExecutingAssembly().Location;
                 File.Move(fileName, fileName + ".bak");
                 File.Move("BepInEx/plugins/TONEX.dll.temp", fileName);
-                succeed = true;
                 return (true, null);
             }
         }

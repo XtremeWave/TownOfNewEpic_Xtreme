@@ -88,16 +88,17 @@ public sealed class NiceTimeStops : RoleBase
         buttonName = "TheWorld";
         return !(UsePetCooldown != -1);
     }
-    public override bool GetGameStartSound(out string sound)
-    {
-        sound = "TheWorld";
-        return true;
-    }
     public override bool GetPetButtonText(out string text)
     {
         text = GetString("NiceTimeStopsVetnButtonText");
         return !(UsePetCooldown != -1);
     }
+    public override bool GetGameStartSound(out string sound)
+    {
+        sound = "TheWorld";
+        return true;
+    }
+
     public void ReduceNowCooldown()
     {
         Cooldown = Cooldown + ReduceCooldown.GetFloat();

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using TONEX.Roles.Core;
+using TONEX.Roles.Crewmate;
 
 namespace TONEX.Modules;
 
@@ -147,7 +148,14 @@ internal static class CustomRoleSelector
         {
             var select = ImpOnList[rd.Next(0, ImpOnList.Count)];
             ImpOnList.Remove(select);
+            
             rolesToAssign.Add(select);
+            if (select == CustomRoles.MimicTeam && optImpNum >=2 && readyRoleNum< optImpNum-2)
+            {
+                rolesToAssign.Remove(select);
+                rolesToAssign.Add(CustomRoles.MimicKiller);
+                rolesToAssign.Add(CustomRoles.MimicAssistant);
+            }
             readyRoleNum++;
             Logger.Info(select.ToString() + " 加入内鬼职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -161,6 +169,12 @@ internal static class CustomRoleSelector
                 var select = ImpRateList[rd.Next(0, ImpRateList.Count)];
                 ImpRateList.Remove(select);
                 rolesToAssign.Add(select);
+                if (select == CustomRoles.MimicTeam && optImpNum >= 2 && readyRoleNum < optImpNum - 2)
+                {
+                    rolesToAssign.Remove(select);
+                    rolesToAssign.Add(CustomRoles.MimicKiller);
+                    rolesToAssign.Add(CustomRoles.MimicAssistant);
+                }
                 readyRoleNum++;
                 Logger.Info(select.ToString() + " 加入内鬼职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -233,6 +247,11 @@ internal static class CustomRoleSelector
             var select = roleOnList[rd.Next(0, roleOnList.Count)];
             roleOnList.Remove(select);
             rolesToAssign.Add(select);
+            if (select == CustomRoles.Sheriff && Sheriff.HasDeputy.GetBool() && readyRoleNum < playerCount)
+            {
+                
+                rolesToAssign.Add(CustomRoles.Deputy);
+            }
             readyRoleNum++;
             Logger.Info(select.ToString() + " 加入船员职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -245,6 +264,11 @@ internal static class CustomRoleSelector
                 var select = roleRateList[rd.Next(0, roleRateList.Count)];
                 roleRateList.Remove(select);
                 rolesToAssign.Add(select);
+                if (select == CustomRoles.Sheriff && Sheriff.HasDeputy.GetBool() && readyRoleNum < playerCount)
+                {
+
+                    rolesToAssign.Add(CustomRoles.Deputy);
+                }
                 readyRoleNum++;
                 Logger.Info(select.ToString() + " 加入船员职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
