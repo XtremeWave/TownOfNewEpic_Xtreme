@@ -29,7 +29,7 @@ public static class AudioManager
     {
         "SpringRejoicesinParallelUniverses",
         "GongXiFaCaiLiuDeHua",
-        "StarFallsWithHeavenCrumbles_V2",
+        "StarFallsWithHeavenCrumbles_V3",
         "RejoiceThisSEASONRespectThisWORLD",
     };
     public static Dictionary<string, bool> TONEXOfficialMusic = new();

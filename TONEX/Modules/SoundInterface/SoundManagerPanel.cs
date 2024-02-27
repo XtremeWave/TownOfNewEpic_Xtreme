@@ -160,7 +160,7 @@ public static class SoundManagerPanel
                 renderer.color = rollover.OutColor = Color.yellow;
                 button.GetComponent<PassiveButton>().enabled = false;
             }
-            if (sound== "StarFallsWithHeavenCrumbles_V2" || sound == "RejoiceThisSEASONRespectThisWORLD")
+            if (sound== "StarFallsWithHeavenCrumbles_V3" || sound == "RejoiceThisSEASONRespectThisWORLD")
             {
                 renderer.color = rollover.OutColor = Palette.DisabledGrey;
                 button.GetComponent<PassiveButton>().enabled = false;
