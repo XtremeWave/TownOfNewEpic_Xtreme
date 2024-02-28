@@ -100,10 +100,13 @@ static class CustomRolesHelper
     CustomRoles.Luckless or//TODO 倒霉蛋
     CustomRoles.FateFavor or//TODO 命运眷顾者
     CustomRoles.Nihility or//TODO 虚无
-    CustomRoles.Diseased or//TODO 患者
     CustomRoles.IncorruptibleOfficial or//TODO 清廉之官
     CustomRoles.VIP or//TODO VIP
-    CustomRoles.Believer//TODO 信徒
+    CustomRoles.Believer or //TODO 信徒
+    CustomRoles.Phantom or//TODO 幻影
+    CustomRoles.MeteorArbiter or//TODO 陨星判官,1.2限定
+    CustomRoles.MeteorMurder or//TODO 陨星戮者,1.2限定
+    CustomRoles.InjusticeSpirit//TODO 陨星戮者,1.2限定
             )
             return true;
         return false;

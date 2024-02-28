@@ -100,7 +100,7 @@
 >  
 >### :star: [To-Hope](https://gitee.com/xigua_ya/to-hope) :
 > 
-> - 开发者：[Night_瓜](https://gitee.com/xigua_ya)
+> - 开发者：[Night_瓜(Yu遇千知)](https://gitee.com/xigua_ya)
 > - 参考: TOHEX中的自定义按钮
 > 
 >### :star: [Project:Lotus](https://github.com/ImaMapleTree/Lotus) :

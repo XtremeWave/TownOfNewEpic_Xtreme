@@ -53,11 +53,12 @@ public class ModUpdater
     public static bool forceUpdate = false;
     public static bool isBroken = false;
     public static bool isChecked = false;
-
+    public static bool DebugUnused = false;
     public static string versionInfoRaw = "";
 
     public static Version latestVersion = null;
     public static string showVer = "";
+    public static Version DebugVer = null;
     public static bool CanUpdate = false;
     public static string verHead = "";
     public static string verDate = "";
@@ -198,6 +199,7 @@ public class ModUpdater
             verTestName = new(data["verTestName"]?.ToString());
             verTestNum = new(data["verTestNum"]?.ToString());
             latestVersion = new(data["version"]?.ToString());
+            DebugVer = new(data["DebugVer"]?.ToString());
             var vertestname = (verTestName == "") ? "" : $"_{verTestName}";
             var vertesttext = (verTestNum == "") ? "" : $"{vertestname}_{verTestNum}";
             showVer = $"{verHead}_{verDate}{vertesttext}";
@@ -226,6 +228,10 @@ public class ModUpdater
 
             hasUpdate = Main.version < latestVersion;
             forceUpdate = Main.version < minimumVersion || creation > Main.PluginCreation;
+#if DEBUG
+            DebugUnused = Main.version < DebugVer;
+            hasUpdate = forceUpdate = DebugUnused;
+#endif
 
             return true;
         }

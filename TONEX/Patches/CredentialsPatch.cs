@@ -62,7 +62,7 @@ internal class VersionShowerStartPatch
         TMPTemplate.SetBase(__instance.text);
         Main.CredentialsText = $"\r\n<color={Main.ModColor}>{Main.ModName}</color> - <color=#ffff00>v{Main.PluginShowVersion}</color>";
 #if DEBUG
-        Main.CredentialsText = $"\r\n<color=#cdfffd>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
+        Main.CredentialsText += $"\r\n<color=#cdfffd>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
 #endif
 
 #if RELEASE

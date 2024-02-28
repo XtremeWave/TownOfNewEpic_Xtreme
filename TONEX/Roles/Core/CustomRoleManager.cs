@@ -646,6 +646,7 @@ public enum CustomRoles
     Bees,//TODO 蜜蜂
     CopyCat,//TODO 效颦者
     Deputy,
+    InjusticeSpirit,//TODO 冤魂
     //Neutral
     Arsonist,
     Jester,
@@ -684,11 +685,11 @@ public enum CustomRoles
     Rebels,
     Admirer,//TODO 暗恋者
     Akujo, //TODO 魅魔
-    Puppeteer,//TODO 傀儡师
+    Puppeteer,
     Changger,//TODO 连环交换师
     Amnesiac,//TODO 失忆者
-    Plaguebearer,//TODO 瘟疫之源
-    GodOfPlagues,//TODO 万疫之神
+    Plaguebearer,
+    GodOfPlagues,
     Yandere,//TODO 病娇
     PoliticalStrategists,//TODO 纵横家
 
@@ -696,6 +697,9 @@ public enum CustomRoles
     Martyr,
     NightWolf,
     Moonshadow,//TODO 月影,1.4限定
+    Phantom,//TODO 幻影
+    MeteorArbiter,//TODO 陨星判官,1.2限定
+    MeteorMurder,//TODO 陨星戮者,1.2限定
 
     //GameMode
     HotPotato,
@@ -740,7 +744,7 @@ public enum CustomRoles
     Luckless,//TODO 倒霉蛋
     FateFavor,//TODO 命运眷顾者
     Nihility,//TODO 虚无
-    Diseased,//TODO 患者
+    Diseased,
     IncorruptibleOfficial,//TODO 清廉之官
     VIP,//TODO VIP
     Believer,//TODO 信徒
