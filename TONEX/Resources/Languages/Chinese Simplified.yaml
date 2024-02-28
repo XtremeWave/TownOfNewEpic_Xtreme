@@ -277,14 +277,8 @@ WinnerRoleText.Rebels: "推翻暴政！"
 WinnerRoleText.Mini: "未成年人保护法！"
 WinnerRoleText.Martyr: "带着后辈走向希望的曙光"
 WinnerRoleText.NightWolf: "嗷呜~~~~~~~~"
-WinnerRoleText.Akujo: "魅魔"
-WinnerRoleText.Puppeteer: "傀儡师"
+WinnerRoleText.Puppeteer: "【链接已屏蔽】"
 WinnerRoleText.GodOfPlagues: "病毒扩散.png"
-WinnerRoleText.Yandere: "病娇"
-WinnerRoleText.PoliticalStrategists: "纵横家"
-WinnerRoleText.Challenger: "挑战者"
-WinnerRoleText.Moonshadow: "月影"
-WinnerRoleText.PVPboss: "PVP大佬"
 
 
 ## 胜利界面职业名 / Role Name for End Screen
@@ -323,6 +317,8 @@ WinnerRoleTezt.InEnd.Rebels: "起义军"
 WinnerRoleText.InEnd.Mini: "迷你船员"
 WinnerRoleText.InEnd.Martyr: "先烈"
 WinnerRoleText.InEnd.NightWolf: "月下狼人"
+WinnerRoleText.InEnd.Puppeteer: "傀儡师"
+WinnerRoleText.InEnd.GodOfPlague: "月下狼人"
 
 
 # 以下是职业简介（显示在开局以及任务栏的文本）/ Shows at Impostor/Crewmate Screen
@@ -379,20 +375,11 @@ BlackmailerInfo: "闭麦！"
 GamblersInfo: "出千？我可是真诚的赌徒！"
 DoubleKillerInfo: "我TM杀杀杀杀杀"
 MedusaInfo: "注视我的眼睛"
-ViciousSeekerInfo: "我怀恨在心"
+ViciousSeekerInfo: "您的恶，是您的死期"
 
 EvilSwapperInfo: "要开始耍赖咯"
-DisperserInfo: "分散者"
-EvilPianistInfo: "砸钢琴ing"
 EvilGuardianInfo: "在死后做点什么吧..."
 SkinwalkerInfo: "您的皮肤真好看"
-EvilTimeStopsInfo: "真理骤停"
-MirrorSpiritInfo: "攻守易形了"
-AssaulterInfo: "偷袭，不讲武德，年轻人耗子尾汁"
-MimicTeamInfo: ""
-MimicKillerInfo: "质疑，理解，模仿，成为！"
-MimicAssistantInfo: "原地变身！"
-
 ## 船员阵营 / Crewmate Blurbs
 LuckeyInfo: "您擅长治疗内鬼的低血压"
 LazyGuyInfo: "摆烂快乐！摆烂万岁！"
@@ -1394,7 +1381,7 @@ CustomSoundHelp: "您可以在“音频管理”中下载TONEX的游戏音频或
 # 官方音乐
 SpringRejoicesinParallelUniverses: "异世庆同春 -Slok7565"
 GongXiFaCaiLiuDeHua: "恭喜发财 -刘德华"
-StarFallsWithHeavenCrumbles_V3: "星陨天坠_V2 -Slok7565(未上线)"
+StarFallsWithHeavenCrumbles_V3: "星陨天坠_V3 -Slok7565(未上线)"
 RejoiceThisSEASONRespectThisWORLD: "庆此春 敬此世 -Slok7565(未上线)"
 
 # 指令帮助 / Commands Help
