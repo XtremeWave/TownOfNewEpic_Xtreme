@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
+using TONEX.Roles.Impostor;
 
 namespace TONEX.Modules;
 
@@ -34,10 +35,16 @@ public class MessageControl
         MsgRecallMode recallMode = MsgRecallMode.None;
         // Check if it is a role command
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
+        if (GameStates.IsInGame && CustomRoles.Blackmailer.IsExist())
+            if (Blackmailer.ForBlackmailer.Contains(Player.PlayerId))
+            {
+                IsCommand = true;
+                recallMode = MsgRecallMode.Spam;
+            }
         //IsCommand = Player.GetRoleClass()?.OnPlayerSendMessage(player, Message, out recallMode) ?? false;
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
         CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
-
+        
         RecallMode = recallMode;
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
 

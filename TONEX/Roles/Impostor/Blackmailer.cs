@@ -18,12 +18,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
             CustomRoleTypes.Impostor,
             94_1_1_0000,
             SetupOptionItem,
-            "bl|勒索",
-            experimental: true
-#if RELEASE
-,
-            ctop: true
-#endif
+            "bl|勒索"
         );
     public Blackmailer(PlayerControl player)
     : base(
@@ -52,6 +47,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
     public override void Add()
     {
         ForBlackmailer = new();
+        //ForBlackmailer.Add(Player.PlayerId);
         BlackmailerLimit = new();
     }
     public override void ApplyGameOptions(IGameOptions opt)

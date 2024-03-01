@@ -373,7 +373,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             Utils.ShowActiveRoles(playerId);
             return;
         }
-        else if (!GetRoleByInputName(input, out var role))
+        else if (!GetRoleByInputName(input, out var role) || role is CustomRoles.Non_Villain or CustomRoles.HotPotato or CustomRoles.ColdPotato)
         {
             Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
             return;

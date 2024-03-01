@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class GodOfPlagues: RoleBase, IKiller, IIndependent
+public sealed class GodOfPlagues: RoleBase, IKiller, IIndependent, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -35,6 +35,7 @@ public sealed class GodOfPlagues: RoleBase, IKiller, IIndependent
     )
     {
     }
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.GodOfPlagues;
     public bool CanUseKillButton() => true;
     public float CalculateKillCooldown()=> Plaguebearer.OptionGodOfPlaguesKillCooldown.GetFloat();
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(false);

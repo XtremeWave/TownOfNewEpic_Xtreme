@@ -106,8 +106,8 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         MadCanKillNeutral = BooleanOptionItem.Create(RoleInfo, 23, OptionName.SheriffMadCanKillNeutral, true, false).SetParent(SetMadCanKill);
         MadCanKillCrew = BooleanOptionItem.Create(RoleInfo, 24, OptionName.SheriffMadCanKillCrew, true, false).SetParent(SetMadCanKill);
         HasDeputy = BooleanOptionItem.Create(RoleInfo, 25, OptionName.HasDeputy, true, false);
-        DeputySkillLimit = IntegerOptionItem.Create(RoleInfo, 26, OptionName.DeputySkillLimit, new(1, 999, 1), 5, false,HasDeputy);
-        DeputySkillCooldown = FloatOptionItem.Create(RoleInfo, 27, OptionName.DeputySkillCooldown, new(2.5f, 180f, 2.5f), 15f, false, HasDeputy);
+        DeputySkillLimit = IntegerOptionItem.Create(RoleInfo, 26, OptionName.DeputySkillLimit, new(1, 999, 1), 5, false,HasDeputy).SetValueFormat(OptionFormat.Times);
+        DeputySkillCooldown = FloatOptionItem.Create(RoleInfo, 27, OptionName.DeputySkillCooldown, new(2.5f, 180f, 2.5f), 15f, false, HasDeputy).SetValueFormat(OptionFormat.Seconds);
         DeputyCanBecomeSheriff = BooleanOptionItem.Create(RoleInfo, 28, OptionName.DeputyCanBecomeSheriff, true, false, HasDeputy);
         SheriffKnowDeputy = BooleanOptionItem.Create(RoleInfo, 29, OptionName.SheriffKnowDeputy, true, false, HasDeputy);
         DeputyKnowSheriff = BooleanOptionItem.Create(RoleInfo, 30, OptionName.DeputyKnowSheriff, true, false, HasDeputy);
@@ -117,13 +117,14 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
 
         foreach (var neutral in CustomRolesHelper.AllStandardRoles.Where(x => x.IsNeutral() && !x.IsTODO()).ToArray())
         {
-            if (neutral is CustomRoles.SchrodingerCat or CustomRoles.HotPotato or CustomRoles.ColdPotato) continue;
+            if (neutral is CustomRoles.SchrodingerCat or CustomRoles.HotPotato or CustomRoles.ColdPotato or CustomRoles.Non_Villain or CustomRoles.GodOfPlagues) continue;
+            if (neutral.IsTODO()) continue;
             SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutrals);
             idOffset++;
         }
         foreach (var catType in EnumHelper.GetAllValues<SchrodingerCat.TeamType>())
         {
-            if ((byte)catType < 50)
+            if ((byte)catType < 50 || catType == SchrodingerCat.TeamType.NightWolf)
             {
                 continue;
             }

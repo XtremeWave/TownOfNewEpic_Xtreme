@@ -39,6 +39,8 @@ public abstract class RoleDescription
                 RoleInfo.RoleName = CustomRoles.GodOfPlagues;
             else if (rn is CustomRoles.Sidekick or CustomRoles.Whoops)
                 RoleInfo.RoleName = CustomRoles.Jackal;
+            else if (rn is CustomRoles.Deputy)
+                RoleInfo.RoleName = CustomRoles.Sheriff;
             if (Options.CustomRoleSpawnChances.TryGetValue(RoleInfo.RoleName, out var opt))
                 Utils.ShowChildrenSettings(opt, ref builder, forChat: true);
             RoleInfo.RoleName = rn;

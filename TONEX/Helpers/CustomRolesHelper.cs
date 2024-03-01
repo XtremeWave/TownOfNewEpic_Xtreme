@@ -64,7 +64,6 @@ static class CustomRolesHelper
     CustomRoles.MimicTeam or//TODO 模仿者团队
     CustomRoles.MimicKiller or//TODO 模仿者（杀手）
     CustomRoles.MimicAssistant or//TODO 模仿者（助手）
-    CustomRoles.Blackmailer or//TODO 勒索者
     CustomRoles.Disperser or//TODO 分散者
     CustomRoles.EvilPianist or//TODO 邪恶的钢琴家
     CustomRoles.Perfumer or //TODO 香水师
@@ -82,7 +81,7 @@ static class CustomRolesHelper
     CustomRoles.Konan or//TODO 柯南
     CustomRoles.Stalker or //TODO 潜藏者
     CustomRoles.Collector or
-    CustomRoles.Provocateur or//TODO 自爆卡车Sunnyboy,
+    CustomRoles.Provocateur or//TODO 自爆卡车,
     CustomRoles.PVPboss or//TODO PVP大佬
    CustomRoles.Admirer or//TODO 暗恋者
     CustomRoles.Akujo or //TODO 魅魔
@@ -106,7 +105,8 @@ static class CustomRolesHelper
     CustomRoles.Phantom or//TODO 幻影
     CustomRoles.MeteorArbiter or//TODO 陨星判官,1.2限定
     CustomRoles.MeteorMurder or//TODO 陨星戮者,1.2限定
-    CustomRoles.InjusticeSpirit//TODO 陨星戮者,1.2限定
+    CustomRoles.SharpShooter or//TODO 神射手
+    CustomRoles.InjusticeSpirit//TODO 冤魂
             )
             return true;
         return false;

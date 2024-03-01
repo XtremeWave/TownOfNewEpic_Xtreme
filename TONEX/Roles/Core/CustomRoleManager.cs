@@ -694,13 +694,13 @@ public enum CustomRoles
     PoliticalStrategists,//TODO 纵横家
 
     Challenger,//TODO 挑战者
-    Martyr,
+    Martyr,//先烈 1.1限定
     NightWolf,
     Moonshadow,//TODO 月影,1.4限定
     Phantom,//TODO 幻影
     MeteorArbiter,//TODO 陨星判官,1.2限定
     MeteorMurder,//TODO 陨星戮者,1.2限定
-
+    SharpShooter,//TODO 神射手
     //GameMode
     HotPotato,
     ColdPotato,

@@ -547,6 +547,7 @@ public static class Options
 
         AddonsNumLimit = IntegerOptionItem.Create(1_003_005, "AddonsNumLimit", new(0, 99, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Pieces)
             .SetHeader(true);
 
         // GM
@@ -645,7 +646,7 @@ public static class Options
         Bait.SetupCustomOption();
         Beartrap.SetupCustomOption();
         Rambler.SetupCustomOption() ;
-        Chameleon.SetupCustomOption();
+        //Chameleon.SetupCustomOption();
         Mini.SetupCustomOption();
         Signal.SetupCustomOption();
         Libertarian.SetupCustomOption();
@@ -802,7 +803,7 @@ public static class Options
         .SetHidden(true)
 #endif
             ;
-        SubGameMode = StringOptionItem.Create(3_1001_001, "SubGameMode", SubGameModes, 0, TabGroup.GameSettings, false)
+        SubGameMode = StringOptionItem.Create(3_090_001, "SubGameMode", SubGameModes, 0, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 238, 232, byte.MaxValue))
         #if RELEASE

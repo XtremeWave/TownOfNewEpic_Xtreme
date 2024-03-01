@@ -77,7 +77,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndepende
     }
     public enum SwitchTrigger
     {
-        TriggerKill,
+        TriggerForKill,
         TriggerDouble,
     };
     private static float KillCooldown;
@@ -103,12 +103,12 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndepende
             .SetValueFormat(OptionFormat.Times);
         OptionJackalCanSaveSidekick = BooleanOptionItem.Create(RoleInfo, 17, OptionName.CanSaveSidekick, true, false , OptionItemCanSidekick);
         OptionSidekickCanKill = BooleanOptionItem.Create(RoleInfo, 18, OptionName.SidekickCanKill, false, false, OptionJackalCanSaveSidekick);
-        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false, OptionJackalCanSaveSidekick).SetValueFormat(OptionFormat.Seconds);
+        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false, OptionSidekickCanKill).SetValueFormat(OptionFormat.Seconds);
         OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanVent, true, false, OptionJackalCanSaveSidekick);
         OptionSidekickCanBeJackal = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SidekickCanBeJackal, true, false, OptionJackalCanSaveSidekick);
         
         OptionWhoopsCanRecruit = BooleanOptionItem.Create(RoleInfo, 22, OptionName.WhoopsCanRecruit, true, false, OptionJackalCanSaveSidekick);
-        OptionWhoopsTasksCount = IntegerOptionItem.Create(RoleInfo, 23, OptionName.WhoopsTasksCount, new(1, 99, 1), 3, false, OptionWhoopsCanRecruit);
+        OptionWhoopsTasksCount = IntegerOptionItem.Create(RoleInfo, 23, OptionName.WhoopsTasksCount, new(1, 99, 1), 3, false, OptionWhoopsCanRecruit).SetValueFormat(OptionFormat.Pieces);
         OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 24, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
     }
     public override void Add()

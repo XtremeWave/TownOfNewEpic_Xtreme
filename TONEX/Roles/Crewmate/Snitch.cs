@@ -90,7 +90,7 @@ public class Snitch : RoleBase
         OptionCanFindMadmate = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SnitchCanFindMadmate, false, false);
         OptionCanFindCharmed = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SnitchCanFindCharmed, false, false);
         OptionCanFindWolfmate = BooleanOptionItem.Create(RoleInfo, 17, OptionName.SnitchCanFindWolfmate, false, false);
-        OptionRemainingTasks = IntegerOptionItem.Create(RoleInfo, 13, OptionName.SnitchRemainingTaskFound, new(0, 10, 1), 1, false);
+        OptionRemainingTasks = IntegerOptionItem.Create(RoleInfo, 13, OptionName.SnitchRemainingTaskFound, new(0, 10, 1), 1, false).SetValueFormat(OptionFormat.Pieces);
         Options.OverrideTasksData.Create(RoleInfo, 20);
     }
     /// <summary>

@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
+public sealed class RewardOfficer : RoleBase, IKiller, IIndependent, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -36,7 +36,7 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
     {
         ForRewardOfficer = new();
     }
-
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.RewardOfficer;
     private static OptionItem OptionKillCooldown;
     static OptionItem RewardOfficerCanSeeRoles;
     enum OptionName

@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
+public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -34,7 +34,7 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
     public static OptionItem OptionCanKill;
     public static OptionItem OptionCanVent;
     public bool IsNK { get; private set; } = OptionCanKill.GetBool();
-
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Opportunist;
     private static void SetupOptionItem()
     {
         OptionCanKill = BooleanOptionItem.Create(RoleInfo, 15, GeneralOption.CanKill, true, false);
@@ -50,6 +50,6 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
 
     public bool CheckWin(ref CustomRoles winnerRole, ref CountTypes winnerCountType)
     {
-        return Player.IsAlive();
+        return Player.IsAlive() || CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.SchrodingerCat) && SchrodingerCat.TeamStatic == SchrodingerCat.TeamType.Opportunist;
     }
 }
