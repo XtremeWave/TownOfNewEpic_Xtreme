@@ -156,7 +156,7 @@ class IntroCutscenePatch
                 __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
                 break;
             case CustomRoleTypes.Neutral:
-                if (PlayerControl.LocalPlayer.GetRoleClass() is not IIndependent independent && !PlayerControl.LocalPlayer.IsNeutralEvil())
+                if (!PlayerControl.LocalPlayer.IsNeutralEvil())
                 {
                     __instance.TeamTitle.text = GetString("TeamNeutral");
                     __instance.TeamTitle.color  = new Color32(255, 171, 27, byte.MaxValue);
@@ -206,7 +206,7 @@ class IntroCutscenePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                 break;
             case CustomRoleTypes.Neutral:
-                if (PlayerControl.LocalPlayer.CanUseKillButton())
+                if (PlayerControl.LocalPlayer.IsNeutralKiller())
                 {
                     new LateTask(() =>
                     {

@@ -38,8 +38,8 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2023.10.24";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.7";
-    public const string PluginShowVersion = "1.1_20240301_Debug_4";
+    public const string PluginVersion = "1.0.8";
+    public const string PluginShowVersion = "1.1_20240301_Debug_5";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -272,7 +272,7 @@ public class Main : BasePlugin
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
                 {CustomRoles.Signal,"#F39C12" },
-                {CustomRoles.Mini,"#ffffff" },
+                {CustomRoles.Mini,"#C6A6FF" },
                 {CustomRoles.Libertarian,"#33CC99" },
                 {CustomRoles.Spiders, "#ff1919"},
                 {CustomRoles.Diseased,"#c0c0c0" },

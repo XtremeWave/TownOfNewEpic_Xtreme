@@ -8,7 +8,7 @@ using static TONEX.Translator;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Mario : RoleBase, IIndependent
+public sealed class Mario : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(

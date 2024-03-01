@@ -8,7 +8,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Sidekick : RoleBase, IKiller, IIndependent, ISchrodingerCatOwner
+public sealed class Sidekick : RoleBase, INeutralKiller, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -34,6 +34,7 @@ public sealed class Sidekick : RoleBase, IKiller, IIndependent, ISchrodingerCatO
         () => HasTask.False
     )
     { }
+    public bool IsNK { get; private set; } = true;
     public bool CanUseSabotageButton() => false;
     public bool CanUseKillButton() => Jackal.OptionSidekickCanKill.GetBool();
     public bool IsKiller { get; private set; } = Jackal.OptionSidekickCanKill.GetBool();

@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class RewardOfficer : RoleBase, IKiller, IIndependent, ISchrodingerCatOwner
+public sealed class RewardOfficer : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

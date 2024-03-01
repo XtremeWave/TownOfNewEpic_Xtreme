@@ -15,7 +15,7 @@ using System.Linq;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vagator : RoleBase, IKiller, IIndependent
+public sealed class Vagator : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -116,6 +116,7 @@ public sealed class Vagator : RoleBase, IKiller, IIndependent
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public float CalculateKillCooldown() => KillCooldown;
+    public bool IsNK { get; private set; } = true;
     private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
     {
         if (info.IsSuicide) return true;

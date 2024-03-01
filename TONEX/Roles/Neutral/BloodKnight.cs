@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class BloodKnight : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -44,7 +44,7 @@ public sealed class BloodKnight : RoleBase, IKiller, ISchrodingerCatOwner, IInde
     public static bool CanVent;
 
     private long ProtectStartTime;
-
+    public bool IsNK { get; private set; } = true;
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.BloodKnight;
 
     private static void SetupOptionItem()

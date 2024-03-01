@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Succubus : RoleBase, IKiller, IIndependent
+public sealed class Succubus : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -54,7 +54,7 @@ public sealed class Succubus : RoleBase, IKiller, IIndependent
     }
 
     private int CharmLimit;
-
+    public bool IsNK { get; private set; } = true;
     private static void SetupOptionItem()
     {
         OptionCharmCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.SuccubusCharmCooldown, new(2.5f, 180f, 2.5f), 30f, false)

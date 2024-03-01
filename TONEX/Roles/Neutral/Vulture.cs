@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vulture : RoleBase, IIndependent
+public sealed class Vulture : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
                SimpleRoleInfo.Create(

@@ -13,7 +13,7 @@ TypeAddon: "Add-ons"
 # 阵营 / Teams
 TeamImpostor: "Impostor"
 TeamNeutral: "Neutral"
-TeamIndependent: "Independent"
+TeamIndependent: "Neutral"
 TeamCrewmate: "Crewmate"
 ImpostorNum: "There are <color=#ff1919>{0}</color> Impotors Among Us"
 
@@ -24,7 +24,7 @@ GM: "GM"
 
 ## 游戏模式职业 / GameMode
 HotPotato: "Hot Potato"
-ColdPotato: "Hot Potato"
+ColdPotato: "Cold Potato"
 
 ## 原版职业 / Vanilla
 Crewmate: "Crewmate"

@@ -10,7 +10,7 @@ using static TONEX.Translator;
 using TONEX.Roles.Crewmate;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Martyr : RoleBase, IAdditionalWinner,IKiller
+public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -53,6 +53,7 @@ public sealed class Martyr : RoleBase, IAdditionalWinner,IKiller
     public static bool CanKill;
     public static bool HasProtect;
     public bool IsNK { get; private set; } = CanKill;
+    public bool IsNE { get; private set; } = CanKill;
     public static List<PlayerControl> player;
     private static void SetupOptionItem()
     {

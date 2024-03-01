@@ -11,7 +11,7 @@ using UnityEngine;
 namespace TONEX.Roles.Neutral;
 
 // マッドが属性化したらマッド状態時の特別扱いを削除する
-public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSeeable, IKillFlashSeeable, IIndependent
+public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSeeable, IKillFlashSeeable, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

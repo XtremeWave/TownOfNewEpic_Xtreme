@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
+public sealed class Follower : RoleBase, INeutralKiller, IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -72,6 +72,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         BetLimit = OptionMaxBetTimes.GetInt();
         BetTarget = byte.MaxValue;
     }
+    public bool IsNE { get; private set; } = false;
     public bool IsKiller => false;
     public float CalculateKillCooldown()
     {

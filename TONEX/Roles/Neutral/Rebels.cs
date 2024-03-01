@@ -7,7 +7,7 @@ using static TONEX.Translator;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Rebels : RoleBase, IOverrideWinner, IIndependent
+public sealed class Rebels : RoleBase, IOverrideWinner, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

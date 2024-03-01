@@ -12,7 +12,7 @@ using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
+public sealed class PlagueDoctor : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

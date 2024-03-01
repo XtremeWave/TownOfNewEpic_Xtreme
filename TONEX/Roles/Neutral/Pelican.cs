@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Pelican : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -51,7 +51,7 @@ public sealed class Pelican : RoleBase, IKiller, ISchrodingerCatOwner, IIndepend
     public static bool CanVent;
 
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Pelican;
-
+    public bool IsNK { get; private set; } = true;
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.PelicanKillCooldown, new(2.5f, 180f, 2.5f), 30f, false)

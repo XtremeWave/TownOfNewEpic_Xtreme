@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Demon : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -55,7 +55,7 @@ public sealed class Demon : RoleBase, IKiller, ISchrodingerCatOwner, IIndependen
     public static bool CanVent;
     private static Dictionary<byte, int> PlayerHP;
     private int DemonHP;
-
+    public bool IsNK { get; private set; } = true;
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Demon;
 
     private static void SetupOptionItem()

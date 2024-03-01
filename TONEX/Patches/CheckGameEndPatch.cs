@@ -102,14 +102,7 @@ class GameEndChecker
                         overrideWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
                     }
                 }
-                //移除胜利
-                foreach (var pc in Main.AllPlayerControls)
-                {
-                    if (pc.GetRoleClass() is IRemoveWinner removeWinner)
-                    {
-                        removeWinner.CheckWin(ref CustomWinnerHolder.WinnerTeam, ref CustomWinnerHolder.WinnerIds);
-                    }
-                }
+                
                 //Instigator 胜利时移除玩家ID了
                 if (CustomRoles.Instigator.IsExist() && Instigator.ForInstigator.Count != 0)
                 {

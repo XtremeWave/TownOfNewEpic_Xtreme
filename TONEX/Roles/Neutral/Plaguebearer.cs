@@ -11,7 +11,7 @@ using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Plaguebearer : RoleBase, IKiller, IIndependent
+public sealed class Plaguebearer : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

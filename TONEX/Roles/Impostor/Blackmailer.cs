@@ -16,7 +16,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
             CustomRoles.Blackmailer,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            94_1_1_0000,
+            75_1_1_0600,
             SetupOptionItem,
             "bl|勒索"
         );
@@ -35,6 +35,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
     static OptionItem OptionShapeshiftCooldown;
     public static List<byte> ForBlackmailer;
     public static Dictionary<byte, int> BlackmailerLimit;
+
     enum OptionName
     {
         BlackmailerCooldown,

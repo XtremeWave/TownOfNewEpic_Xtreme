@@ -6,7 +6,7 @@ using UnityEngine;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Workaholic : RoleBase, IIndependent
+public sealed class Workaholic : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

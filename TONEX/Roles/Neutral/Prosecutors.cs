@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
+public sealed class Prosecutors : RoleBase, INeutralKiller,IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -36,6 +36,7 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
         ForProsecutors = new();
     }
     public bool IsKiller { get; private set; } = false;
+    public bool IsNE { get; private set; } = false;
     private int ProsecutorsLimit;
     public static List<byte> ForProsecutors;
     public override void Add()

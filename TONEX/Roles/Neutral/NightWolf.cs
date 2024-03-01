@@ -7,7 +7,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class NightWolf : RoleBase, IKiller, IIndependent, ISchrodingerCatOwner
+public sealed class NightWolf : RoleBase, INeutralKiller, ISchrodingerCatOwner
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -37,6 +37,7 @@ ctop:true
     {
 
     }
+    public bool IsNK { get; private set; } = true;
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.NightWolf;
     static OptionItem OptionKillCooldown;
     static OptionItem OptionCooldown;

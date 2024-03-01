@@ -8,7 +8,7 @@ using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Executioner : RoleBase, IAdditionalWinner, IIndependent
+public sealed class Executioner : RoleBase, IAdditionalWinner, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

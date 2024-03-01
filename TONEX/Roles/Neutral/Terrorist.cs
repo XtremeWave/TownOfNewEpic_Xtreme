@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Terrorist : RoleBase, IIndependent
+public sealed class Terrorist : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

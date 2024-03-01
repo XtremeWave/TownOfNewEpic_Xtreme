@@ -11,7 +11,7 @@ using MS.Internal.Xml.XPath;
 
 namespace TONEX.Roles.Crewmate;
 
-public sealed class Instigator : RoleBase,IRemoveWinner
+public sealed class Instigator : RoleBase
 {
     public static readonly SimpleRoleInfo RoleInfo =
     SimpleRoleInfo.Create(

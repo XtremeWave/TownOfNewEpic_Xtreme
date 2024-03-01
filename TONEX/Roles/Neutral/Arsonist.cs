@@ -8,7 +8,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Arsonist : RoleBase, IKiller, IIndependent
+public sealed class Arsonist : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

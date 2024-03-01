@@ -3,12 +3,13 @@ using Hazel;
 using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Whoops : RoleBase
+public sealed class Whoops : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

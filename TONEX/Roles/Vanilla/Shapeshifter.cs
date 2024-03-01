@@ -5,7 +5,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Vanilla;
 
-public sealed class Shapeshifter : RoleBase, IImpostor, IKiller
+public sealed class Shapeshifter : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.CreateForVanilla(

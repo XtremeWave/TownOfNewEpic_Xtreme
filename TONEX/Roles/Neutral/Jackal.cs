@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Jackal : RoleBase, ISchrodingerCatOwner, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -60,6 +60,7 @@ public sealed class Jackal : RoleBase, IKiller, ISchrodingerCatOwner, IIndepende
     public static OptionItem OptionSidekickKillCoolDown;
     public static OptionItem OptionWhoopsCanRecruit;
     public static OptionItem OptionWhoopsTasksCount;
+    public bool IsNK { get; private set; } = true;
     enum OptionName
     {
         JackalCanWinBySabotageWhenNoImpAlive,

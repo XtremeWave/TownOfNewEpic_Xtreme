@@ -7,7 +7,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class God : RoleBase, IOverrideWinner, IIndependent
+public sealed class God : RoleBase, IOverrideWinner, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
