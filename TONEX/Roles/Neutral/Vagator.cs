@@ -12,6 +12,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Core.Interfaces;
 using System.Linq;
+using TONEX.Roles.Crewmate;
 
 namespace TONEX.Roles.Neutral;
 
@@ -40,7 +41,6 @@ public sealed class Vagator : RoleBase, INeutralKiller
     )
     {
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
-        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_Before);
         ElementPowerCount = 0;
         NormalKillTimesCount = 0;
         KillTimesTotalCount = 0;
@@ -50,12 +50,12 @@ public sealed class Vagator : RoleBase, INeutralKiller
     }
 
     #region 全局变量
-    public static int ElementPowerCount;
-    public static int NormalKillTimesCount;
-    public static int KillTimesTotalCount;
-    public static int SkillTimesTotalCount;
-    public static int ShieldsCount;
-    public static List<byte> Feeble;
+    public int ElementPowerCount;
+    public int NormalKillTimesCount;
+    public int KillTimesTotalCount;
+    public int SkillTimesTotalCount;
+    public int ShieldsCount;
+    public List<byte> Feeble;
     private float KillCooldown;
     public int UsePetCooldown;
     #endregion
@@ -117,7 +117,7 @@ public sealed class Vagator : RoleBase, INeutralKiller
     public bool CanUseImpostorVentButton() => false;
     public float CalculateKillCooldown() => KillCooldown;
     public bool IsNK { get; private set; } = true;
-    private static bool OnCheckMurderPlayerOthers_Before(MurderInfo info)
+    public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
@@ -182,23 +182,11 @@ public sealed class Vagator : RoleBase, INeutralKiller
             player.Notify(string.Format(GetString("PetSkillCanUse")), 2f);
         }
     }
-    public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
-    {
-        if (!seer.IsModClient()) return"";
-        seen ??= seer;
-        //seeおよびseenが自分である場合以外は関係なし
-        if (!Is(seer) || !Is(seen)) return "";
-
-        return $"{GetString("VagatorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagatorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagatorElementPowerCount")}:{ElementPowerCount}";
-
-    }
     public override string GetSuffix(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false)
     {
         seen ??= seer;
         //seeおよびseenが自分である場合以外は関係なし
-        if (seer != seen || seer.IsModClient()) return "";
         return $"\n<color=#e6adoa>{GetString("VagatorKillTimesTotalCount")}:{KillTimesTotalCount},{GetString("VagatorSkillTimesTotalCount")}:{SkillTimesTotalCount},{GetString("VagatorElementPowerCount")}:{ElementPowerCount}</color>";
-
     }
     public override void OnUsePet()
     {
@@ -323,9 +311,9 @@ public sealed class Vagator : RoleBase, INeutralKiller
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
 
-        if (Feeble.Contains(seen.PlayerId)) return "🔻";
+        if ((seer.GetRoleClass() as Vagator).Feeble.Contains(seen.PlayerId)) return "↓";
         else if (seer == seen)
-        return Utils.ColorString(RoleInfo.RoleColor, $"({ShieldsCount})");
+        return Utils.ColorString(RoleInfo.RoleColor, $"({(seer.GetRoleClass() as Vagator).ShieldsCount})");
         return "";
     }
     public override bool GetPetButtonText(out string text)

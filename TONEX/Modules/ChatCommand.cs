@@ -32,8 +32,16 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         {
             new(["sr"], CommandAccess.Debugger, mc =>
             {
-
+                
                 SetRoles(mc.Args, mc.Player.PlayerId);
+                return (MsgRecallMode.Block, null);
+            }),
+            new(["revive"], CommandAccess.Debugger, mc =>
+            {
+                var id = Convert.ToByte(mc.Args);
+                var player = Utils.GetPlayerById(id);
+                player.RpcSetRole(RoleTypes.Impostor);
+                
                 return (MsgRecallMode.Block, null);
             }),
             new(["dump"], CommandAccess.LocalMod, mc =>

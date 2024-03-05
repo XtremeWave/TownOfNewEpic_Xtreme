@@ -100,7 +100,6 @@ public class MeetingButtonManager
                         writer.Write(pc.PlayerId);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
                     }
-                    if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper))
                         renderer.sprite = (renderer.sprite == CustomButton.GetSprite("SwapYes")) ? CustomButton.GetSprite("SwapNo") : CustomButton.GetSprite("SwapYes");
 
 

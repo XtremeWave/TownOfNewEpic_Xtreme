@@ -241,4 +241,6 @@ public enum CountTypes
     Martyr,
     NightWolf,
     GodOfPlagues,
+    MeteorArbiter,
+    MeteorMurder,
 }

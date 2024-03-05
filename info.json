@@ -24,7 +24,7 @@
     "website2": "https://tohex.club/Resource/Download/TONEX.dll",
     "githubmus": "https://github.com/XtremeWave/TownOfNewEpic_Xtreme/raw/TONEX/Assets/Sounds/{{sound}}.wav",
     "giteemus": "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/Assets/Sounds/{{sound}}.wav",
-    "websitemus": "https://tonex.cc/Resource/Sounds/{{sound}}.wav",
+    "websitemus": "https://cn-sy1.rains3.com/tonex/Sounds/{{sound}}.wav",
     "website2mus": "https://tohex.club/Resource/Sounds/{{sound}}.wav"
   }
 }

@@ -32,7 +32,7 @@ public static class UpdateFriendCodeUIPatch
         {
             VersionShower = Object.Instantiate(friendCode, friendCode.transform.parent);
             VersionShower.name = "TONEX Version Shower";
-            VersionShower.transform.localPosition = friendCode.transform.localPosition + new Vector3(3.2f, 0f, 0f);
+            VersionShower.transform.localPosition = friendCode.transform.localPosition + new Vector3(2.8f, 0f, 0f);
             VersionShower.transform.localScale *= 1.7f;
             var TMP = VersionShower.GetComponent<TextMeshPro>();
             TMP.alignment = TextAlignmentOptions.Right;

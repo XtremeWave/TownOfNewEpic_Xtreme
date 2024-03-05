@@ -653,7 +653,7 @@ static class ExtendedPlayerControl
 
     public static bool IsNeutral(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral);
 
-    public static bool IsNeutralKiller(this PlayerControl player) => player.IsNeutral() && (player.GetCustomRole().GetRoleInfo().IsNK || ((player.GetRoleClass() as INeutralKiller)?.IsNK ?? false));
+    public static bool IsNeutralKiller(this PlayerControl player) => player.IsNeutral() && ((player.GetRoleClass() as INeutralKiller)?.IsNK ?? false);
     public static bool IsNeutralNonKiller(this PlayerControl player) => !player.IsNeutralKiller();
 
     public static bool IsNeutralEvil(this PlayerControl player) => player.IsNeutral() && ((player.GetRoleClass() as INeutral)?.IsNE ?? false);

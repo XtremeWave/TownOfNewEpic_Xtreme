@@ -167,6 +167,9 @@ public enum CustomRPC
     SetHunterList,
     //患者,
     ForDiseased,
+    //判官&戮者
+    SetMeteorArbiter,
+    SetMeteorMurder
 }
 public enum Sounds
 {

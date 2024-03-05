@@ -36,12 +36,14 @@ internal class PingTrackerUpdatePatch
         if (!GameStates.IsModHost) sb.Append($"\r\n").Append("<size=135%>" + Utils.ColorString(Color.red, GetString("Warning.NoModHost")) + "</size>");
         else
         {
+            sb.Append("<size=110%>");
             if (Options.NoGameEnd.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("NoGameEnd")));
             if (Options.AllowConsole.GetBool()) sb.Append($"\r\n").Append(Utils.ColorString(Color.red, GetString("AllowConsole")));
             if (DebugModeManager.IsDebugMode) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("DebugMode")));
             if (Options.LowLoadMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.green, GetString("LowLoadMode")));
             if (Options.EnableDirectorMode.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(new Color32(214, 157, 133, byte.MaxValue), GetString("DirectorMode")));
             if (Options.UsePets.GetBool()) sb.Append("\r\n").Append(Utils.ColorString(Color.cyan, GetString("PetMode")));
+            sb.Append($"\r\n").Append("</size>");
         }
 
         var offset_x = 1.2f; //右端からのオフセット
@@ -64,7 +66,8 @@ internal class VersionShowerStartPatch
 #if DEBUG
         Main.CredentialsText += $"\r\n<color=#cdfffd>{ThisAssembly.Git.Branch}</color> - {ThisAssembly.Git.Commit}";
 #endif
-
+        
+        Main.CredentialsText += $"\r\n<size=80%><color=#FFC0CB>Town Of Next</color><color=#D77DFF> By </color><color=#FFC0CB>KARPED1EM</color>\r\n<color=#cdfffd>Town Of New Epic_Xtreme</color><color=#ffff00> By </color><color=#cdfffd>XtremeWave</color></size>";
 #if RELEASE
         string additionalCredentials = GetString("TextBelowVersionText");
         if (additionalCredentials != null && additionalCredentials != "*" && additionalCredentials != "")
