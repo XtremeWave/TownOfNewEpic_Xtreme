@@ -116,7 +116,6 @@ public static class ConfirmEjections
 
         if (Options.ShowImpRemainOnEject.GetBool())
         {
-            text += "\n";
             string comma = neutralNum > 0 ? "，" : "";
             if (impNum == 0) text += GetString("NoImpRemain") + comma;
             else text += string.Format(GetString("ImpRemain"), impNum) + comma;

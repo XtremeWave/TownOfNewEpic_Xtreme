@@ -89,7 +89,7 @@ public class MusicDownloader
                     }
                     return;
                 }
-                Logger.Error($"Md5 Currect in {url}", "DownloadSound");
+                Logger.Info($"Md5 Currect in {url}", "DownloadSound");
             }
             else
             {
@@ -177,7 +177,7 @@ public class MusicDownloader
         {"ElementSkill3","BDF00B0AC80B4E6510619F2C9A5E2062"},
         {"FlashBang","E4C9912E139F1DFFDFD95F0081472EBA"},
         {"GongXiFaCai","7DED159AD441CA72DB98A442B037A3D7"},
-        {"GongXiFaCaiLiuDeHua","DB200D93E613020D62645F4841DD55BD"},
+        
         {"Gunfire","4A44EAF6B45B96B63BBC12A946DB517B"},
         {"Gunload","27441FBFC8CC5A5F2945A8CE344A52B9"},
         {"Join1","0DBC4FEDCD5C8D10A57EBB8E5C31189D"},
@@ -187,12 +187,25 @@ public class MusicDownloader
         {"MarioCoin","2698FB768F1E1045C1231B63C2639766"},
         {"MarioJump","A485BCFEE7311EF3A7651F4B20E381CB"},
         {"Onichian","13B71F389E21C2AF8E35996201843642"},
-        {"RejoiceThisSEASONRespectThisWORLD","7AB4778744242E4CFA0468568308EA9B"},
+        
         {"Shapeshifter","B7119CC4E0E5B108B8735D734769AA5C"},
         {"Shield","9EA3B450C5B53A4B952CB8418DF84539"},
-        {"SpringRejoicesinParallelUniverses","D92528104A82DBBFADB4FF251929BA5E"},
-        {"StarFallsWithHeavenCrumbles_V3","96CAD12AC0E0FF82B16FA0D1C0EF7C3C"},
+        
+        
         {"Teleport","8D3DA143C59CD7C4060129C46BEB7A39"},
         {"TheWorld","395010A373FAE0EC704BB4FE8FC5A57A"},
+        //“Ù¿÷
+        {"GongXiFaCaiLiuDeHua","DB200D93E613020D62645F4841DD55BD"},
+        {"RejoiceThisSEASONRespectThisWORLD","7AB4778744242E4CFA0468568308EA9B"},
+        {"SpringRejoicesinParallelUniverses","D92528104A82DBBFADB4FF251929BA5E"},
+        {"StarFallsWithDomeCrumbles_V4","EDCB0187C269BEF42A5E6EC25CFEADF7"},
+        {"TheDomeofTruth","183804914E3310B9F92B47392F503A9F"},
+        {"HopeStillExists_V2","8D5BA9AC283E156AB2C930F7B63A4A36"},
+        {"HeartGuidedbyLight","F1DED08A59936B8E1DB95067A69B006E"},
+        {"Thesorrowofpartingacrosslifetimes","D5071AF2BFE92465EACEB318E6FC3390"},
+        {"GuardianandDream","1AD45F97F70F05E19BCDF77C489932A6"},
+        {"AFamiliarPromise","A3672341F586B4D81EFBA6D4278CFEAE"},
+        {"DeterminationWithJustice","1AD45F97F70F05E19BCDF77C489932A6"},
+
     };
 }

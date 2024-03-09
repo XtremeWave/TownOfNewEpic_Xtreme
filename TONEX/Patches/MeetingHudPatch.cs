@@ -66,8 +66,7 @@ public static class MeetingHudPatch
             }
 
             MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
-            foreach (var role in CustomRoleManager.AllActiveRoles.Values) 
-                role.AfterVoter(voted, voter);
+
            return true;
         }
     }

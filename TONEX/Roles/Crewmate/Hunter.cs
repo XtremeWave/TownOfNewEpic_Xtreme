@@ -9,6 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using System.Linq;
 using UnityEngine.Video;
 using TONEX.Roles.Neutral;
+using UnityEngine.UIElements.UIR;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Hunter : RoleBase, IKiller
@@ -33,8 +34,8 @@ public sealed class Hunter : RoleBase, IKiller
         () => HasTask.False
     )
     {
+        HunterLimit = HunterLimits.GetInt();
         ForHunter = new();
-        CustomRoleManager.OnCheckMurderPlayerOthers_After.Add(OnCheckMurderPlayerOthers_After);
     }
 
     static OptionItem HunterCooldown;
@@ -58,11 +59,6 @@ public sealed class Hunter : RoleBase, IKiller
         AfterMeetClearTarget = BooleanOptionItem.Create(RoleInfo, 12, OptionName.AfterMeetClearTarget, true, false);
         TargetMax = IntegerOptionItem.Create(RoleInfo, 13, OptionName.TargetMaxCount, new(1, 180, 1), 1, false, AfterMeetClearTarget)
             .SetValueFormat(OptionFormat.Times);
-    }
-    public override void Add()
-    {
-        HunterLimit = HunterLimits.GetInt();
-        ForHunter = new();
     }
     private void SendRPC()
     {
@@ -99,14 +95,11 @@ public sealed class Hunter : RoleBase, IKiller
         var (killer, target) = info.AttemptTuple;
         if (HunterLimit >= 1)
         {
-            HunterLimit -= 1;
+            HunterLimit --;
             SendRPC();
             if (ForHunter.Count >= TargetMax.GetInt())
             {
                 Player.Notify(GetString("TargetMax"));
-                ForHunter.Add(target.PlayerId);
-                SendRPC_SyncList();
-                killer.SetKillCooldownV2(target: target);
                 return false;
             }
             ForHunter.Add(target.PlayerId);
@@ -116,19 +109,15 @@ public sealed class Hunter : RoleBase, IKiller
         info.CanKill = false;
         return false;
     }
-    private static bool OnCheckMurderPlayerOthers_After(MurderInfo info)
+    public override bool OnCheckMurderAsTarget(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if (!info.IsSuicide) return true;
-        if (target.Is(CustomRoles.Hunter))
+        foreach (var pc in ForHunter)
         {
-           foreach (var pc in ForHunter)
-            {
-                var player = Utils.GetPlayerById(pc);
-                if (player.IsAlive() || player == null || Pelican.IsEaten(pc)) continue;
-                player.RpcMurderPlayerV2(player);
-                player.SetRealKiller(target);
-            }
+            var player = Utils.GetPlayerById(pc);
+            if (!player.IsAlive() || player == null || Pelican.IsEaten(pc)) continue;
+            player.RpcMurderPlayerV2(player);
+            player.SetRealKiller(target);
         }
         return true;
     }

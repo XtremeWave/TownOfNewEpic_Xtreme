@@ -54,8 +54,7 @@ public sealed class Whoops : RoleBase, INeutral
     }
     public override bool CheckVoteAsVoter(PlayerControl votedFor)
     {
-        if (votedFor != null && (votedFor.GetCountTypes() == CountTypes.Jackal || !CanRecruit)) return true;
-        ModifyVote(Player.PlayerId, votedFor.PlayerId, true);
+        if (votedFor == null || (votedFor.GetCountTypes() == CountTypes.Jackal || !CanRecruit)) return true;
         if (votedFor.CanUseKillButton())
             votedFor.RpcSetCustomRole(CustomRoles.Sidekick);
         else
@@ -63,17 +62,4 @@ public sealed class Whoops : RoleBase, INeutral
         Utils.SendMessage(Translator.GetString("WhoopsRecruitTrue"), votedFor.PlayerId);
         return false;
     }
-    public override (byte? votedForId, int? numVotes, bool doVote) ModifyVote(byte voterId, byte sourceVotedForId, bool isIntentional)
-    {
-        var (votedForId, numVotes, doVote) = base.ModifyVote(voterId, sourceVotedForId, isIntentional);
-        var baseVote = (votedForId, numVotes, doVote);
-        if (!isIntentional || voterId != Player.PlayerId || Utils.GetPlayerById(sourceVotedForId).GetCountTypes() == CountTypes.Jackal|| sourceVotedForId >= 253 || !Player.IsAlive())
-        {
-            return baseVote;
-        }
-        MeetingHudPatch.TryAddAfterMeetingDeathPlayers(CustomDeathReason.Suicide, Player.PlayerId);
-        MeetingVoteManager.Instance.ClearAndExile(Player.PlayerId, sourceVotedForId);
-        return (votedForId, numVotes, false);
-    }
-
 }

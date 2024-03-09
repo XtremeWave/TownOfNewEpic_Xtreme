@@ -19,6 +19,8 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
+    private static ClientOptionItem EnableMapBackGround;
+    private static ClientOptionItem EnableRoleBackGround;
     private static ClientActionItem UnloadMod;
     private static ClientActionItem DumpLog;
     private static ClientOptionItem VersionCheat;
@@ -92,6 +94,14 @@ public static class OptionsMenuBehaviourStartPatch
         {
             EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
         }
+        if (EnableRoleBackGround == null || EnableRoleBackGround.ToggleButton == null)
+        {
+            EnableRoleBackGround = ClientOptionItem.Create("EnableRoleBackGround", Main.EnableRoleBackGround, __instance);
+        }
+        if (EnableMapBackGround == null || EnableMapBackGround.ToggleButton == null)
+        {
+            EnableMapBackGround = ClientOptionItem.Create("EnableMapBackGround", Main.EnableMapBackGround, __instance);
+        }
         if (UnloadMod == null || UnloadMod.ToggleButton == null)
         {
             UnloadMod = ClientActionItem.Create("UnloadMod", ModUnloaderScreen.Show, __instance);
@@ -121,15 +131,10 @@ public static class OptionsMenuBehaviourStartPatch
         {
             Sound = MoreActionItem.Create("SoundOption", () =>
             {
-                if (SoundPanel.CustomBackground == null)
-                    Logger.Info("1_1", "test");
-                if (SoundPanel.CustomBackground.gameObject == null)
-                    Logger.Info("1_2", "test");
                 try
                 {
                     SoundPanel.CustomBackground.gameObject.SetActive(true);
                 }
-
                 catch (System.Exception ex)
                 {
                     Logger.Exception(ex, "Sounds");

@@ -144,31 +144,34 @@ class IntroCutscenePatch
         __instance.ImpostorText.gameObject.SetActive(false);
         PlayerControl.LocalPlayer.Data.Role.IntroSound = null;
         PlayerControl.LocalPlayer.Data.Role.UseSound = GetIntroSound(RoleTypes.Impostor);
-        switch (role.GetCustomRoleTypes())
+        if (Main.EnableRoleBackGround.Value)
         {
-            case CustomRoleTypes.Impostor:
-                __instance.TeamTitle.text = GetString("TeamImpostor");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
+            switch (role.GetCustomRoleTypes())
+            {
+                case CustomRoleTypes.Impostor:
+                    __instance.TeamTitle.text = GetString("TeamImpostor");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
                     break;
-            case CustomRoleTypes.Crewmate:
-                __instance.TeamTitle.text = $"{GetString("TeamCrewmate")}\n{string.Format(GetString("ImpostorNum"),Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors))}";
-                __instance.TeamTitle.color = new Color32(140, 255, 255, byte.MaxValue);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
-                break;
-            case CustomRoleTypes.Neutral:
-                if (!PlayerControl.LocalPlayer.IsNeutralEvil())
-                {
-                    __instance.TeamTitle.text = GetString("TeamNeutral");
-                    __instance.TeamTitle.color  = new Color32(255, 171, 27, byte.MaxValue);
+                case CustomRoleTypes.Crewmate:
+                    __instance.TeamTitle.text = $"{GetString("TeamCrewmate")}\n{string.Format(GetString("ImpostorNum"), Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors))}";
+                    __instance.TeamTitle.color = new Color32(140, 255, 255, byte.MaxValue);
                     __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
-                }
-                else
-                {
-                    __instance.TeamTitle.text = GetString("TeamIndependent");
-                    __instance.TeamTitle.color = new Color32(187, 187, 187, byte.MaxValue);
-                    __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
-                }
-                break;
+                    break;
+                case CustomRoleTypes.Neutral:
+                    if (!PlayerControl.LocalPlayer.IsNeutralEvil())
+                    {
+                        __instance.TeamTitle.text = GetString("TeamNeutral");
+                        __instance.TeamTitle.color = new Color32(255, 171, 27, byte.MaxValue);
+                        __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                    }
+                    else
+                    {
+                        __instance.TeamTitle.text = GetString("TeamIndependent");
+                        __instance.TeamTitle.color = new Color32(187, 187, 187, byte.MaxValue);
+                        __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                    }
+                    break;
+            }
         }
         if (PlayerControl.LocalPlayer.GetRoleClass()?.GetGameStartSound(out var newsound) ?? false)
         {

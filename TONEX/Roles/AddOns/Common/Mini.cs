@@ -73,11 +73,12 @@ public static class Mini
         if (!AmongUsClient.Instance.AmHost) return;
         if (player.Is(CustomRoles.Mini))
         {
-            if (!player.IsAlive() && Age[player.PlayerId] < 18)
+            if (!player.IsAlive() && Age[player.PlayerId] < 18 && player.IsCrew())
             {
+                
                 CustomSoundsManager.RPCPlayCustomSoundAll("Congrats");
                 CustomWinnerHolder.ResetAndSetWinner(CustomWinner.Mini); 
-                foreach (var pid in playerIdList)
+                foreach (var pid in playerIdList.Where(p=>Utils.GetPlayerById(p).IsCrew()))
                 CustomWinnerHolder.WinnerIds.Add(pid);
             }
             if (!GameStates.IsInTask && OptionNotGrowInMeeting.GetBool()) return;
@@ -114,6 +115,6 @@ public static class Mini
     public static string GetProgressText(byte playerId, bool comms = false)
     {
         if (!playerIdList.Contains(playerId)) return "";
-        return Age[playerId] < 18 ? Utils.ColorString(Color.yellow, $"({Age})") : "";
+        return Age[playerId] < 18 ? Utils.ColorString(Color.yellow, $"({Age[playerId]})") : "";
     }
 }

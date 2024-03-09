@@ -18,8 +18,6 @@ public static class SoundPanel
     public static GameObject Slider { get; private set; }
     public static Dictionary<string, GameObject> Items { get; private set; }
 
-    //public static int PlayMode = 0;
-    //public static int OptPlayMode = 0;
     private static int numItems = 0;
     public static void Hide()
     {
@@ -107,13 +105,13 @@ public static class SoundPanel
             {
                 Slider = Object.Instantiate(sliderTemplate, CustomBackground.transform);
                 Slider.name = "Name Tags Slider";
-                Slider.transform.localPosition = new Vector3(0f, 0.5f, -12f);
+                Slider.transform.localPosition = new Vector3(0f, 0.5f, -11f);
                 Slider.transform.localScale = new Vector3(1f, 1f, 1f);
                 Slider.GetComponent<SpriteRenderer>().size = new(5f, 4f);
                 var scroller = Slider.GetComponent<Scroller>();
                 scroller.ScrollWheelSpeed = 0.3f;
                 var mask = Slider.transform.FindChild("Mask");
-                mask.transform.localScale = new Vector3(4.9f, 3.92f, 0f);
+                mask.transform.localScale = new Vector3(4.9f, 3.92f, 1f);
             }
             Logger.Info("e", "test");
         }
@@ -138,8 +136,7 @@ public static class SoundPanel
 
         foreach (var soundp in AllMusic)
         {
-            try
-            {
+            
                 var sound = soundp.Key;
                 numItems++;
                 var button = Object.Instantiate(buttonPrefab, scroller.Inner);
@@ -199,11 +196,7 @@ public static class SoundPanel
                     preview = GetString("CanPlay");
                 previewText.text = preview;
                 Items.Add(sound, button);
-            }
-            catch (Exception ex)
-            {
-                Logger.Exception(ex, "SoundPanel");
-            }
+            
         }
         scroller.SetYBoundsMin(0f);
         scroller.SetYBoundsMax(0.6f * numItems);

@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
+using MS.Internal.Xml.XPath;
 using System.Linq;
 using TONEX.Attributes;
 using TONEX.Roles.AddOns.Common;
@@ -144,6 +145,8 @@ public class PlayerGameOptionsSender : GameOptionsSender
             opt.SetVision(false);
             float KILL = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown;
             opt.SetFloat(FloatOptionNames.KillCooldown, KILL * Diseased.OptionVistion.GetFloat());
+            player.ResetKillCooldown();
+            player.SyncSettings();
             Utils.NotifyRoles(player);
         }
 

@@ -36,10 +36,10 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2023.10.24";
+    public const string LowestSupportedVersion = "2024.3.5";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.8";
-    public const string PluginShowVersion = "1.1_20240301_Debug_5";
+    public const string PluginVersion = "1.0.11";
+    public const string PluginShowVersion = "1.1_20240310_Debug_8";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -74,6 +74,8 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
+    public static ConfigEntry<bool> EnableMapBackGround { get; private set; }
+    public static ConfigEntry<bool> EnableRoleBackGround { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static ConfigEntry<bool> GodMode { get; private set; }
 
@@ -119,6 +121,7 @@ public class Main : BasePlugin
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsTOHEInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
+    public static bool IsTOHEXInitialRelease = DateTime.Now.Month == 5 && DateTime.Now.Day is 21;
     public static bool IsTONEXInitialRelease = DateTime.Now.Month == 2 && DateTime.Now.Day is 9;
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
     public const float RoleTextSize = 2f;
@@ -167,6 +170,8 @@ public class Main : BasePlugin
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
+        EnableMapBackGround = Config.Bind("Client Options", "EnableMapBackGround", true);
+        EnableRoleBackGround = Config.Bind("Client Options", "EnableRoleBackGround", true);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
 
@@ -272,7 +277,7 @@ public class Main : BasePlugin
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
                 {CustomRoles.Signal,"#F39C12" },
-                {CustomRoles.Mini,"#C6A6FF" },
+                {CustomRoles.Mini,"#ffebd7" },
                 {CustomRoles.Libertarian,"#33CC99" },
                 {CustomRoles.Spiders, "#ff1919"},
                 {CustomRoles.Diseased,"#c0c0c0" },
@@ -327,7 +332,7 @@ public enum CustomDeathReason
     Kill,
     Vote,
 
-    //cTOH
+    // TOH
     Suicide,
     Spell,
     FollowingSuicide,
@@ -353,9 +358,10 @@ public enum CustomDeathReason
     Dismembered,
     LossOfHead,
     Trialed,
-    Merger,
+
 
     // TONEX
+    Merger,
 
     etc = -1
 }

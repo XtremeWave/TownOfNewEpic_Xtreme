@@ -62,7 +62,7 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
             nameText = Utils.ColorString(RoleInfo.RoleColor, seen.PlayerId.ToString()) + " " + nameText;
         }
     }
-    
+    public string ButtonName { get; private set; } = "SwapNo";
     public bool ShouldShowButton() => Player.IsAlive();
     public bool ShouldShowButtonFor(PlayerControl target) => !SwapperCanSelf.GetBool() && target != Player || target.IsAlive() && SwapperCanSelf.GetBool();
     public override bool GetGameStartSound(out string sound)
@@ -80,22 +80,15 @@ public sealed class NiceSwapper : RoleBase, IMeetingButton
     {
         Swap(Player,target, out var reason);
         if (reason != null)
-            Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + Translator.GetString(reason));
+            Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" +(reason));
         return false;
     }
     public IReadOnlyDictionary<byte, VoteData> AllVotes => allVotes;
     private Dictionary<byte, VoteData> allVotes = new(15);
-    public override void AfterVoter(PlayerControl votedFor, PlayerControl voter)
-    {
-        if (votedFor == null || !Player.IsAlive() || SwapList.Count != 2) return;
-
-        if (votedFor.PlayerId == SwapList[0])Instance?.SetVote(voter.PlayerId, SwapList[1]);
-
-        if (votedFor.PlayerId == SwapList[1])Instance?.SetVote(voter.PlayerId, SwapList[0]);
-    }
     public override void AfterMeetingTasks()
     {
-    
+        if (SwapList.Count == 2)
+            SwapLimit--;
         SwapList.Clear();
         SendRPC(true);
     }

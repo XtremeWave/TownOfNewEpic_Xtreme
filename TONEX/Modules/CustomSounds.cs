@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Media;
+using static TONEX.AudioManager;
 
 
 namespace TONEX.Modules;
@@ -127,17 +128,6 @@ public static class CustomSoundsManager
       //  if (@$"{path}".Contains(".mp3"))
         //    PlaySoundInMedia(path);
         PlaySound(@$"{path}", 0, 9);
-    }
-    public static void PlaySoundInMedia(string audioFilePath)
-    {
-        SoundPlayer player = new(audioFilePath);
-
-        while (true)
-        {
-            player.PlaySync(); 
-            player.Stream.Position = 0; 
-        }
-
     }
 
 }

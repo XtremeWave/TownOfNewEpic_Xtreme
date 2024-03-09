@@ -106,7 +106,11 @@ static class CustomRolesHelper
     CustomRoles.MeteorArbiter or//TODO 陨星判官,1.2限定
     CustomRoles.MeteorMurder or//TODO 陨星戮者,1.2限定
     CustomRoles.SharpShooter or//TODO 神射手
+    CustomRoles.Revolutionist or//TODO 革命家
+     CustomRoles.Sunnyboy or//TODO 革命家
+      CustomRoles.Non_Villain or//不演反派
     CustomRoles.InjusticeSpirit//TODO 冤魂
+    
             )
             return true;
         return false;

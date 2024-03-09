@@ -38,7 +38,7 @@ public static class Signal
     }
     public static void AfterMeet()
     {
-        foreach (var pc in Main.AllAlivePlayerControls)
+        foreach (var pc in Main.AllPlayerControls)
         {
             if (pc.Is(CustomRoles.Signal))
             {

@@ -3,7 +3,7 @@
 namespace TONEX;
 
 // 来源：https://github.com/ykundesu/SuperNewRoles/blob/master/SuperNewRoles/Patches/HorseModePatch.cs
-[HarmonyPatch(typeof(Constants), nameof(Constants.ShouldHorseAround))]
+[HarmonyPatch(typeof(AprilFoolsMode), nameof(AprilFoolsMode.ShouldHorseAround))]
 public static class HorseModePatch
 {
     public static bool Prefix(ref bool __result)

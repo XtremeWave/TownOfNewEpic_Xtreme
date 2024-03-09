@@ -35,8 +35,8 @@ public abstract class RoleDescription
                 RoleInfo.RoleName = CustomRoles.Lawyer;
             else if (rn is CustomRoles.MimicKiller or CustomRoles.MimicAssistant)
                 RoleInfo.RoleName = CustomRoles.Mimic;
-            else if (rn is CustomRoles.Plaguebearer)
-                RoleInfo.RoleName = CustomRoles.GodOfPlagues;
+            else if (rn is CustomRoles.GodOfPlagues)
+                RoleInfo.RoleName = CustomRoles.Plaguebearer;
             else if (rn is CustomRoles.Sidekick or CustomRoles.Whoops)
                 RoleInfo.RoleName = CustomRoles.Jackal;
             else if (rn is CustomRoles.Deputy)

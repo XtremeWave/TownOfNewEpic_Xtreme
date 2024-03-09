@@ -104,6 +104,15 @@ public sealed class Deputy : RoleBase, IKiller
         }
 
     }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        if (!CustomRoles.Sheriff.IsExist() && Sheriff.DeputyCanBecomeSheriff.GetBool())
+        {
+            Player.Notify(GetString("BeSheriff"));
+            Player.RpcProtectedMurderPlayer();
+            Player.RpcSetCustomRole(CustomRoles.Sheriff);
+        }
+    }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(CanUseKillButton() ? RoleInfo.RoleColor : Color.gray, $"({DeputyLimit})");
     public override void OnStartMeeting()
     {

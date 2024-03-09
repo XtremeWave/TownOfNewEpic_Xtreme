@@ -871,6 +871,7 @@ public static class Utils
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
     {
+        
         if (AmongUsClient.Instance.IsGameStarted)
         {
             SendMessage(GetString("CantUse.lastresult"), PlayerId);
@@ -1175,7 +1176,7 @@ public static class Utils
                     }
                     if (target.Is(CustomRoles.Mini) && seer != target)
                     {
-                        TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>({Mini.Age})</color>");
+                        TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>({Mini.Age[target.PlayerId]})</color>");
                     }
 
                         //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
@@ -1326,6 +1327,7 @@ public static class Utils
         };
         Process.Start(startInfo);
     }
+    private static string LastResultForChat;
     public static string SummaryTexts(byte id, bool isForChat)
     {
         /*// 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
@@ -1363,22 +1365,25 @@ public static class Utils
         // チャットならposタグを使わない(文字数削減)
         if (isForChat)
         {
-            var pc = GetPlayerById(id);
-            builder.Append(Main.AllPlayerNames[id]);
-            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-            builder.Append(' ').Append(GetVitalText(id));
-            string oldRoleName = GetOldRoleName(pc);
-            var newRoleName = GetTrueRoleName(id, false);
-            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
-            {
-                builder.AppendFormat("<pos={0}em>");
-                builder.Append(oldRoleName + pc.GetTrueRoleName());
-                return builder.ToString();
-            }
-            builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+            return LastResultForChat;
         }
         else
         {
+            builder.Append(Main.AllPlayerNames[id]);
+            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
+            builder.Append(' ').Append(GetVitalText(id));
+            string oldRoleName = GetOldRoleName(id);
+            var newRoleName = GetTrueRoleName(id, false);
+            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
+            {
+                builder.AppendFormat("<pos={0}em>", 0); // 修改此处，设置 pos 值
+                builder.Append(oldRoleName + newRoleName);
+            }
+            else
+            {
+                builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+            }
+            LastResultForChat = builder.ToString();
             // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
             // 1em ≒ 半角2文字
             // 空白は0.5emとする
@@ -1394,13 +1399,11 @@ public static class Utils
             // "Lover's Suicide " = 8em
             // "回線切断 " = 4.5em
             pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
-            var pc = GetPlayerById(id);
-            string oldRoleName = GetOldRoleName(pc);
-            var newRoleName = GetTrueRoleName(id, false);
-            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
+            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
             {
                 builder.AppendFormat("<pos={0}em>", pos);
-                builder.Append(oldRoleName + pc.GetTrueRoleName());
+                builder.Append(oldRoleName);
+                builder.Append(GetTrueRoleName(id, false));
                 builder.Append("</pos>");
                 return builder.ToString();
             }
@@ -1411,12 +1414,12 @@ public static class Utils
         }
         return builder.ToString();
     }
-    private static string GetOldRoleName(PlayerControl pc)
+    private static string GetOldRoleName(byte id)
     {
         foreach (var kvp in Main.SetRolesList)
         {
             StringBuilder sb = new();
-            if (kvp.Key == pc.PlayerId && kvp.Value.Count > 0)
+            if (kvp.Key == id && kvp.Value.Count > 0)
                 foreach (var role in kvp.Value)
                 {
                     if (role == "" || role == null) continue;

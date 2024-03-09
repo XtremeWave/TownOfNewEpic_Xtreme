@@ -76,17 +76,25 @@ public class MeetingButtonManager
         foreach (var pva in __instance.playerStates)
         {
             var pc = Utils.GetPlayerById(pva.TargetPlayerId);
+            var swapnicelist = (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper)?.SwapList;
+            var swapevillist = (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper)?.SwapList;
             if (pc == null || !meetingButton.ShouldShowButtonFor(pc)) continue;
             GameObject template = pva.Buttons.transform.Find("CancelButton").gameObject;
             GameObject targetBox = UnityEngine.Object.Instantiate(template, pva.transform);
             targetBox.name = "Custom Meeting Button";
             targetBox.transform.localPosition = new Vector3(-0.95f, 0.03f, -1.31f);
             SpriteRenderer renderer = targetBox.GetComponent<SpriteRenderer>();
-            if (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper))
-            renderer.sprite = (PlayerControl.LocalPlayer.Is(CustomRoles.NiceSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as NiceSwapper).SwapList.Contains(pc.PlayerId)
-               || PlayerControl.LocalPlayer.Is(CustomRoles.EvilSwapper) && (PlayerControl.LocalPlayer.GetRoleClass() as EvilSwapper).SwapList.Contains(pc.PlayerId)) ? CustomButton.GetSprite("SwapYes") : CustomButton.GetSprite("SwapNo");
-            else
             renderer.sprite =  CustomButton.GetSprite(meetingButton.ButtonName);
+            if (swapnicelist != null)
+            {
+                if(swapnicelist.Contains(pc.PlayerId))
+                    renderer.sprite = CustomButton.GetSprite("SwapYes");
+            }
+            else if (swapevillist != null)
+            {
+                if (swapevillist.Contains(pc.PlayerId))
+                    renderer.sprite = CustomButton.GetSprite("SwapYes");
+            }
             PassiveButton button = targetBox.GetComponent<PassiveButton>();
             button.OnClick = new();
             button.OnClick.AddListener((Action)(() =>
@@ -99,11 +107,12 @@ public class MeetingButtonManager
                         MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.OnClickMeetingButton, SendOption.Reliable, -1);
                         writer.Write(pc.PlayerId);
                         AmongUsClient.Instance.FinishRpcImmediately(writer);
+                        
                     }
-                        renderer.sprite = (renderer.sprite == CustomButton.GetSprite("SwapYes")) ? CustomButton.GetSprite("SwapNo") : CustomButton.GetSprite("SwapYes");
-
-
+                    
                 }
+                ClearMeetingButton(__instance, true);
+                CreateMeetingButton(__instance, meetingButton);
             }));
         }
         ButtonCreated = true;

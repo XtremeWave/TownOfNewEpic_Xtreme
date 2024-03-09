@@ -27,11 +27,30 @@ public static class AudioManager
 
     private static List<string> TONEXOfficialMusicList = new()
     {
-        "SpringRejoicesinParallelUniverses",
         "GongXiFaCaiLiuDeHua",
-        "StarFallsWithHeavenCrumbles_V3",
         "RejoiceThisSEASONRespectThisWORLD",
+        "SpringRejoicesinParallelUniverses",
+        "StarFallsWithDomeCrumbles_V4",
+        "TheDomeofTruth",
+        "HopeStillExists_V2",
+        "HeartGuidedbyLight",
+        "Thesorrowofpartingacrosslifetimes",
+        "GuardianandDream",
+        "AFamiliarPromise",
+        "DeterminationWithJustice",
     };
+    public static List<string> NotUp = new()
+    {
+        "RejoiceThisSEASONRespectThisWORLD",
+        "StarFallsWithDomeCrumbles_V4",
+        "TheDomeofTruth",
+        "HopeStillExists_V2",
+        "HeartGuidedbyLight",
+        "GuardianandDream",
+        "AFamiliarPromise",
+        "DeterminationWithJustice",
+    };
+
     public static Dictionary<string, bool> TONEXOfficialMusic = new();
     public static Dictionary<string, bool> TONEXSounds = new();
     private static List<string> TONEXSoundList = new()

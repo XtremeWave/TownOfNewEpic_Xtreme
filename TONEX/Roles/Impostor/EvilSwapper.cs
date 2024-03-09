@@ -28,7 +28,6 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
         player
     )
     {
-        CustomRoleManager.MarkOthers.Add(GetMarkOthers);
         SwapList = new();
     }
 
@@ -76,20 +75,14 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     {
         Swap(Player, target, out var reason);
         if (reason != null)
-        Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + Translator.GetString(reason));
+        Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + reason);
         return false;
     }
-    public override void AfterVoter(PlayerControl votedFor, PlayerControl voter)
-    {
-        if (votedFor == null || !Player.IsAlive() || SwapList.Count != 2) return;
-
-        if (votedFor.PlayerId == SwapList[0]) Instance?.SetVote(voter.PlayerId, SwapList[1]);
-
-        if (votedFor.PlayerId == SwapList[1]) Instance?.SetVote(voter.PlayerId, SwapList[0]);
-    }
+    public string ButtonName { get; private set; } = "SwapNo";
     public override void AfterMeetingTasks()
     {
-
+        if (SwapList.Count == 2)
+            SwapLimit--;
         SwapList.Clear();
         SendRPC(true);
     }
@@ -107,11 +100,5 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
         var cle = reader.ReadBoolean();
         if (cle)
             SwapList.Clear();
-    }
-    public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
-    {
-
-        if ((seer.GetRoleClass() as EvilSwapper).SwapList.Contains(seen.PlayerId)) return Utils.ColorString(RoleInfo.RoleColor, "▲"); ;
-        return "";
     }
 }

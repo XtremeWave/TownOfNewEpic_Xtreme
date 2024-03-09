@@ -59,7 +59,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Translator.GetString("SoulCatcherButtonText");
+        text = Translator.GetString("BlackMailerButtonText");
         return !Shapeshifting;
     }
     private bool Shapeshifting;
