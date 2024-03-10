@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using TONEX.Attributes;
 using TONEX.Roles.Core;
+using TONEX.Modules;
 using UnityEngine;
 
 [assembly: AssemblyFileVersion(TONEX.Main.PluginVersion)]
@@ -38,8 +39,8 @@ public class Main : BasePlugin
     // == 版本相关设定 / Version Config ==
     public const string LowestSupportedVersion = "2024.3.5";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.20";
-    public const string PluginShowVersion = "1.1_20240328_Preview_1";
+    public const string PluginVersion = "1.1.0";
+    public const string PluginShowVersion = "1.1_20240404";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -317,6 +318,8 @@ public class Main : BasePlugin
         handler.Info($"{nameof(ThisAssembly.Git.Tag)}: {ThisAssembly.Git.Tag}");
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
+
+        SystemEnvironment.SetEnvironmentVariables();
 
         Harmony.PatchAll();
 

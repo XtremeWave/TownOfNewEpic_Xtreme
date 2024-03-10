@@ -384,10 +384,10 @@ public static class CustomRoleManager
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="rpcType"></param>
-    public static void DispatchRpc(MessageReader reader, CustomRPC rpcType)
+    public static void DispatchRpc(MessageReader reader)
     {
         var playerId = reader.ReadByte();
-        GetByPlayerId(playerId)?.ReceiveRPC(reader, rpcType);
+        GetByPlayerId(playerId)?.ReceiveRPC(reader);
     }
     //NameSystem
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = new();

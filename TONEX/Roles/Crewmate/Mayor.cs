@@ -89,12 +89,12 @@ public sealed class Mayor : RoleBase
     public override bool CanUseAbilityButton() => LeftButtonCount > 0;
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.MayorCanUseButton);
+        using var sender = CreateSender();
         sender.Writer.Write(LeftButtonCount);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.MayorCanUseButton) return;
+        
         LeftButtonCount = reader.ReadInt32();
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)

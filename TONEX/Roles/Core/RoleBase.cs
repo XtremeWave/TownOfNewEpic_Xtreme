@@ -98,9 +98,9 @@ public abstract class RoleBase : IDisposable
    public class RoleRPCSender : IDisposable
     {
         public MessageWriter Writer;
-        public RoleRPCSender(RoleBase role, CustomRPC rpcType)
+        public RoleRPCSender(RoleBase role)
         {
-            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)rpcType, SendOption.Reliable, -1);
+            Writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.CustomRoleSync, SendOption.Reliable, -1);
             Writer.Write(role.Player.PlayerId);
         }
         public void Dispose()
@@ -114,9 +114,9 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     /// <param name="rpcType">发送的 RPC 类型</param>
     /// <returns>用于发送的 RoleRPCSender</returns>
-    public RoleRPCSender CreateSender(CustomRPC rpcType)
+    protected RoleRPCSender CreateSender()
     {
-        return new RoleRPCSender(this, rpcType);
+        return new RoleRPCSender(this);
     }
     /// <summary>
     /// 接受到 RPC 时的函数
@@ -125,7 +125,7 @@ public abstract class RoleBase : IDisposable
     /// </summary>
     /// <param name="reader">收到 RPC 内容</param>
     /// <param name="rpcType">收到 RPC 类型</param>
-    public virtual void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public virtual void ReceiveRPC(MessageReader reader)
     { }
     /// <summary>
     /// 可以使用技能按钮
@@ -163,6 +163,21 @@ public abstract class RoleBase : IDisposable
     public virtual void OnMurderPlayerAsTarget(MurderInfo info)
     { }
 
+    /// <summary>
+    /// 仅自己视角变身
+    /// 可以将外壳留在自己视角处
+    /// </summary>
+    public virtual bool CanDesyncShapeshift => false;
+
+    /// <summary>
+    /// 在变身检查时被调用
+    /// 仅在自己变身时被调用
+    /// 可以通过操作animate来切断变身动画
+    /// </summary>
+    /// <param name="target">变身目标</param>
+    /// <param name="animate">是否播放动画</param>
+    /// <returns>返回false可取消变身</returns>
+    public virtual bool OnCheckShapeshift(PlayerControl target, ref bool animate) => true;
     /// <summary>
     /// 玩家死亡时调用的函数
     /// 无论死亡玩家是谁，所有玩家都会调用，所以您需要判断死亡玩家的身份

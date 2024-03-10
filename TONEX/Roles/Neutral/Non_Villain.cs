@@ -1,4 +1,4 @@
-using AmongUs.GameOptions;
+/*using AmongUs.GameOptions;
 using static TONEX.Translator;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
@@ -94,37 +94,37 @@ null,
     #region 击杀事件&秒更新的RPC
     public void SendRPC_MoneyCount(byte targetId, int money)
     {
-        using var sender = CreateSender(CustomRPC.ForNVMoney);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
         sender.Writer.Write(money);
     }
     public void SendRPC_WealthAndBrillianceDictionary(byte targetId)
     {
-        using var sender = CreateSender(CustomRPC.ForNVWAH);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
     }
     public void SendRPC_ComeAndAwayList(byte targetId)
     {
-        using var sender = CreateSender(CustomRPC.ForNVCAAList);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
     }
     public void SendRPC_OvercomeList(byte targetId)
     {
-        using var sender = CreateSender(CustomRPC.ForNVOvercomeList);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
     }
     public void SendRPC_FarAheadList(byte targetId)
     {
-        using var sender = CreateSender(CustomRPC.ForNVFarAheadList);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
     }
     public void SendRPC_DFList(byte targetId)
     {
-        using var sender = CreateSender(CustomRPC.ForNVFarAheadList);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
     }
     #endregion
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
         if (rpcType.IsNVRPC())
         {
@@ -496,4 +496,4 @@ null,
         timer -= Time.deltaTime;
         return timer;
     }
-}
+}*/

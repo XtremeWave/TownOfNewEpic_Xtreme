@@ -70,13 +70,13 @@ public sealed class Plaguebearer : RoleBase, INeutralKiller
     public bool CanUseKillButton() => Player.IsAlive();
     private void SendRPC()
     {
-        var sender = CreateSender(CustomRPC.SyncPlaguePlayers);
+        var sender = CreateSender();
         sender.Writer.Write(PlaguePlayers.Count);
         PlaguePlayers.Do(sender.Writer.Write);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncPlaguePlayers) return;
+        
         PlaguePlayers = new();
         for (int i = 0; i < reader.ReadInt32(); i++)
             PlaguePlayers.Add(reader.ReadByte());

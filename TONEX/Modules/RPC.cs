@@ -24,24 +24,10 @@ public enum CustomRPC
     EndGame,
     PlaySound,
     SetCustomRole,
-    SetBountyTarget,
-    WitchSync,
-    SetSheriffShotLimit,
-    SetDousedPlayer,
     SetNameColorData,
-    SniperSync,
     SetLoversPlayers,
-    SetExecutionerTarget,
-    SetCurrentDousingTarget,
-    SetEvilTrackerTarget,
     SetRealKiller,
-    SyncPuppet,
-    SetSchrodingerCatTeam,
-    StealthDarken,
-    MessengerCreateMurderNotify,
-    PenguinSync,
-    MareSync,
-    SyncPlagueDoctor,
+    CustomRoleSync,
 
     //TONX
     AntiBlackout,
@@ -447,8 +433,8 @@ internal class RPCHandlerPatch
             case CustomRPC.SetHunterList:
                 Hunter.ReceiveRPC_SyncList(reader);
                 break;
-            default:
-                CustomRoleManager.DispatchRpc(reader, rpcType);
+            case CustomRPC.CustomRoleSync:
+                CustomRoleManager.DispatchRpc(reader);
                 break;
         }
     }

@@ -94,7 +94,7 @@ public sealed class Sniper : RoleBase, IImpostor
     private void SendRPC()
     {
         Logger.Info($"{Player.GetNameWithRole()}:SendRPC", "Sniper");
-        using var sender = CreateSender(CustomRPC.SniperSync);
+        using var sender = CreateSender();
 
         var snList = ShotNotify;
         sender.Writer.Write(snList.Count);
@@ -104,9 +104,9 @@ public sealed class Sniper : RoleBase, IImpostor
         }
     }
 
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SniperSync) return;
+        
         ShotNotify.Clear();
         var count = reader.ReadInt32();
         while (count > 0)

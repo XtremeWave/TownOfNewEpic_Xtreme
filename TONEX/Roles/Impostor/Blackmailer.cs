@@ -63,11 +63,12 @@ public sealed class Blackmailer : RoleBase, IImpostor
         return !Shapeshifting;
     }
     private bool Shapeshifting;
-    public override void OnShapeshift(PlayerControl target)
+    public override bool OnCheckShapeshift(PlayerControl target, ref bool animate)
     {
+
         Shapeshifting = !Is(target);
 
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return false;
 
         if (Shapeshifting)
         {
@@ -76,6 +77,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
             else
                 ForBlackmailer.Add(target.PlayerId);
         }
+        return false;
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {

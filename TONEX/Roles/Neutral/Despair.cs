@@ -50,12 +50,12 @@ public sealed class Despair : RoleBase, INeutral
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.DespairBeKill);
+        using var sender = CreateSender();
         sender.Writer.Write(KillCooldown);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.DespairBeKill) return;
+        
         KillCooldown = reader.ReadInt32();
     }
     public override bool OnCompleteTask(out bool cancel)

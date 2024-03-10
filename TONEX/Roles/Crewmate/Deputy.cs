@@ -42,7 +42,7 @@ public sealed class Deputy : RoleBase, IKiller
     public static List<byte> ForDeputy;
     private void SendRPC(bool clear = false)
     {
-        using var sender = CreateSender(CustomRPC.SetDeputyLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(DeputyLimit);
         sender.Writer.Write(clear);
         if (!clear)
@@ -50,9 +50,9 @@ public sealed class Deputy : RoleBase, IKiller
                 sender.Writer.Write(pc);
 
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetDeputyLimit) return;
+        
         DeputyLimit = reader.ReadInt32();
         var clear = reader.ReadBoolean();
         if (clear)

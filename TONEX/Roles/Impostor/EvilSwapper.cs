@@ -88,14 +88,14 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     }
     public void SendRPC(bool cle = false)
     {
-        using var sender = CreateSender(CustomRPC.EvilSwapperSync);
+        using var sender = CreateSender();
         sender.Writer.Write(SwapLimit);
         sender.Writer.Write(cle);
     }
 
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.EvilSwapperSync) return;
+        
         SwapLimit = reader.ReadInt32();
         var cle = reader.ReadBoolean();
         if (cle)

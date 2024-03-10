@@ -49,6 +49,16 @@ class ExileControllerWrapUpPatch
             exiled = AntiBlackout_LastExiled;
         }
 
+        var mapId = Main.NormalOptions.MapId;
+        // エアシップではまだ湧かない
+        if ((MapNames)mapId != MapNames.Airship)
+        {
+            foreach (var state in PlayerState.AllPlayerStates.Values)
+            {
+                state.HasSpawned = true;
+            }
+        }
+
         bool DecidedWinner = false;
         if (!AmongUsClient.Instance.AmHost) return; //ホスト以外はこれ以降の処理を実行しません
         AntiBlackout.RestoreIsDead(doSend: false);
@@ -81,7 +91,7 @@ class ExileControllerWrapUpPatch
         if (RandomSpawn.IsRandomSpawn())
         {
             RandomSpawn.SpawnMap map;
-            switch (Main.NormalOptions.MapId)
+                switch (mapId)
             {
                 case 0:
                     map = new RandomSpawn.SkeldSpawnMap();

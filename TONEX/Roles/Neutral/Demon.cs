@@ -91,9 +91,9 @@ public sealed class Demon : RoleBase, INeutralKiller
         writer.Write(Player.PlayerId == id ? DemonHP : PlayerHP[id]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetDemonHealth) return;
+        
         byte id = reader.ReadByte();
         int hp = reader.ReadInt32();
         if (Player.PlayerId == id)

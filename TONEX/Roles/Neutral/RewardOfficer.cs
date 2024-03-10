@@ -93,12 +93,12 @@ public sealed class RewardOfficer : RoleBase, INeutralKiller
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetRewardOfficerName);
+        using var sender = CreateSender();
         sender.Writer.Write(Name);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetRewardOfficerName) return;
+        
         Name = reader.ReadString();
     }
     public override string GetProgressText(bool comms = false)

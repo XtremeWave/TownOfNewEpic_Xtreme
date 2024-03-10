@@ -36,12 +36,12 @@ public sealed class SpecterSlayer : RoleBase, IKiller
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SpecterSlayerKill);
+        using var sender = CreateSender();
         sender.Writer.Write(KillLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SpecterSlayerKill) return;
+        
         KillLimit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => CanUseKillButton() ? 5f : 255f;

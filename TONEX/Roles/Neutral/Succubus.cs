@@ -78,12 +78,12 @@ public sealed class Succubus : RoleBase, INeutralKiller
     public bool CanUseSabotageButton() => false;
     private void SendRPC()
     {
-        var sender = CreateSender(CustomRPC.SetSuccubusCharmLimit);
+        var sender = CreateSender();
         sender.Writer.Write(CharmLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetSuccubusCharmLimit) return;
+        
         CharmLimit = reader.ReadInt32();
     }
     public bool CanUseKillButton() => Player.IsAlive() && CharmLimit >= 1;

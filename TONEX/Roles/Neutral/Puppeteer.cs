@@ -78,12 +78,12 @@ public sealed class Puppeteer : RoleBase, INeutralKiller
     public bool CanUseKillButton() => Player.IsAlive();
     private void SendRPC_SyncLimit()
     {
-        using var sender = CreateSender(CustomRPC.SetBeKillLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(BeKillLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetBeKillLimit) return;
+        
         BeKillLimit = reader.ReadInt32();
     }
     public override string GetProgressText(bool comms = false) => Utils.ColorString(Utils.ShadeColor(RoleInfo.RoleColor), $"({BeKillLimit})");

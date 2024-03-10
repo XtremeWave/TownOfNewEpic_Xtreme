@@ -55,7 +55,7 @@ public sealed class MeteorArbiter : RoleBase, INeutralKiller, IAdditionalWinner
     #region RPC相关
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetMeteorArbiter);
+        using var sender = CreateSender();
         sender.Writer.Write(Murderer);
         sender.Writer.Write(Dust);
         sender.Writer.Write(LOVE);
@@ -63,16 +63,15 @@ public sealed class MeteorArbiter : RoleBase, INeutralKiller, IAdditionalWinner
         sender.Writer.Write(LVOverFlow);
         
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType == CustomRPC.SetMeteorArbiter)
-        {
+
             Murderer = reader.ReadBoolean();
             Dust = reader.ReadBoolean();
             LOVE = reader.ReadInt32();
             Tired = reader.ReadInt32();
             LVOverFlow = reader.ReadInt32();
-        }
+        
     }
     #endregion
     public bool CanUseKillButton() => true;

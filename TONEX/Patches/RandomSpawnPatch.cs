@@ -2,6 +2,7 @@ using HarmonyLib;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Hazel;
 using TONEX.Roles.Core;
 using TONEX.Roles.Impostor;
 using UnityEngine;

@@ -120,12 +120,12 @@ public sealed class Jackal : RoleBase, INeutralKiller
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetJackalRewardLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(SidekickLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetJackalRewardLimit) return;
+        
         SidekickLimit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();

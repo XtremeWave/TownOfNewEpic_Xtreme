@@ -90,10 +90,10 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        using var sender = CreateSender(CustomRPC.SetMartyrTarget);
+        using var sender = CreateSender();
         sender.Writer.Write(TargetId);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         TargetId.PlayerId = targetId;

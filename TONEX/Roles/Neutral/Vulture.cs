@@ -83,7 +83,7 @@ public sealed class Vulture : RoleBase, INeutral
     }
     private void SendRPC(bool add, Vector3 loc = new())
     {
-        using var sender = CreateSender(CustomRPC.SetVultureArrow);
+        using var sender = CreateSender();
         sender.Writer.Write(add);
         if (add)
         {
@@ -92,9 +92,9 @@ public sealed class Vulture : RoleBase, INeutral
             sender.Writer.Write(loc.z);
         }
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetVultureArrow) return;
+        
         if (reader.ReadBoolean())
             LocateArrow.Add(Player.PlayerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
         else LocateArrow.RemoveAllTarget(Player.PlayerId);

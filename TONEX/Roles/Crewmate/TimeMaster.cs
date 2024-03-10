@@ -87,12 +87,12 @@ public sealed class TimeMaster : RoleBase
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SyncTimeMaster);
+        using var sender = CreateSender();
         sender.Writer.Write(Marked);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncTimeMaster) return;
+        
         Marked = reader.ReadBoolean();
     }
     public void ReduceNowCooldown()

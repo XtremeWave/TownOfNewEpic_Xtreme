@@ -77,7 +77,7 @@ public sealed class ViciousSeeker : RoleBase, IImpostor
     }
     public static void ReceiveRPC_Limit(MessageReader reader, CustomRPC rpcType)
     {
-        if (rpcType != CustomRPC.ViciousSeekerKill) return;
+        
         Limit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => KillCooldown;

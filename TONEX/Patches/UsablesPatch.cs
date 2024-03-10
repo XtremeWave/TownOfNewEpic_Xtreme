@@ -36,7 +36,7 @@ class CanUseVentPatch
 
         // カスタムロールを元にベントを使えるか判定
         // エンジニアベースの役職は常にtrue
-        couldUse = playerControl.CanUseImpostorVentButton() || pc.Role.Role == RoleTypes.Engineer;
+        couldUse = playerControl.CanUseImpostorVentButton() || (pc.Role.Role == RoleTypes.Engineer && pc.Role.CanUse(__instance.Cast<IUsable>()));
 
         canUse = couldUse;
         // カスタムロールが使えなかったら使用不可

@@ -62,12 +62,12 @@ public sealed class Hunter : RoleBase, IKiller
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.HunterKill);
+        using var sender = CreateSender();
         sender.Writer.Write(HunterLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.HunterKill) return;
+        
         HunterLimit = reader.ReadInt32();
     }
     private static void SendRPC_SyncList()

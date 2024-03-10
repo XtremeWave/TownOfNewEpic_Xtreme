@@ -46,12 +46,12 @@ public int SabotageFalseLimit;
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.AdventurerSabotage);
+        using var sender = CreateSender();
         sender.Writer.Write(SabotageFalseLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.AdventurerSabotage) return;
+        
         SabotageFalseLimit = reader.ReadInt32();
     }
     public override bool OnSabotage(PlayerControl player, SystemTypes systemType)

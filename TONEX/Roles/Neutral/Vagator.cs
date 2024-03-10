@@ -55,7 +55,7 @@ public sealed class Vagator : RoleBase, INeutralKiller
     public int KillTimesTotalCount;
     public int SkillTimesTotalCount;
     public int ShieldsCount;
-    public List<byte> Feeble;
+    public static List<byte> Feeble;
     private float KillCooldown;
     public int UsePetCooldown;
     #endregion
@@ -68,7 +68,7 @@ public sealed class Vagator : RoleBase, INeutralKiller
     #region RPC相关
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetVagator);
+        using var sender = CreateSender();
         sender.Writer.Write(ElementPowerCount);
         sender.Writer.Write(NormalKillTimesCount);
         sender.Writer.Write(KillTimesTotalCount);
@@ -76,40 +76,36 @@ public sealed class Vagator : RoleBase, INeutralKiller
         sender.Writer.Write(ShieldsCount);
         
     }
-    private void SendRPC_AddFeeble()
+    private static void SendRPC_SyncList()
     {
-        using var sender = CreateSender(CustomRPC.AddFeeble);
-        foreach (var pid in Feeble)
-            sender.Writer.Write(pid);
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.AddFeeble, SendOption.Reliable, -1);
+        writer.Write(Feeble.Count);
+        for (int i = 0; i < Feeble.Count; i++)
+            writer.Write(Feeble[i]);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    private void SendRPC_RemoveFeeble()
+    public static void ReceiveRPC_SyncList(MessageReader reader)
     {
-        using var sender = CreateSender(CustomRPC.RemoveFeeble);
-        foreach (var pid in Feeble)
-            sender.Writer.Write(pid);
+        int count = reader.ReadInt32();
+        Feeble = new();
+        for (int i = 0; i < count; i++)
+            Feeble.Add(reader.ReadByte());
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType == CustomRPC.SetVagator)
-        {
+
             ElementPowerCount = reader.ReadInt32();
             NormalKillTimesCount = reader.ReadInt32();
             KillTimesTotalCount = reader.ReadInt32();
             SkillTimesTotalCount = reader.ReadInt32();
             ShieldsCount = reader.ReadInt32();
-        }
-        else if (rpcType == CustomRPC.AddFeeble)
-        {
+       
             var pid = reader.ReadByte();
             if (!Feeble.Contains(pid))
                  Feeble.Add(pid);
-        }
-        else if (rpcType == CustomRPC.RemoveFeeble)
-        {
-            var pid = reader.ReadByte();
+        
             if (Feeble.Contains(pid))
                 Feeble.Remove(pid);
-        }
     }
     #endregion
     public bool CanUseKillButton() => true;
@@ -216,13 +212,13 @@ public sealed class Vagator : RoleBase, INeutralKiller
                     ElementPowerCount++;
                     maydielist.Add(pc);
                     Feeble.Add(pc.PlayerId);
-                    SendRPC_AddFeeble();
+                    SendRPC_SyncList();
                     new LateTask(() =>
                     {
                         if (Feeble.Contains(pc.PlayerId))
                         {
                             Feeble.Remove(pc.PlayerId);
-                            SendRPC_RemoveFeeble();
+                            SendRPC_SyncList();
                         }
                     }, 40f, "ZhongLiShield");
                 }
@@ -311,7 +307,7 @@ public sealed class Vagator : RoleBase, INeutralKiller
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
     {
 
-        if ((seer.GetRoleClass() as Vagator).Feeble.Contains(seen.PlayerId)) return "↓";
+        if (Feeble.Contains(seen.PlayerId)) return "↓";
         else if (seer == seen)
         return Utils.ColorString(RoleInfo.RoleColor, $"({(seer.GetRoleClass() as Vagator).ShieldsCount})");
         return "";
@@ -354,4 +350,3 @@ public sealed class Vagator : RoleBase, INeutralKiller
         return true;
     }
 }
-//*/

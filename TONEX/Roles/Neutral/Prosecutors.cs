@@ -45,12 +45,12 @@ public sealed class Prosecutors : RoleBase, INeutralKiller,IAdditionalWinner
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetProsectorsLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(ProsecutorsLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetProsectorsLimit) return;
+        
         ProsecutorsLimit = reader.ReadInt32();
     }
     public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)

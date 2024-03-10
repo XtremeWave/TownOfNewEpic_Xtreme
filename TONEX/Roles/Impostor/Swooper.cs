@@ -51,13 +51,13 @@ public sealed class EvilInvisibler : RoleBase, IImpostor
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetEvilInvisiblerTimer);
+        using var sender = CreateSender();
         sender.Writer.Write(InvisTime.ToString());
         sender.Writer.Write(LastTime.ToString());
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetEvilInvisiblerTimer) return;
+        
         InvisTime = long.Parse(reader.ReadString());
         LastTime = long.Parse(reader.ReadString());
     }
