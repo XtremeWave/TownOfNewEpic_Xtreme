@@ -119,7 +119,7 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         {
             if (neutral is CustomRoles.SchrodingerCat or CustomRoles.HotPotato or CustomRoles.ColdPotato or CustomRoles.Non_Villain or CustomRoles.GodOfPlagues) continue;
             if (neutral.IsTODO()) continue;
-            SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutrals);
+            SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutralsMode);
             idOffset++;
         }
         foreach (var catType in EnumHelper.GetAllValues<SchrodingerCat.TeamType>())
@@ -128,7 +128,7 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
             {
                 continue;
             }
-            SetUpSchrodingerCatKillTargetOption(catType, idOffset, true, CanKillNeutrals);
+            SetUpSchrodingerCatKillTargetOption(catType, idOffset, true, CanKillNeutralsMode);
             idOffset++;
         }
     }

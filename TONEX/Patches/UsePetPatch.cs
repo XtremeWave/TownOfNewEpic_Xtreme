@@ -34,8 +34,7 @@ class TryPetPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
         if (!(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
-        var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
-        if (cancel)
+
             __instance.petting = true;
         ExternalRpcPetPatch.Prefix(__instance.MyPhysics, 51, new MessageReader());
     }
@@ -44,12 +43,11 @@ class TryPetPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard || !Options.UsePets.GetBool()) return;
         var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
-        if (cancel)
-        {
+
             __instance.petting = false;
             if (__instance.AmOwner)
                 __instance.MyPhysics.RpcCancelPet();
-        }
+        
     }
 }
 

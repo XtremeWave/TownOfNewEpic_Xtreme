@@ -1,5 +1,5 @@
 using AmongUs.GameOptions;
-
+using System.Linq;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
@@ -51,6 +51,12 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner, INeutralKiller
 
     public bool CheckWin(ref CustomRoles winnerRole, ref CountTypes winnerCountType)
     {
-        return Player.IsAlive() || CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.SchrodingerCat) && SchrodingerCat.TeamStatic == SchrodingerCat.TeamType.Opportunist;
+        var win = false;
+        foreach (var player in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.SchrodingerCat)))
+        {
+            if (CustomWinnerHolder.WinnerIds.Contains(player.PlayerId) && (player.GetRoleClass() as SchrodingerCat).Team == SchrodingerCat.TeamType.Opportunist)
+                win = true;
+        }
+        return Player.IsAlive()|| win;
     }
 }

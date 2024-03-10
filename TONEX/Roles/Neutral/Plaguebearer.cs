@@ -86,15 +86,15 @@ public sealed class Plaguebearer : RoleBase, INeutralKiller
     {
         var (killer, target) = info.AttemptTuple;
         if (info.IsSuicide) return true;
-        if(PlaguePlayers.Contains(target.PlayerId)) return true;
+        if(PlaguePlayers.Contains(target.PlayerId)) return false;
         PlaguePlayers.Add(target.PlayerId);
         killer.SetKillCooldownV2();
         SendRPC();
        if (Main.AllAlivePlayerControls.ToList().Count - 1 == PlaguePlayers.Count)
-         {
+       {
                 Player.RpcSetCustomRole(CustomRoles.GodOfPlagues);
                 killer.SetKillCooldownV2();
-        }
+       }
         return false;
     }
     public override void OnFixedUpdate(PlayerControl player)

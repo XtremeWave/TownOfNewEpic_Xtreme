@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller, INeutral
+public sealed class Lawyer : RoleBase, IAdditionalWinner,INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

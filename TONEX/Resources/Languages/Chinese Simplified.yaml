@@ -635,6 +635,7 @@ MartyrInfoLong: "先烈有一个目标是他的后辈，先烈可以使用管道
 NightWolfInfoLong: "月下狼人可以使用管道/宠物进入狂暴状态，进入狂暴时移动速度会增加并且拥有击杀的能力，在狂暴前不可击杀"
 PlaguebearerInfoLong: "瘟疫之源需要感染所有人，成为万疫之神"
 GodOfPlaguesInfoLong: "万疫之神可以反杀所有击杀万疫之神的人，万疫之神需要杀死所有人获得胜利"
+PuppeteerInfoLong: "傀儡师可以通过击杀按钮取样并且通过宠物按钮变成取样目标样式，在傀儡师被击杀后会传送回变身地点，傀儡师被击杀达到一定次数后胜利"
 
 ## 附加职业 / Add-ons Descriptions
 LastImpostorInfoLong: "这个效果在内鬼仅剩一人时赋予该内鬼。使其击杀冷却缩短。"
@@ -1579,6 +1580,7 @@ SwapNull: "目标无效"
 ChooseMax: "选择目标次数到达上限"
 SmartYou: "您真聪明！您成功给自己断子绝孙了！"
 SmartJackal: "豺狼真聪明！虎毒还不食子呢，看来您的豺狼是真的饿了"
+HasProtect: "您已经在守护他啦"
 
 # 信息 / Messages
 Message.SetToSeconds: "信息发送冷却时间为【{0}】秒"
@@ -1775,7 +1777,7 @@ LiuDeHuaKillButtonText: "发红包"
 DoubleKillerKillButton: "第二把刀冷却"
 RebelsVetnButtonText: "起义"
 DeputyText: "手铐"
-: "夺舍"
+BlackMailerButtonText: "勒索"
 
 # 作弊 / EAC
 EAC.CheatDetected.HighLevel: "警告：EAC正在抵御炸房外挂"

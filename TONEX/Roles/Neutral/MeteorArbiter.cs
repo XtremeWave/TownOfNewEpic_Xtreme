@@ -30,6 +30,9 @@ public sealed class MeteorArbiter : RoleBase, INeutralKiller, IAdditionalWinner
              "#C0EAFF",
             true,
             true,
+#if RELEASE
+            ctop:true,
+#endif
             countType: CountTypes.MeteorArbiter
         );
     public MeteorArbiter(PlayerControl player)

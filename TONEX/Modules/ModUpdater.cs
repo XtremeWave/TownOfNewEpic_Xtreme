@@ -31,11 +31,21 @@ public class ModUpdater
         "file:///D:/Desktop/info.json",
 #else
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.1/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.2/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.3/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.4/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.5/info.json",
         "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",
          //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
         "https://tohex.club/Resource/info.json",
         "https://tonex.cc/Resource/info.json",
         "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.1/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.2/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.3/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.4/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.5/info.json",
          
 
 #endif
@@ -69,6 +79,7 @@ public class ModUpdater
     public static string md5 = "";
     public static int visit => isChecked ? 216822 : 0;
 
+    public static string announcement_pre = "";
     public static string announcement_zh = "";
     public static string announcement_en = "";
     public static string downloadUrl_github = "";
@@ -194,26 +205,45 @@ public class ModUpdater
             }
 
             JObject data = JObject.Parse(result);
+
             verHead = new(data["verHead"]?.ToString());
-            verDate = new(data["verDate"]?.ToString());
             verTestName = new(data["verTestName"]?.ToString());
             verTestNum = new(data["verTestNum"]?.ToString());
-            latestVersion = new(data["version"]?.ToString());
+
             DebugVer = new(data["DebugVer"]?.ToString());
+
+            
+            CanUpdate = bool.Parse(new(data["CanUpdate"]?.ToString()));
+
+            if (verTestName == "Preview")
+            {
+                verDate = new(data["verDatePre"]?.ToString());
+                md5 = data["md5Pre"]?.ToString();
+                latestVersion = new(data["versionPre"]?.ToString());
+            }
+            else
+            {
+                verDate = new(data["verDate"]?.ToString());
+                md5 = data["md5"]?.ToString();
+                latestVersion = new(data["version"]?.ToString());
+            }
+
             var vertestname = (verTestName == "") ? "" : $"_{verTestName}";
             var vertesttext = (verTestNum == "") ? "" : $"{vertestname}_{verTestNum}";
             showVer = $"{verHead}_{verDate}{vertesttext}";
-            CanUpdate = bool.Parse(new(data["CanUpdate"]?.ToString()));
-            Logger.Info(showVer, "ver");
+
             var minVer = data["minVer"]?.ToString();
             minimumVersion = minVer.ToLower() == "latest" ? latestVersion : new(minVer);
             creation = int.Parse(data["creation"]?.ToString());
             isBroken = data["allowStart"]?.ToString().ToLower() != "true";
-            md5 = data["md5"]?.ToString();
 
             JObject announcement = data["announcement"].Cast<JObject>();
             announcement_en = announcement["English"]?.ToString();
             announcement_zh = announcement["SChinese"]?.ToString();
+            if (verTestName == "Preview")
+            {
+                announcement_en = announcement_zh = announcement["Preview"]?.ToString();
+            }
 
             JObject downloadUrl = data["url"].Cast<JObject>();
             downloadUrl_github = downloadUrl["github"]?.ToString();

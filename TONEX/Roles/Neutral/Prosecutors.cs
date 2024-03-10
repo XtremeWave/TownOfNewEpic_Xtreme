@@ -72,6 +72,8 @@ public sealed class Prosecutors : RoleBase, INeutralKiller,IAdditionalWinner
             ForProsecutors.Add(target.PlayerId);
         }
         info.CanKill = false;
+        killer.RpcProtectedMurderPlayer(target);
+        killer.SetKillCooldownV2();
         return false;
     }
     public static bool OnCheckMurderPlayerOthers_After(MurderInfo info)

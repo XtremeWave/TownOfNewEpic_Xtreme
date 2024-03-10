@@ -40,6 +40,7 @@ internal static class HotPotatoManager
         HotQuan = IntegerOptionItem.Create(62_293_009, "HotMax", new(1, 4, 1), 2, TabGroup.GameSettings, false)
            .SetGameMode(CustomGameMode.HotPotato)
            .SetColor(new Color32(245, 82, 82, byte.MaxValue))
+           .SetHeader(true)
            .SetValueFormat(OptionFormat.Players);
         Boom = IntegerOptionItem.Create(62_293_008, "BoomTime", new(10, 60, 5), 15, TabGroup.GameSettings, false)
            .SetGameMode(CustomGameMode.HotPotato)

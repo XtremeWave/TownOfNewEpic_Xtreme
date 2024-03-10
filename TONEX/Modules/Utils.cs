@@ -891,12 +891,12 @@ public static class Utils
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, false));
+            sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, true));
             cloneRoles.Remove(id);
         }
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n　 ").Append(SummaryTexts(id, false));
+            sb.Append($"\n　 ").Append(SummaryTexts(id, true));
         }
         SendMessage(sb.ToString(), PlayerId);
     }
@@ -1327,7 +1327,7 @@ public static class Utils
         };
         Process.Start(startInfo);
     }
-    private static string LastResultForChat;
+    private static Dictionary<byte, string> LastResultForChat = new();
     public static string SummaryTexts(byte id, bool isForChat)
     {
         /*// 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
@@ -1365,25 +1365,27 @@ public static class Utils
         // チャットならposタグを使わない(文字数削減)
         if (isForChat)
         {
-            return LastResultForChat;
+            return LastResultForChat[id];
         }
         else
         {
-            builder.Append(Main.AllPlayerNames[id]);
-            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-            builder.Append(' ').Append(GetVitalText(id));
-            string oldRoleName = GetOldRoleName(id);
-            var newRoleName = GetTrueRoleName(id, false);
-            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
-            {
-                builder.AppendFormat("<pos={0}em>", 0); // 修改此处，设置 pos 值
-                builder.Append(oldRoleName + newRoleName);
-            }
-            else
-            {
-                builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
-            }
-            LastResultForChat = builder.ToString();
+
+                  builder.Append(Main.AllPlayerNames[id]);
+                  builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
+                  builder.Append(' ').Append(GetVitalText(id));
+                  string oldRoleName = GetOldRoleName(id);
+                  var newRoleName = GetTrueRoleName(id, false);
+                  if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
+                  {
+                      builder.AppendFormat("<pos={0}em>", 0); // 修改此处，设置 pos 值
+                      builder.Append(oldRoleName + newRoleName);
+                  }
+                  else
+                  {
+                      builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+                  }
+
+            builder = new StringBuilder();
             // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
             // 1em ≒ 半角2文字
             // 空白は0.5emとする
@@ -1405,6 +1407,10 @@ public static class Utils
                 builder.Append(oldRoleName);
                 builder.Append(GetTrueRoleName(id, false));
                 builder.Append("</pos>");
+                if (!LastResultForChat.ContainsKey(id))
+                    LastResultForChat.Add(id, builder.ToString());
+                else
+                    LastResultForChat[id] = builder.ToString();
                 return builder.ToString();
             }
             builder.AppendFormat("<pos={0}em>", pos);
@@ -1412,6 +1418,10 @@ public static class Utils
             builder.Append(GetSubRolesText(id));
             builder.Append("</pos>");
         }
+        if (!LastResultForChat.ContainsKey(id))
+            LastResultForChat.Add(id, builder.ToString());
+        else
+            LastResultForChat[id] = builder.ToString();
         return builder.ToString();
     }
     private static string GetOldRoleName(byte id)

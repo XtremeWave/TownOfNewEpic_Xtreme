@@ -42,7 +42,6 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
 
     private static OptionItem OptionKillCooldown;
     private static OptionItem OptionCanGetKillButton;
-    public static OptionItem OptionCanUseSabotage;
     private static OptionItem OptionHasImpostorVision;
     enum OptionName
     {
@@ -51,7 +50,7 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
 
     public static PlayerControl TargetId;
     public static bool CanKill;
-    public static bool HasProtect;
+    public bool HasProtect;
     public bool IsNK { get; private set; } = CanKill;
     public bool IsNE { get; private set; } = CanKill;
     public static List<PlayerControl> player;
@@ -60,13 +59,13 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false)
             .SetValueFormat(OptionFormat.Seconds);
         OptionCanGetKillButton = BooleanOptionItem.Create(RoleInfo, 11, OptionName.MartryCanUseKillButtonOnGameStart, true, false);
-        OptionCanUseSabotage = BooleanOptionItem.Create(RoleInfo, 12, GeneralOption.CanUseSabotage, false, false);
         OptionHasImpostorVision = BooleanOptionItem.Create(RoleInfo, 13, GeneralOption.ImpostorVision, true, false);
     }
     public override void Add()
     {
         //ターゲット割り当て
         if (!AmongUsClient.Instance.AmHost) return;
+        player = new();
         player.Add(Player);
         CanKill = OptionCanGetKillButton.GetBool();
         HasProtect = false;
@@ -84,7 +83,7 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
         SendRPC();
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
-    public bool CanUseSabotageButton() => OptionCanUseSabotage.GetBool();
+    public bool CanUseSabotageButton() => false;
     public bool CanUseKillButton() => CanKill && Player.IsAlive();
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(OptionHasImpostorVision.GetBool());
     public void SendRPC()
@@ -109,7 +108,7 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
              {
                 if (pc.IsAlive())
                 {
-                    if (HasProtect)
+                    if ((pc.GetRoleClass() as Martyr).HasProtect)
                     {
                         pc.RpcTeleport(target.transform.position);
                         killer.RpcTeleport(pc.transform.position);
@@ -128,9 +127,9 @@ public sealed class Martyr : RoleBase, IAdditionalWinner, INeutralKiller
                 }
                 else
                 {
-                    if (HasProtect)
+                    if ((pc.GetRoleClass() as Martyr).HasProtect)
                     {
-                        HasProtect = false;
+                        (pc.GetRoleClass() as Martyr).HasProtect = false;
                         return false;
                     }
                 }

@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Jackal : RoleBase, ISchrodingerCatOwner, INeutralKiller
+public sealed class Jackal : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -182,7 +182,7 @@ public sealed class Jackal : RoleBase, ISchrodingerCatOwner, INeutralKiller
             target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("SmartJackal")));
             return true;
         }
-        if (NowSwitchTrigger != SwitchTrigger.TriggerForKill && SidekickLimit >= 1)
+        if (NowSwitchTrigger == SwitchTrigger.TriggerForKill && SidekickLimit >= 1)
         {
             Recruit(target);
             return false;

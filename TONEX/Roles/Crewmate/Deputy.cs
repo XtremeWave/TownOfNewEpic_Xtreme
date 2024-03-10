@@ -83,6 +83,8 @@ public sealed class Deputy : RoleBase, IKiller
             SendRPC();
         }
         info.CanKill = false;
+        killer.RpcProtectedMurderPlayer(target);
+        killer.SetKillCooldownV2();
         return false;
     }
     public static bool OnCheckMurderPlayerOthers_After(MurderInfo info)

@@ -17,7 +17,8 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     HotPotato = 0x02,
-    All = int.MaxValue
+    AllCrewMod = 0x03,
+    All = int.MaxValue,
 }
 
 [HarmonyPatch]

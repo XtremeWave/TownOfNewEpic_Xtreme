@@ -184,7 +184,7 @@ public sealed class Medic : RoleBase, IKiller
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
-        if (!Player.IsAlive())
+        if (!Player.IsAlive() && OptionMedicShieldMode.GetInt()==1)
         {
             foreach (var pc in ProtectList)
             {
