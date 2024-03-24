@@ -31,6 +31,8 @@ public class PlayerState
     }
     public (DateTime, byte) RealKiller;
     public PlainShipRoom LastRoom;
+    /// <summary>会議等の後に湧いた後かどうか</summary>
+    public bool HasSpawned { get; set; } = false;
     public Dictionary<byte, string> TargetColorData;
     public PlayerState(byte playerId)
     {
@@ -73,6 +75,13 @@ public class PlayerState
                    CustomRoles.GM => CountTypes.OutOfGame,
                    _ => role.IsImpostor() ? CountTypes.Impostor : CountTypes.Crew,
                };
+        if (role is CustomRoles.Sidekick or CustomRoles.Whoops)
+        {
+            CountType = CountTypes.Jackal;
+            SubRoles.Remove(CustomRoles.Madmate);
+            SubRoles.Remove(CustomRoles.Charmed);
+            SubRoles.Remove(CustomRoles.LastImpostor);
+        }
     }
     public void SetSubRole(CustomRoles role, bool AllReplace = false)
     {
@@ -105,12 +114,14 @@ public class PlayerState
             };
             SubRoles.Remove(CustomRoles.Madmate);
             SubRoles.Remove(CustomRoles.Wolfmate);
+            SubRoles.Remove(CustomRoles.LastImpostor);
         }
         if (role == CustomRoles.Wolfmate)
         {
             CountType = CountTypes.Jackal;
             SubRoles.Remove(CustomRoles.Madmate);
             SubRoles.Remove(CustomRoles.Charmed);
+            SubRoles.Remove(CustomRoles.LastImpostor);
         }
     }
     public void RemoveSubRole(CustomRoles role)

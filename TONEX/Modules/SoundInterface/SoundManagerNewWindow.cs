@@ -6,7 +6,7 @@ using static TONEX.Translator;
 using Object = UnityEngine.Object;
 using TONEX.Modules.SoundInterface;
 using Newtonsoft.Json;
-using static TONEX.IntSoundManager;
+using static TONEX.AudioManager;
 using System.IO;
 using System.Linq;
 
@@ -82,7 +82,7 @@ public static class SoundManagerNewWindow
             var code = EnterBox.GetComponent<TextBoxTMP>().text;
             var reg = new Regex(@"^(\s{1}|)$");
 
-            if (AllMusic.Contains(code))
+            if (AllMusic.ContainsKey(code))
             {
                 ConfirmButton.SetActive(false);
                 colorInfoTmp.text = GetString("SoundManagerAlreadyExist");

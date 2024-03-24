@@ -11,7 +11,7 @@ using UnityEngine.Rendering;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
+public sealed class Lawyer : RoleBase, IAdditionalWinner,INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -39,7 +39,7 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
         CustomRoleManager.MarkOthers.Add(GetMarkOthers);
     }
     public static byte WinnerID;
-
+    public bool IsNE { get; private set; } = false;
     private static OptionItem OptionCanTargetCrewmate;
     private static OptionItem OptionCanTargetJester;
     private static OptionItem OptionCanTargetNeutralKiller;
@@ -117,10 +117,10 @@ public sealed class Lawyer : RoleBase, IAdditionalWinner,IKiller
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        using var sender = CreateSender(CustomRPC.SetExecutionerTarget);
+        using var sender = CreateSender();
         sender.Writer.Write(TargetId);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         TargetId = targetId;

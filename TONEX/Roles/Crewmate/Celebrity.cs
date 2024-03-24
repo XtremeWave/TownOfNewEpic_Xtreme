@@ -60,11 +60,11 @@ public sealed class Celebrity : RoleBase
         {
             if (isOnMeeting)
             {
-                Utils.SendMessage(string.Format(Translator.GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("CelebrityNewsTitle"))); ;
+                Utils.SendMessage(string.Format(Translator.GetString("CelebrityDead"), Player.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("CelebrityNewsTitle"))); ;
             }
             else
             {
-                MsgToSend.Add((string.Format(Translator.GetString("CelebrityDead"), pc.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("CelebrityNewsTitle"))));
+                MsgToSend.Add((string.Format(Translator.GetString("CelebrityDead"), Player.GetRealName()), pc.PlayerId, Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("CelebrityNewsTitle"))));
                 pc.Notify(Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("OnCelebrityDead")));
             }
         }

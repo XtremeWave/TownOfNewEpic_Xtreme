@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class God : RoleBase, IOverrideWinner, IIndependent
+public sealed class God : RoleBase, IOverrideWinner, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(

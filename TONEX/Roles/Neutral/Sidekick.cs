@@ -8,7 +8,7 @@ using UnityEngine;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent, ISchrodingerCatOwner
+public sealed class Sidekick : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -17,7 +17,7 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent,
             CustomRoles.Sidekick,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_5_1_0,
+            94_1_0_0500,
             null,
             "si",
             "#00b4eb",
@@ -34,6 +34,7 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent,
         () => HasTask.False
     )
     { }
+    public bool IsNK { get; private set; } = true;
     public bool CanUseSabotageButton() => false;
     public bool CanUseKillButton() => Jackal.OptionSidekickCanKill.GetBool();
     public bool IsKiller { get; private set; } = Jackal.OptionSidekickCanKill.GetBool();
@@ -47,7 +48,8 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent,
         
             if (target.Is(CustomRoles.Jackal) && Player.Is(CustomRoles.Sidekick) && Jackal.OptionSidekickCanBeJackal.GetBool())
             {
-                Player.Notify(GetString("BeJackal")); 
+                Player.Notify(GetString("BeJackal"));
+            Player.RpcProtectedMurderPlayer();
                 Player.RpcSetCustomRole(CustomRoles.Jackal);
             }
        
@@ -56,8 +58,8 @@ public sealed class Sidekick : RoleBase ,INeutralKilling, IKiller, IIndependent,
     {
         //seenが省略の場合seer
         seen ??= seer;
-        if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
-        else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
+        else if (seen.Is(CustomRoles.Jackal)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
         //else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
         else
             return "";

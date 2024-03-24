@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCatOwner
+public sealed class Hater : RoleBase, IAdditionalWinner, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -29,7 +29,8 @@ public sealed class Hater : RoleBase, IKiller, IAdditionalWinner, ISchrodingerCa
     )
     { }
 
-    public float CalculateKillCooldown() => 0f;
+    public float CalculateKillCooldown() => 0f; 
+    public bool IsNE { get; private set; } = false;
     public bool CanUseSabotageButton() => false;
     public bool CanUseImpostorVentButton() => false;
     public override void ApplyGameOptions(IGameOptions opt) => opt.SetVision(true);

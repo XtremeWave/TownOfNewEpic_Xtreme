@@ -17,7 +17,7 @@ public sealed class HotPotato : RoleBase, IKiller
             CustomRoles.HotPotato,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_2_1_0,
+            94_1_0_0200,
             null,
             "ho",
             "#ff9900",

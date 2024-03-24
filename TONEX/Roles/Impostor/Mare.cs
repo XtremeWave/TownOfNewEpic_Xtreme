@@ -3,6 +3,7 @@ using Hazel;
 using InnerNet;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using UnityEngine;
 using static TONEX.Options;
 
 namespace TONEX.Roles.Impostor;
@@ -77,12 +78,12 @@ public sealed class Mare : RoleBase, IImpostor
     }
     public void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.MareSync);
+        using var sender = CreateSender();
         sender.Writer.Write(IsActivateKill);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.MareSync) return;
+        
 
         IsActivateKill = reader.ReadBoolean();
     }

@@ -87,12 +87,12 @@ public sealed class TimeMaster : RoleBase
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SyncTimeMaster);
+        using var sender = CreateSender();
         sender.Writer.Write(Marked);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncTimeMaster) return;
+        
         Marked = reader.ReadBoolean();
     }
     public void ReduceNowCooldown()
@@ -133,7 +133,7 @@ public sealed class TimeMaster : RoleBase
         {
             ProtectStartTime = -1;
             player.RpcProtectedMurderPlayer();
-            player.Notify(string.Format(GetString("TimeStopsOffGuard")));
+            player.Notify(string.Format(GetString("NiceTimeStopsOffGuard")));
         }
         if (UsePetCooldown + (long)Cooldown < now && UsePetCooldown != -1 && Options.UsePets.GetBool())
         {

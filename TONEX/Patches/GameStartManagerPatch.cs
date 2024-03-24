@@ -238,7 +238,7 @@ public static class GameStartManagerBeginGamePatch
         Main.LastShapeshifterCooldown.Value = AURoleOptions.ShapeshifterCooldown;
         AURoleOptions.ShapeshifterCooldown = 0f;
 
-        PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt));
+        PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(opt, Main.IsAprilFools));
 
         __instance.ReallyBegin(false);
         return false;
@@ -276,7 +276,7 @@ class ResetStartStatePatch
         if (GameStates.IsCountDown)
         {
             Main.NormalOptions.KillCooldown = Options.DefaultKillCooldown;
-            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions));
+            PlayerControl.LocalPlayer.RpcSyncSettings(GameOptionsManager.Instance.gameOptionsFactory.ToBytes(GameOptionsManager.Instance.CurrentGameOptions, Main.IsAprilFools));
         }
     }
 }

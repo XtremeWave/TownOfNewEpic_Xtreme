@@ -15,6 +15,7 @@ public class MessageControl
     public bool HasValidArgs { get; set; }
 
     public PlayerControl Player { get; set; }
+    public List<byte> SendToList { get; set; } = new();
     public bool IsAlive { get => Player.IsAlive(); }
     public bool IsFromMod { get => Player.IsModClient(); }
     public bool IsFromSelf { get => Player.AmOwner; }
@@ -34,30 +35,28 @@ public class MessageControl
         MsgRecallMode recallMode = MsgRecallMode.None;
         // Check if it is a role command
         IsCommand = Player.GetRoleClass()?.OnSendMessage(Message, out recallMode) ?? false;
+        if (GameStates.IsInGame && CustomRoles.Blackmailer.IsExist())
+            if (Blackmailer.ForBlackmailer.Contains(Player.PlayerId))
+            {
+                IsCommand = true;
+                recallMode = MsgRecallMode.Spam;
+            }
+        //IsCommand = Player.GetRoleClass()?.OnPlayerSendMessage(player, Message, out recallMode) ?? false;
         if (IsCommand && !AmongUsClient.Instance.AmHost) ForceSend = true;
         CustomRoleManager.ReceiveMessage.Do(a => a.Invoke(this));
-        /*
-        if (Blackmailer.ForBlackmailer.Contains(player.PlayerId))
-        {
-            foreach (var pc in Main.AllPlayerControls)
-                if (pc.Is(CustomRoles.Blackmailer)) player.SetRealKiller(pc);
-            player.RpcSuicideWithAnime();
-            recallMode = MsgRecallMode.Spam;
-        }
-        */
+        
         RecallMode = recallMode;
         if (IsCommand || !AmongUsClient.Instance.AmHost) return;
+
         if (!IsCommand)
         {
-
-
-            // Not a role command, check for command listw
+            // Not a role command, check for command list
             foreach (var command in ChatCommand.AllCommands)
             {
                 if (command.Access switch
                 {
                     CommandAccess.All => false,
-                    CommandAccess.LocalMod => !IsFromSelf,
+                    CommandAccess.LocalMod => !IsFromMod,
                     CommandAccess.Host => !AmongUsClient.Instance.AmHost || !IsFromSelf,
                     CommandAccess.Debugger => !DebugModeManager.AmDebugger,
                     _ => true,
@@ -72,7 +71,9 @@ public class MessageControl
                 Logger.Info($"Command: /{keyword}, Args: {Args}", "ChatControl");
 
                 (RecallMode, string msg) = command.Command(this);
-                if (!string.IsNullOrEmpty(msg)) Utils.SendMessage(msg, Player.PlayerId);
+                if (!string.IsNullOrEmpty(msg)) 
+                    foreach ( var pid in SendToList)
+                       Utils.SendMessage(msg, pid);
                 IsCommand = true;
                 return;
             }

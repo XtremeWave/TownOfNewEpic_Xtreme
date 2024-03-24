@@ -59,12 +59,12 @@ public sealed class Warlock : RoleBase, IImpostor
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SyncWarlock);
+        using var sender = CreateSender();
         sender.Writer.Write(IsCursed);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncWarlock) return;
+        
         IsCursed = reader.ReadBoolean();
     }
     public bool OverrideKillButtonText(out string text)

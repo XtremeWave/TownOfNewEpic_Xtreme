@@ -1,0 +1,18 @@
+#Number:100046
+#Title:TownOfNewEpic_Xtreme v1.0
+#SubTitle:★★★★Version Patch★★★★
+#ShortTitle:★TONEX v1.0
+#Date:2024-03-08T00:00:00Z
+#-----------------------------
+# English
+Sloth I HATE YOU!!!!
+
+## Base
+- Based on AmongUs v2023.11.28
+- Based on Town Of Host v5.1.4 & Town Of Next v3.0.1Of Next v3.0.1
+
+## Warning
+- Create/join public lobbies is temporarily unavailable
+- This change is due to a server-side update that makes modded public lobbies unavailable for vanilla. Private lobbies are not affected.
+- Currently, this change is NOT permanent.
+- This Version(ver 1.0_20240308) was just for support Among Us new ver,Please wait for v1.1

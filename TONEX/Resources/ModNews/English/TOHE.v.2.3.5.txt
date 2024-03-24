@@ -36,7 +36,7 @@ I hope this is the last version before the TOH update
 - Fixed the bug that when the host is a Revolutionist, Arsonist, Mayor, Paranoid, Veteran, Grenadier, etc., clicking the vent button may not respond
 - Fixed the bug that some roles will be reset to double the time when resetting the kill/skill cooldown
 - Fixed the bug that Mayor's and Paranoid's vent cooldowns could be incorrectly reset to 300s
-- Fixed the bug that Puppeteers on non-host mod side can't see target marks
+- Fixed the bug that Puppeteer on non-host mod side can't see target marks
 - Fixed the bug that the game start countdown timer cannot be seen on the non-host mod
 - Fixed the bug that The file location will not pop up after outputting the log
 - Fixed the bug that Quick Shooter and Bomber's skill cooldowns were not being reset after a meeting
@@ -68,7 +68,7 @@ I hope this is the last version before the TOH update
 ## Role Changing
 - Mortician won't become Seer
 - Medium's skill changed to directly connect with the victim being reported for each meeting
-- Swooper will no longer be The Flash due to technical limitations
+- EvilInvisibler will no longer be The Flash due to technical limitations
 - Succubus color changed and is no longer an experimental role
 
 ## New Role

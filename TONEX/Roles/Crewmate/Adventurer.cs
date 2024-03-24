@@ -14,7 +14,7 @@ public sealed class Adventurer : RoleBase
             CustomRoles.Adventurer,
             () => RoleTypes.Crewmate,
             CustomRoleTypes.Crewmate,
-            94_3_1_0,
+            94_1_0_0300,
             SetupOptionItem,
             "ad|探险家",
             "#185abd"
@@ -46,12 +46,12 @@ public int SabotageFalseLimit;
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.AdventurerSabotage);
+        using var sender = CreateSender();
         sender.Writer.Write(SabotageFalseLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.AdventurerSabotage) return;
+        
         SabotageFalseLimit = reader.ReadInt32();
     }
     public override bool OnSabotage(PlayerControl player, SystemTypes systemType)

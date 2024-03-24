@@ -383,10 +383,10 @@ public static class Utils
 
                     || (seer.Is(CustomRoles.Charmed) && seen.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool())
 
-               || (seer.Is(CustomRoles.Wolfmate) && seen.Is(CustomRoles.Wolfmate))
-          || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Sidekick))
-          || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Whoops))
-            || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Sidekick))
+                    || (seer.Is(CustomRoles.Wolfmate) && seen.Is(CustomRoles.Wolfmate))
+                    || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Sidekick))
+                    || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Whoops))
+                    || (seer.Is(CustomRoles.Whoops) && seen.Is(CustomRoles.Sidekick))
                     || (seer.Is(CustomRoles.Sidekick) && seen.Is(CustomRoles.Whoops));
 
         var (roleColor, roleText) = GetTrueRoleNameData(seen.PlayerId, seer == seen || !seer.IsAlive());
@@ -543,7 +543,7 @@ public static class Utils
         if (RealKillerColor)
         {
             var KillerId = state.GetRealKiller();
-            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.Doctor);
+            Color color = KillerId != byte.MaxValue ? Main.PlayerColors[KillerId] : GetRoleColor(CustomRoles.MedicalExaminer);
             if (state.DeathReason is CustomDeathReason.Disconnected or CustomDeathReason.Vote) color = new Color32(255, 255, 255, 60);
             deathReason = ColorString(color, deathReason);
         }
@@ -635,6 +635,7 @@ public static class Utils
             (pc.Is(CustomRoles.NiceGuesser) && !Options.NGuesserCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Snitch) && !Options.SnitchCanBeMadmate.GetBool()) ||
             (pc.Is(CustomRoles.Judge) && !Options.JudgeCanBeMadmate.GetBool()) ||
+            (pc.Is(CustomRoles.NiceSwapper) && !Options.NSwapperCanBeMadmate.GetBool()) ||
             pc.Is(CustomRoles.LazyGuy) ||
             pc.Is(CustomRoles.Egoist)
             );
@@ -803,20 +804,44 @@ public static class Utils
             return;
         }
         var sb = new StringBuilder(GetString("Roles")).Append(':');
+        var sb1 = new StringBuilder(GetString("Roles")).Append(':');
+        var sb2 = new StringBuilder(GetString("Roles")).Append(':');
+        var sb3 = new StringBuilder(GetString("Roles")).Append(':');
+        var sb4 = new StringBuilder(GetString("Roles")).Append(':');
         sb.AppendFormat("\n{0}:{1}", GetRoleName(CustomRoles.GM), Options.EnableGM.GetString().RemoveHtmlTags());
         int headCount = -1;
         foreach (CustomRoles role in CustomRolesHelper.AllStandardRoles)
         {
             headCount++;
             if (role.IsImpostor() && headCount == 0) sb.Append("\n\n● " + GetString("TabGroup.ImpostorRoles"));
-            else if (role.IsCrewmate() && headCount == 1) sb.Append("\n\n● " + GetString("TabGroup.CrewmateRoles"));
-            else if (role.IsNeutral() && headCount == 2) sb.Append("\n\n● " + GetString("TabGroup.NeutralRoles"));
-            else if (role.IsAddon() && headCount == 3) sb.Append("\n\n● " + GetString("TabGroup.Addons"));
+            else if (role.IsCrewmate() && headCount == 1) sb1.Append("\n\n● " + GetString("TabGroup.CrewmateRoles"));
+            else if (role.IsNeutral() && headCount == 2) sb2.Append("\n\n● " + GetString("TabGroup.NeutralRoles"));
+            else if (role.IsAddon() && headCount == 3) sb3.Append("\n\n● " + GetString("TabGroup.Addons"));
             else headCount--;
 
-            if (role.IsEnable()) sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+            if (role.IsEnable())
+            {
+                switch (role.GetCustomRoleTypes())
+                {
+                    case CustomRoleTypes.Impostor:
+                        sb.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                    case CustomRoleTypes.Crewmate:
+                        sb1.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                    case CustomRoleTypes.Neutral:
+                        sb2.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                    case CustomRoleTypes.Addon:
+                        sb3.AppendFormat("\n{0}:{1}x{2}", GetRoleName(role), $"{Utils.GetRoleDisplaySpawnMode(role, false)}", role.GetCount());
+                        break;
+                }
+            }
         }
         SendMessage(sb.ToString(), PlayerId);
+        SendMessage(sb1.ToString(), PlayerId);
+        SendMessage(sb2.ToString(), PlayerId);
+        SendMessage(sb3.ToString(), PlayerId);
     }
     public static void ShowChildrenSettings(OptionItem option, ref StringBuilder sb, int deep = 0, bool forChat = false)
     {
@@ -846,6 +871,7 @@ public static class Utils
     }
     public static void ShowLastResult(byte PlayerId = byte.MaxValue)
     {
+        
         if (AmongUsClient.Instance.IsGameStarted)
         {
             SendMessage(GetString("CantUse.lastresult"), PlayerId);
@@ -865,12 +891,12 @@ public static class Utils
         List<byte> cloneRoles = new(PlayerState.AllPlayerStates.Keys);
         foreach (var id in Main.winnerList.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, false));
+            sb.Append($"\n★ ".Color(winnerColor)).Append(SummaryTexts(id, true));
             cloneRoles.Remove(id);
         }
         foreach (var id in cloneRoles.Where(i => !EndGamePatch.SummaryText[i].Contains("NotAssigned")))
         {
-            sb.Append($"\n　 ").Append(SummaryTexts(id, false));
+            sb.Append($"\n　 ").Append(SummaryTexts(id, true));
         }
         SendMessage(sb.ToString(), PlayerId);
     }
@@ -961,6 +987,7 @@ public static class Utils
             + $"\n  ○ /m {GetString("Command.myrole")}"
             + $"\n  ○ /l {GetString("Command.lastresult")}"
             + $"\n  ○ /win {GetString("Command.winner")}"
+            + $"\n  ○ /eje {GetString("Command.GetLatestEje")}"
             + "\n\n" + "<color=#12bee4>" + GetString("CommandOtherList")
             + $"\n  ○ /color {GetString("Command.color")}"
             + $"\n  ○ /rn {GetString("Command.rename")}"
@@ -1095,7 +1122,7 @@ public static class Utils
                 //seerの役職名とSelfTaskTextとseerのプレイヤー名とSelfMarkを合成
                 var (enabled, text) = GetRoleNameAndProgressTextData(seer);
                 string SelfRoleName = enabled ? $"<size={fontSize}>{text}</size>" : "";
-                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(seer.PlayerId))})" : "";
+                string SelfDeathReason = seer.KnowDeathReason(seer) ? $"({ColorString(GetRoleColor(CustomRoles.MedicalExaminer), GetVitalText(seer.PlayerId))})" : "";
                 string SelfName = $"{ColorString(seer.GetRoleColor(), SeerRealName)}{SelfDeathReason}{SelfMark}";
 
                 if (Pelican.IsEaten(seer.PlayerId))
@@ -1149,7 +1176,7 @@ public static class Utils
                     }
                     if (target.Is(CustomRoles.Mini) && seer != target)
                     {
-                        TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>({Mini.Age})</color>");
+                        TargetMark.Append($"<color={GetRoleColorCode(CustomRoles.Judge)}>({Mini.Age[target.PlayerId]})</color>");
                     }
 
                         //他人の役職とタスクは幽霊が他人の役職を見れるようになっていてかつ、seerが死んでいる場合のみ表示されます。それ以外の場合は空になります。
@@ -1185,7 +1212,7 @@ public static class Utils
 
                     string TargetDeathReason = "";
                     if (seer.KnowDeathReason(target))
-                        TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.Doctor), GetVitalText(target.PlayerId))})";
+                        TargetDeathReason = $"({ColorString(GetRoleColor(CustomRoles.MedicalExaminer), GetVitalText(target.PlayerId))})";
 
                     if (((IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding) && !isForMeeting)
                         TargetPlayerName = $"<size=0%>{TargetPlayerName}</size>";
@@ -1300,6 +1327,7 @@ public static class Utils
         };
         Process.Start(startInfo);
     }
+    private static Dictionary<byte, string> LastResultForChat = new();
     public static string SummaryTexts(byte id, bool isForChat)
     {
         /*// 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
@@ -1337,23 +1365,27 @@ public static class Utils
         // チャットならposタグを使わない(文字数削減)
         if (isForChat)
         {
-            var pc = GetPlayerById(id);
-            builder.Append(Main.AllPlayerNames[id]);
-            builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
-            builder.Append(' ').Append(GetVitalText(id));
-            string oldRoleName = GetOldRoleName(pc);
-            var newRoleName = GetTrueRoleName(id, false);
-            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
-            {
-                builder.AppendFormat("<pos={0}em>");
-                builder.Append($" {oldRoleName}{GetSubRolesText(id)} =>" + GetTrueRoleName(id, false).RemoveColorTags());
-                builder.Append(' ').Append(GetSubRolesText(id).RemoveColorTags());
-                return builder.ToString();
-            }
-            builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+            return LastResultForChat[id];
         }
         else
         {
+
+                  builder.Append(Main.AllPlayerNames[id]);
+                  builder.Append(": ").Append(GetProgressText(id).RemoveColorTags());
+                  builder.Append(' ').Append(GetVitalText(id));
+                  string oldRoleName = GetOldRoleName(id);
+                  var newRoleName = GetTrueRoleName(id, false);
+                  if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
+                  {
+                      builder.AppendFormat("<pos={0}em>", 0); // 修改此处，设置 pos 值
+                      builder.Append(oldRoleName + newRoleName);
+                  }
+                  else
+                  {
+                      builder.Append(' ').Append(GetTrueRoleName(id, false).RemoveColorTags());
+                  }
+
+            builder = new StringBuilder();
             // 全プレイヤー中最長の名前の長さからプレイヤー名の後の水平位置を計算する
             // 1em ≒ 半角2文字
             // 空白は0.5emとする
@@ -1369,15 +1401,16 @@ public static class Utils
             // "Lover's Suicide " = 8em
             // "回線切断 " = 4.5em
             pos += DestroyableSingleton<TranslationController>.Instance.currentLanguage.languageID == SupportedLangs.English ? 8f : 4.5f;
-            var pc = GetPlayerById(id);
-            string oldRoleName = GetOldRoleName(pc);
-            var newRoleName = GetTrueRoleName(id, false);
-            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName && !pc.Is(CustomRoles.GM))
+            if (!string.IsNullOrEmpty(oldRoleName) && oldRoleName != newRoleName)
             {
                 builder.AppendFormat("<pos={0}em>", pos);
-                builder.Append($"  {oldRoleName}{GetSubRolesText(id)} => " + GetTrueRoleName(id, false));
-                builder.Append(GetSubRolesText(id));
+                builder.Append(oldRoleName);
+                builder.Append(GetTrueRoleName(id, false));
                 builder.Append("</pos>");
+                if (!LastResultForChat.ContainsKey(id))
+                    LastResultForChat.Add(id, builder.ToString());
+                else
+                    LastResultForChat[id] = builder.ToString();
                 return builder.ToString();
             }
             builder.AppendFormat("<pos={0}em>", pos);
@@ -1385,16 +1418,26 @@ public static class Utils
             builder.Append(GetSubRolesText(id));
             builder.Append("</pos>");
         }
+        if (!LastResultForChat.ContainsKey(id))
+            LastResultForChat.Add(id, builder.ToString());
+        else
+            LastResultForChat[id] = builder.ToString();
         return builder.ToString();
     }
-    private static string GetOldRoleName(PlayerControl pc)
+    private static string GetOldRoleName(byte id)
     {
-        foreach (var role in Main.SetRolesList)
+        foreach (var kvp in Main.SetRolesList)
         {
-            if (role.Item2.PlayerId == pc.PlayerId || role.Item2.PlayerId.Equals(pc.PlayerId))
-                return role.Item1;
+            StringBuilder sb = new();
+            if (kvp.Key == id && kvp.Value.Count > 0)
+                foreach (var role in kvp.Value)
+                {
+                    if (role == "" || role == null) continue;
+                    sb.Append($"{role} =>");
+                }
+            return sb.ToString();
         }
-        Logger.Info($"失败", "LoadImage");
+        Logger.Info($"无", "RoleName");
         return null;
     }
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", string.Empty);

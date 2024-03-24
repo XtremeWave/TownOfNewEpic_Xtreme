@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Neutral;
-public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
+public sealed class RewardOfficer : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -36,7 +36,7 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
     {
         ForRewardOfficer = new();
     }
-
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.RewardOfficer;
     private static OptionItem OptionKillCooldown;
     static OptionItem RewardOfficerCanSeeRoles;
     enum OptionName
@@ -93,12 +93,12 @@ public sealed class RewardOfficer : RoleBase, IKiller, IIndependent
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetRewardOfficerName);
+        using var sender = CreateSender();
         sender.Writer.Write(Name);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetRewardOfficerName) return;
+        
         Name = reader.ReadString();
     }
     public override string GetProgressText(bool comms = false)

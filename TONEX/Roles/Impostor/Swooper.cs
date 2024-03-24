@@ -6,13 +6,13 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Impostor;
-public sealed class Swooper : RoleBase, IImpostor
+public sealed class EvilInvisibler : RoleBase, IImpostor
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
-            typeof(Swooper),
-            player => new Swooper(player),
-            CustomRoles.Swooper,
+            typeof(EvilInvisibler),
+            player => new EvilInvisibler(player),
+            CustomRoles.EvilInvisibler,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
             3900,
@@ -20,7 +20,7 @@ public sealed class Swooper : RoleBase, IImpostor
             "sw|隱匿者|隐匿|隐身人|隐身"
         );
 
-    public Swooper(PlayerControl player)
+    public EvilInvisibler(PlayerControl player)
     : base(
         RoleInfo,
         player
@@ -31,12 +31,12 @@ public sealed class Swooper : RoleBase, IImpostor
         VentedId = -1;
     }
 
-    static OptionItem SwooperCooldown;
-    static OptionItem SwooperDuration;
+    static OptionItem EvilInvisiblerCooldown;
+    static OptionItem EvilInvisiblerDuration;
     enum OptionName
     {
-        SwooperCooldown,
-        SwooperDuration,
+        EvilInvisiblerCooldown,
+        EvilInvisiblerDuration,
     }
 
     private long InvisTime;
@@ -44,20 +44,20 @@ public sealed class Swooper : RoleBase, IImpostor
     private int VentedId;
     private static void SetupOptionItem()
     {
-        SwooperCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.SwooperCooldown, new(2.5f, 180f, 2.5f), 30f, false)
+        EvilInvisiblerCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.EvilInvisiblerCooldown, new(2.5f, 180f, 2.5f), 30f, false)
             .SetValueFormat(OptionFormat.Seconds);
-        SwooperDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.SwooperDuration, new(2.5f, 180f, 2.5f), 15f, false)
+        EvilInvisiblerDuration = FloatOptionItem.Create(RoleInfo, 11, OptionName.EvilInvisiblerDuration, new(2.5f, 180f, 2.5f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetSwooperTimer);
+        using var sender = CreateSender();
         sender.Writer.Write(InvisTime.ToString());
         sender.Writer.Write(LastTime.ToString());
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetSwooperTimer) return;
+        
         InvisTime = long.Parse(reader.ReadString());
         LastTime = long.Parse(reader.ReadString());
     }
@@ -68,29 +68,29 @@ public sealed class Swooper : RoleBase, IImpostor
         if (!AmongUsClient.Instance.AmHost || LastTime == -1) return;
         var now = Utils.GetTimeStamp();
 
-        if (LastTime + (long)SwooperCooldown.GetFloat() < now)
+        if (LastTime + (long)EvilInvisiblerCooldown.GetFloat() < now)
         {
             LastTime = -1;
-            if (!player.IsModClient()) player.Notify(GetString("SwooperCanVent"));
+            if (!player.IsModClient()) player.Notify(GetString("EvilInvisiblerCanVent"));
             SendRPC();
         }
     }
     public override void OnSecondsUpdate(PlayerControl player, long now)
     {
         if (!AmongUsClient.Instance.AmHost || !IsInvis()) return;
-        var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - now;
+        var remainTime = InvisTime + (long)EvilInvisiblerDuration.GetFloat() - now;
         if (remainTime < 0)
         {
             LastTime = now;
             InvisTime = -1;
             SendRPC();
             player?.MyPhysics?.RpcBootFromVent(VentedId != -1 ? VentedId : Main.LastEnteredVent[player.PlayerId].Id);
-            NameNotifyManager.Notify(player, GetString("SwooperInvisStateOut"));
+            NameNotifyManager.Notify(player, GetString("EvilInvisiblerInvisStateOut"));
             return;
         }
         else if (remainTime <= 10)
         {
-            if (!player.IsModClient()) player.Notify(string.Format(GetString("SwooperInvisStateCountdown"), remainTime));
+            if (!player.IsModClient()) player.Notify(string.Format(GetString("EvilInvisiblerInvisStateCountdown"), remainTime));
         }
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)
@@ -101,7 +101,7 @@ public sealed class Swooper : RoleBase, IImpostor
             LastTime = now;
             InvisTime = -1;
             SendRPC();
-            NameNotifyManager.Notify(Player, GetString("SwooperInvisStateOut"));
+            NameNotifyManager.Notify(Player, GetString("EvilInvisiblerInvisStateOut"));
             return false;
         }
         else
@@ -119,14 +119,14 @@ public sealed class Swooper : RoleBase, IImpostor
                     InvisTime = now;
                     SendRPC();
 
-                    NameNotifyManager.Notify(Player, GetString("SwooperInvisState"), SwooperDuration.GetFloat());
+                    NameNotifyManager.Notify(Player, GetString("EvilInvisiblerInvisState"), EvilInvisiblerDuration.GetFloat());
                 }
                 else
                 {
                     physics.RpcBootFromVent(ventId);
-                    NameNotifyManager.Notify(Player, GetString("SwooperInvisInCooldown"));
+                    NameNotifyManager.Notify(Player, GetString("EvilInvisiblerInvisInCooldown"));
                 }
-            }, 0.5f, "Swooper Vent");
+            }, 0.5f, "EvilInvisibler Vent");
             return true;
         }
     }
@@ -137,18 +137,18 @@ public sealed class Swooper : RoleBase, IImpostor
         var str = new StringBuilder();
         if (IsInvis())
         {
-            var remainTime = InvisTime + (long)SwooperDuration.GetFloat() - Utils.GetTimeStamp();
-            return string.Format(GetString("SwooperInvisStateCountdown"), remainTime);
+            var remainTime = InvisTime + (long)EvilInvisiblerDuration.GetFloat() - Utils.GetTimeStamp();
+            return string.Format(GetString("EvilInvisiblerInvisStateCountdown"), remainTime);
         }
         else if (LastTime != -1)
         {
-            var cooldown = LastTime + (long)SwooperCooldown.GetFloat() - Utils.GetTimeStamp();
+            var cooldown = LastTime + (long)EvilInvisiblerCooldown.GetFloat() - Utils.GetTimeStamp();
 
-            return string.Format(GetString("SwooperInvisCooldownRemain"), cooldown);
+            return string.Format(GetString("EvilInvisiblerInvisCooldownRemain"), cooldown);
         }
         else
         {
-            str.Append(GetString("SwooperCanVent"));
+            str.Append(GetString("EvilInvisiblerCanVent"));
         }
         return str.ToString();
     }

@@ -5,9 +5,10 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using static TONEX.Translator;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Mario : RoleBase, IIndependent
+public sealed class Mario : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -44,12 +45,12 @@ public sealed class Mario : RoleBase, IIndependent
     public override void Add() => VentedTimes = 0;
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SyncMarioVentedTimes);
+        using var sender = CreateSender();
         sender.Writer.Write(VentedTimes);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncMarioVentedTimes) return;
+        
         VentedTimes = reader.ReadInt32();
     }
     public override void ApplyGameOptions(IGameOptions opt)

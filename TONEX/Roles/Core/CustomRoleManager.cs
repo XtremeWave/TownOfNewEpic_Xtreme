@@ -11,6 +11,7 @@ using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.AddOns.Impostor;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
+using static UnityEngine.GraphicsBuffer;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Core;
@@ -160,7 +161,7 @@ public static class CustomRoleManager
         Bait.OnMurderPlayerOthers(info);
         Beartrap.OnMurderPlayerOthers(info);
         Avenger.OnMurderPlayerOthers(info);
-        Mini.OnMurderPlayerOthers(info);
+        
         //その他視点の処理があれば実行
         foreach (var onMurderPlayer in OnMurderPlayerOthers.ToArray())
         {
@@ -369,6 +370,12 @@ public static class CustomRoleManager
                 case CustomRoles.Signal:
                     Signal.Add(pc.PlayerId);
                     break;
+                case CustomRoles.Spiders:
+                    Spiders.Add(pc.PlayerId);
+                    break;
+                case CustomRoles.Diseased:
+                    Diseased.Add(pc.PlayerId);
+                    break;
             }
         }
     }
@@ -377,10 +384,10 @@ public static class CustomRoleManager
     /// </summary>
     /// <param name="reader"></param>
     /// <param name="rpcType"></param>
-    public static void DispatchRpc(MessageReader reader, CustomRPC rpcType)
+    public static void DispatchRpc(MessageReader reader)
     {
         var playerId = reader.ReadByte();
-        GetByPlayerId(playerId)?.ReceiveRPC(reader, rpcType);
+        GetByPlayerId(playerId)?.ReceiveRPC(reader);
     }
     //NameSystem
     public static HashSet<Func<PlayerControl, PlayerControl, bool, string>> MarkOthers = new();
@@ -528,7 +535,6 @@ public enum CustomRoles
     SerialKiller,
     ShapeMaster,
     EvilGuesser,
-    EvilSwapper,//TODO
     KillingMachine,
     Zombie,
     Sniper,
@@ -540,7 +546,7 @@ public enum CustomRoles
     Miner,
     Escapist,
     Mare,
-    Puppeteer,
+    ControlFreak,
     TimeThief,
     EvilTracker,
     AntiAdminer,
@@ -561,20 +567,30 @@ public enum CustomRoles
     Butcher,
     Hangman,
     Bard,
-    Swooper,
+    EvilInvisibler,
     CrewPostor,
     Penguin,
     Stealth,
     Messenger,
     Insider,
     Onmyoji,
-    Blackmailer,//TODO
     Gamblers,
     DoubleKiller,
     Medusa,
     Skinwalker,
     ViciousSeeker,
-    EvilGuardian,//TODO
+    EvilGuardian,//TODO 邪恶天使
+    EvilTimeStops, //TODO 邪恶的时停者
+    MirrorSpirit,//TODO 镜妖
+    Assaulter,//TODO 强袭者
+    MimicTeam,//TODO 模仿者团队
+    MimicKiller,//TODO 模仿者（杀手）
+    MimicAssistant,//TODO 模仿者（助手）
+    Blackmailer,//TODO 勒索者
+    EvilSwapper,
+    Disperser,//TODO 分散者
+    EvilPianist,//TODO 邪恶的钢琴家
+
     //Crewmate(Vanilla)
     Engineer,
     GuardianAngel,
@@ -592,10 +608,9 @@ public enum CustomRoles
     Snitch,
     SpeedBooster,
     Dictator,
-    Doctor,
+    MedicalExaminer,
     Vigilante,
     NiceGuesser,
-    NiceSwapper,//TODO
     Transporter,
     TimeManager,
     Veteran,
@@ -610,12 +625,28 @@ public enum CustomRoles
     Medium,
     Observer,
     DoveOfPeace,
-    TimeStops,
+    NiceTimeStops,
     TimeMaster,
     Prophet,
-    RubePeople,
+    Instigator,
     Adventurer,
     Unyielding,
+    Perfumer, //TODO 香水师
+    Captain,// TODO 舰长
+    VirtueGuider, //TODO 善导者，TOHEX的舰长
+    NiceTracker,//TODO 正义的追踪者
+    NiceInvisibler,//TODO 影行者（正义隐身）
+    NiceSwapper,
+    Hunter,
+    SpecterSlayer,
+    Alien, //TODO 外星人
+    Spy,//TODO 卧底
+    NicePianist,//TODO 正义的钢琴家
+    Sloth,//TODO 树懒
+    Bees,//TODO 蜜蜂
+    CopyCat,//TODO 效颦者
+    Deputy,
+    InjusticeSpirit,//TODO 冤魂
     //Neutral
     Arsonist,
     Jester,
@@ -625,17 +656,17 @@ public enum CustomRoles
     Terrorist,
     Executioner,
     Jackal,
-    Innocent, //TODO
+    Innocent, //TODO 冤罪师
     Pelican,
-    Revolutionist, //TODO
+    Revolutionist, //TODO 革命家
     Hater,
-    Konan, //TODO
+    Konan, //TODO 柯南
     Demon,
-    Stalker, //TODO
+    Stalker, //TODO 潜藏者
     Workaholic,
-    Collector, //TODO
-    Provocateur, //TODO
-    Sunnyboy, //TODO
+    Collector, //TODO 集票者
+    Provocateur, //TODO 自爆卡车
+    Sunnyboy, //TODO 阳光开朗大男孩
     BloodKnight,
     Follower,
     Succubus,
@@ -646,14 +677,34 @@ public enum CustomRoles
     Sidekick,
     Despair,
     RewardOfficer,
-    Vagor_FAFL,
-    Non_Villain,
+    Vagator,
+    Non_Villain,//不演反派 1.0限定
     Lawyer,
     Prosecutors,
-    PVPboss,//TODO
+    PVPboss,//TODO PvP大佬
+    Rebels,
+    Admirer,//TODO 暗恋者
+    Akujo, //TODO 魅魔
+    Puppeteer,
+    Changger,//TODO 连环交换师
+    Amnesiac,//TODO 失忆者
+    Plaguebearer,
+    GodOfPlagues,
+    Yandere,//TODO 病娇
+    PoliticalStrategists,//TODO 纵横家
+
+    Challenger,//TODO 挑战者
+    Martyr,//先烈 1.1限定
+    NightWolf,
+    Moonshadow,//TODO 月影,1.4限定
+    Phantom,//TODO 幻影
+    MeteorArbiter,//TODO 陨星判官,1.2限定
+    MeteorMurder,//TODO 陨星戮者,1.2限定
+    SharpShooter,//TODO 神射手
     //GameMode
     HotPotato,
     ColdPotato,
+
     //GM
     GM,
 
@@ -688,6 +739,16 @@ public enum CustomRoles
     Mini,
     Libertarian,
     Signal,
+    Spiders,
+    Professional,//TODO 专业赌怪
+    Luckless,//TODO 倒霉蛋
+    FateFavor,//TODO 命运眷顾者
+    Nihility,//TODO 虚无
+    Diseased,
+    IncorruptibleOfficial,//TODO 清廉之官
+    VIP,//TODO VIP
+    Believer,//TODO 信徒
+
 }
 public enum CustomRoleTypes
 {

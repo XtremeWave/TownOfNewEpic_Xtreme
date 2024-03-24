@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Pelican : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Pelican : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -51,7 +51,7 @@ public sealed class Pelican : RoleBase, INeutralKilling, IKiller, ISchrodingerCa
     public static bool CanVent;
 
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Pelican;
-
+    public bool IsNK { get; private set; } = true;
     private static void SetupOptionItem()
     {
         OptionKillCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.PelicanKillCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -70,13 +70,13 @@ public sealed class Pelican : RoleBase, INeutralKilling, IKiller, ISchrodingerCa
     public bool CanUseKillButton() => Player.IsAlive();
     private void SendRPC()
     {
-        var sender = CreateSender(CustomRPC.SyncPelicanEatenPlayers);
+        var sender = CreateSender();
         sender.Writer.Write(EatenPlayers.Count);
         EatenPlayers.Do(sender.Writer.Write);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncPelicanEatenPlayers) return;
+        
         EatenPlayers = new();
         for (int i = 0; i < reader.ReadInt32(); i++)
             EatenPlayers.Add(reader.ReadByte());

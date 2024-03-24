@@ -34,22 +34,20 @@ class TryPetPatch
     {
         if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
         if (!(AmongUsClient.Instance.AmHost && AmongUsClient.Instance.AmClient)) return;
-        var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
-        if (cancel)
+
             __instance.petting = true;
         ExternalRpcPetPatch.Prefix(__instance.MyPhysics, 51, new MessageReader());
     }
 
     public static void Postfix(PlayerControl __instance)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard || !Options.UsePets.GetBool()) return;
         var cancel = Options.CurrentGameMode == CustomGameMode.Standard;
-        if (cancel)
-        {
+
             __instance.petting = false;
             if (__instance.AmOwner)
                 __instance.MyPhysics.RpcCancelPet();
-        }
+        
     }
 }
 
@@ -58,7 +56,7 @@ class ExternalRpcPetPatch
 {
     public static void Prefix(PlayerPhysics __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
-        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard) return;
+        if (!AmongUsClient.Instance.AmHost || GameStates.IsLobby || Options.CurrentGameMode != CustomGameMode.Standard || !Options.UsePets.GetBool()) return;
         var rpcType = callId == 51 ? RpcCalls.Pet : (RpcCalls)callId;
         if (rpcType != RpcCalls.Pet) return;
 

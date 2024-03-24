@@ -16,14 +16,9 @@ public sealed class Blackmailer : RoleBase, IImpostor
             CustomRoles.Blackmailer,
             () => RoleTypes.Shapeshifter,
             CustomRoleTypes.Impostor,
-            94_7_1_1,
+            75_1_1_0600,
             SetupOptionItem,
-            "bl|勒索",
-            experimental: true
-#if RELEASE
-,
-            ctop: true
-#endif
+            "bl|勒索"
         );
     public Blackmailer(PlayerControl player)
     : base(
@@ -40,6 +35,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
     static OptionItem OptionShapeshiftCooldown;
     public static List<byte> ForBlackmailer;
     public static Dictionary<byte, int> BlackmailerLimit;
+
     enum OptionName
     {
         BlackmailerCooldown,
@@ -52,6 +48,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
     public override void Add()
     {
         ForBlackmailer = new();
+        //ForBlackmailer.Add(Player.PlayerId);
         BlackmailerLimit = new();
     }
     public override void ApplyGameOptions(IGameOptions opt)
@@ -62,15 +59,16 @@ public sealed class Blackmailer : RoleBase, IImpostor
     }
     public override bool GetAbilityButtonText(out string text)
     {
-        text = Translator.GetString("SoulCatcherButtonText");
+        text = Translator.GetString("BlackMailerButtonText");
         return !Shapeshifting;
     }
     private bool Shapeshifting;
-    public override void OnShapeshift(PlayerControl target)
+    public override bool OnCheckShapeshift(PlayerControl target, ref bool animate)
     {
+
         Shapeshifting = !Is(target);
 
-        if (!AmongUsClient.Instance.AmHost) return;
+        if (!AmongUsClient.Instance.AmHost) return false;
 
         if (Shapeshifting)
         {
@@ -79,6 +77,7 @@ public sealed class Blackmailer : RoleBase, IImpostor
             else
                 ForBlackmailer.Add(target.PlayerId);
         }
+        return false;
     }
     public override void OnExileWrapUp(GameData.PlayerInfo exiled, ref bool DecidedWinner)
     {

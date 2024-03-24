@@ -37,4 +37,4 @@ Thank you for using TOHE!
 - Option: Disable Hidden Roles
 
 ## New Role
-- Impostor: Swooper
+- Impostor: EvilInvisibler

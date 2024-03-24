@@ -1,8 +1,12 @@
-﻿/*using AmongUs.GameOptions;
+﻿using AmongUs.GameOptions;
 using TONEX.Modules;
+using System.Collections.Generic;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.SwapperHelper;
+using Hazel;
+using static TONEX.Modules.MeetingVoteManager;
 
 namespace TONEX.Roles.Impostor;
 public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
@@ -14,44 +18,38 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
             CustomRoles.EvilSwapper,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Impostor,
-            1000,
+            75_1_1_0300,
             SetupOptionItem,
-            "eg|邪惡賭怪|邪恶的赌怪|坏赌|邪恶赌|恶赌|赌怪"
+            "eg|邪惡换票|邪恶的换票|坏换票|邪恶换票|恶换票|换票"
         );
     public EvilSwapper(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
-    { }
-
-    public static OptionItem OptionGuessNums;
-    public static OptionItem OptionCanGuessImp;
-    public static OptionItem OptionCanGuessAddons;
-    public static OptionItem OptionCanGuessVanilla;
-    public static OptionItem OptionCanGuessTaskDoneSnitch;
-    enum OptionName
     {
-        SwapperCanGuessTimes,
-        EGCanGuessImp,
-        EGCanGuessAdt,
-        EGCanGuessVanilla,
-        EGCanGuessTaskDoneSnitch,
+        SwapList = new();
     }
 
-    public int GuessLimit;
+    public static OptionItem OptionGuessNums;
+    public static OptionItem SwapperCanStartMetting;
+    enum OptionName
+    {
+        SwapperCanSwapTimes,
+        SwapperCanStartMetting,
+    }
+
+    public int SwapLimit;
+    public List<byte> SwapList;
     private static void SetupOptionItem()
     {
-        OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanGuessTimes, new(1, 15, 1), 15, false)
+        OptionGuessNums = IntegerOptionItem.Create(RoleInfo, 10, OptionName.SwapperCanSwapTimes, new(1, 15, 1), 15, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionCanGuessImp = BooleanOptionItem.Create(RoleInfo, 11, OptionName.EGCanGuessImp, true, false);
-        OptionCanGuessAddons = BooleanOptionItem.Create(RoleInfo, 12, OptionName.EGCanGuessAdt, false, false);
-        OptionCanGuessVanilla = BooleanOptionItem.Create(RoleInfo, 13, OptionName.EGCanGuessVanilla, true, false);
-        OptionCanGuessTaskDoneSnitch = BooleanOptionItem.Create(RoleInfo, 14, OptionName.EGCanGuessTaskDoneSnitch, true, false);
+        SwapperCanStartMetting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SwapperCanStartMetting, true, false);
     }
     public override void Add()
     {
-        GuessLimit = OptionGuessNums.GetInt();
+        SwapLimit = OptionGuessNums.GetInt();
     }
     public override void OverrideNameAsSeer(PlayerControl seen, ref string nameText, bool isForMeeting = false)
     {
@@ -60,9 +58,8 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
             nameText = Utils.ColorString(Utils.GetRoleColor(CustomRoles.EvilSwapper), seen.PlayerId.ToString()) + " " + nameText;
         }
     }
-    public string ButtonName { get; private set; } = "Target";
     public bool ShouldShowButton() => Player.IsAlive();
-    public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive();
+    public bool ShouldShowButtonFor(PlayerControl target) => target.IsAlive() && target != Player;
     public override bool GetGameStartSound(out string sound)
     {
         sound = "Gunfire";
@@ -76,7 +73,32 @@ public sealed class EvilSwapper : RoleBase, IImpostor, IMeetingButton
     }
     public bool OnClickButtonLocal(PlayerControl target)
     {
-        ShowGuessPanel(target.PlayerId, MeetingHud.Instance);
+        Swap(Player, target, out var reason);
+        if (reason != null)
+        Player.ShowPopUp(Utils.ColorString(UnityEngine.Color.cyan, Translator.GetString("SwapTitle")) + "\n" + reason);
         return false;
     }
-}*/
+    public string ButtonName { get; private set; } = "SwapNo";
+    public override void AfterMeetingTasks()
+    {
+        if (SwapList.Count == 2)
+            SwapLimit--;
+        SwapList.Clear();
+        SendRPC(true);
+    }
+    public void SendRPC(bool cle = false)
+    {
+        using var sender = CreateSender();
+        sender.Writer.Write(SwapLimit);
+        sender.Writer.Write(cle);
+    }
+
+    public override void ReceiveRPC(MessageReader reader)
+    {
+        
+        SwapLimit = reader.ReadInt32();
+        var cle = reader.ReadBoolean();
+        if (cle)
+            SwapList.Clear();
+    }
+}

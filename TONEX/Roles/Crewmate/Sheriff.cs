@@ -43,10 +43,17 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     public static OptionItem CanKillNeutralsMode;
     private static OptionItem CanKillMadmate;
     private static OptionItem CanKillCharmed;
+    private static OptionItem CanKillWolfMate;
     private static OptionItem SetMadCanKill;
     private static OptionItem MadCanKillCrew;
     private static OptionItem MadCanKillImp;
     private static OptionItem MadCanKillNeutral;
+    public static OptionItem HasDeputy;
+    public static OptionItem DeputySkillLimit;
+    public static OptionItem DeputySkillCooldown;
+    public static OptionItem DeputyCanBecomeSheriff;
+    public static OptionItem SheriffKnowDeputy;
+    public static OptionItem DeputyKnowSheriff;
     enum OptionName
     {
         SheriffMisfireKillsTarget,
@@ -57,10 +64,17 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         SheriffCanKill,
         SheriffCanKillMadmate,
         SheriffCanKillCharmed,
+        SheriffCanKillWolfMate,
         SheriffSetMadCanKill,
         SheriffMadCanKillImp,
         SheriffMadCanKillNeutral,
-        SheriffMadCanKillCrew
+        SheriffMadCanKillCrew,
+        HasDeputy,
+        DeputySkillLimit,
+        DeputySkillCooldown,
+        DeputyCanBecomeSheriff,
+        SheriffKnowDeputy,
+        DeputyKnowSheriff
     }
     public static Dictionary<CustomRoles, OptionItem> KillTargetOptions = new();
     public static Dictionary<SchrodingerCat.TeamType, OptionItem> SchrodingerCatKillTargetOptions = new();
@@ -70,7 +84,6 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     {
             "SheriffCanKillAll", "SheriffCanKillSeparately"
     };
-
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Crew;
 
     private static void SetupOptionItem()
@@ -78,34 +91,44 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
         KillCooldown = FloatOptionItem.Create(RoleInfo, 10, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 15f, false)
             .SetValueFormat(OptionFormat.Seconds);
         MisfireKillsTarget = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SheriffMisfireKillsTarget, false, false);
-        ShotLimitOpt = IntegerOptionItem.Create(RoleInfo, 12, OptionName.SheriffShotLimit, new(1, 15, 1), 15, false)
+        ShotLimitOpt = IntegerOptionItem.Create(RoleInfo, 12, OptionName.SheriffShotLimit, new(1, 15, 1), 5, false)
             .SetValueFormat(OptionFormat.Times);
         CanKillAllAlive = BooleanOptionItem.Create(RoleInfo, 15, OptionName.SheriffCanKillAllAlive, true, false);
-        CanKillMadmate = BooleanOptionItem.Create(RoleInfo, 17, OptionName.SheriffCanKillMadmate, true, false);
-        CanKillCharmed = BooleanOptionItem.Create(RoleInfo, 22, OptionName.SheriffCanKillCharmed, true, false);
-        CanKillNeutrals = BooleanOptionItem.Create(RoleInfo, 16, OptionName.SheriffCanKillNeutrals, true, false);
-        CanKillNeutralsMode = StringOptionItem.Create(RoleInfo, 14, OptionName.SheriffCanKillNeutralsMode, KillOption, 0, false, CanKillNeutrals);
-        SetUpNeutralOptions(30);
-        SetMadCanKill = BooleanOptionItem.Create(RoleInfo, 18, OptionName.SheriffSetMadCanKill, false, false);
-        MadCanKillImp = BooleanOptionItem.Create(RoleInfo, 19, OptionName.SheriffMadCanKillImp, true, false).SetParent(SetMadCanKill);
-        MadCanKillNeutral = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SheriffMadCanKillNeutral, true, false).SetParent(SetMadCanKill);
-        MadCanKillCrew = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SheriffMadCanKillCrew, true, false).SetParent(SetMadCanKill);
+        CanKillMadmate = BooleanOptionItem.Create(RoleInfo, 16, OptionName.SheriffCanKillMadmate, true, false);
+        CanKillCharmed = BooleanOptionItem.Create(RoleInfo, 17, OptionName.SheriffCanKillCharmed, true, false);
+        CanKillWolfMate = BooleanOptionItem.Create(RoleInfo, 18, OptionName.SheriffCanKillWolfMate, true, false);
+        CanKillNeutrals = BooleanOptionItem.Create(RoleInfo, 19, OptionName.SheriffCanKillNeutrals, true, false);
+        CanKillNeutralsMode = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SheriffCanKillNeutralsMode,false, false, CanKillNeutrals);
+        
+        SetUpNeutralOptions(40);
+        SetMadCanKill = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SheriffSetMadCanKill, false, false);
+        MadCanKillImp = BooleanOptionItem.Create(RoleInfo, 22, OptionName.SheriffMadCanKillImp, true, false).SetParent(SetMadCanKill);
+        MadCanKillNeutral = BooleanOptionItem.Create(RoleInfo, 23, OptionName.SheriffMadCanKillNeutral, true, false).SetParent(SetMadCanKill);
+        MadCanKillCrew = BooleanOptionItem.Create(RoleInfo, 24, OptionName.SheriffMadCanKillCrew, true, false).SetParent(SetMadCanKill);
+        HasDeputy = BooleanOptionItem.Create(RoleInfo, 25, OptionName.HasDeputy, true, false);
+        DeputySkillLimit = IntegerOptionItem.Create(RoleInfo, 26, OptionName.DeputySkillLimit, new(1, 999, 1), 5, false,HasDeputy).SetValueFormat(OptionFormat.Times);
+        DeputySkillCooldown = FloatOptionItem.Create(RoleInfo, 27, OptionName.DeputySkillCooldown, new(2.5f, 180f, 2.5f), 15f, false, HasDeputy).SetValueFormat(OptionFormat.Seconds);
+        DeputyCanBecomeSheriff = BooleanOptionItem.Create(RoleInfo, 28, OptionName.DeputyCanBecomeSheriff, true, false, HasDeputy);
+        SheriffKnowDeputy = BooleanOptionItem.Create(RoleInfo, 29, OptionName.SheriffKnowDeputy, true, false, HasDeputy);
+        DeputyKnowSheriff = BooleanOptionItem.Create(RoleInfo, 30, OptionName.DeputyKnowSheriff, true, false, HasDeputy);
     }
     public static void SetUpNeutralOptions(int idOffset)
     {
-        foreach (var neutral in CustomRolesHelper.AllStandardRoles.Where(x => x.IsNeutral()).ToArray())
+
+        foreach (var neutral in CustomRolesHelper.AllStandardRoles.Where(x => x.IsNeutral() && !x.IsTODO()).ToArray())
         {
-            if (neutral is CustomRoles.SchrodingerCat or CustomRoles.HotPotato or CustomRoles.ColdPotato) continue;
-            SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutrals);
+            if (neutral is CustomRoles.SchrodingerCat or CustomRoles.HotPotato or CustomRoles.ColdPotato or CustomRoles.Non_Villain or CustomRoles.GodOfPlagues) continue;
+            if (neutral.IsTODO()) continue;
+            SetUpKillTargetOption(neutral, idOffset, true, CanKillNeutralsMode);
             idOffset++;
         }
         foreach (var catType in EnumHelper.GetAllValues<SchrodingerCat.TeamType>())
         {
-            if ((byte)catType < 50)
+            if ((byte)catType < 50 || catType == SchrodingerCat.TeamType.NightWolf)
             {
                 continue;
             }
-            SetUpSchrodingerCatKillTargetOption(catType, idOffset, true, CanKillNeutrals);
+            SetUpSchrodingerCatKillTargetOption(catType, idOffset, true, CanKillNeutralsMode);
             idOffset++;
         }
     }
@@ -140,12 +163,12 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetSheriffShotLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(ShotLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetSheriffShotLimit) return;
+        
 
         ShotLimit = reader.ReadInt32();
     }
@@ -220,5 +243,13 @@ public sealed class Sheriff : RoleBase, IKiller, ISchrodingerCatOwner
             CustomRoleTypes.Neutral => CanKillNeutrals.GetBool() && (CanKillNeutralsMode.GetValue() == 0 || (!KillTargetOptions.TryGetValue(cRole, out var option) || option.GetBool())),
             _ => CanKill,
         };
+    }
+    public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
+    {
+        //seenが省略の場合seer
+        seen ??= seer;
+        if (seen.Is(CustomRoles.Deputy) && SheriffKnowDeputy.GetBool()) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Sheriff), "△");
+        else
+            return "";
     }
 }

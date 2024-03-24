@@ -7,6 +7,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using UnityEngine;
 using static TONEX.Translator;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using Hazel;
 using System.IO;
 using System.Reflection;
@@ -143,34 +144,39 @@ class IntroCutscenePatch
         __instance.ImpostorText.gameObject.SetActive(false);
         PlayerControl.LocalPlayer.Data.Role.IntroSound = null;
         PlayerControl.LocalPlayer.Data.Role.UseSound = GetIntroSound(RoleTypes.Impostor);
-        switch (role.GetCustomRoleTypes())
+        if (Main.EnableRoleBackGround.Value)
         {
-            case CustomRoleTypes.Impostor:
-                __instance.TeamTitle.text = GetString("TeamImpostor");
-                __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
+            switch (role.GetCustomRoleTypes())
+            {
+                case CustomRoleTypes.Impostor:
+                    __instance.TeamTitle.text = GetString("TeamImpostor");
+                    __instance.TeamTitle.color = __instance.BackgroundBar.material.color = new Color32(255, 25, 25, byte.MaxValue);
                     break;
-            case CustomRoleTypes.Crewmate:
-                __instance.TeamTitle.text = $"{GetString("TeamCrewmate")}\n{string.Format(GetString("ImpostorNum"),Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors))}";
-                __instance.TeamTitle.color = new Color32(140, 255, 255, byte.MaxValue);
-                __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
-                break;
-            case CustomRoleTypes.Neutral:
-                if (PlayerControl.LocalPlayer.GetRoleClass() is not IIndependent independent)
-                {
-                    __instance.TeamTitle.text = GetString("TeamNeutral");
-                    __instance.TeamTitle.color  = new Color32(255, 171, 27, byte.MaxValue);
+                case CustomRoleTypes.Crewmate:
+                    __instance.TeamTitle.text = $"{GetString("TeamCrewmate")}\n{string.Format(GetString("ImpostorNum"), Main.RealOptionsData.GetInt(Int32OptionNames.NumImpostors))}";
+                    __instance.TeamTitle.color = new Color32(140, 255, 255, byte.MaxValue);
                     __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
-                }
-                else
-                {
-                    __instance.TeamTitle.text = GetString("TeamIndependent");
-                    __instance.TeamTitle.color = new Color32(187, 187, 187, byte.MaxValue);
-                    __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
-                }
-                break;
+                    break;
+                case CustomRoleTypes.Neutral:
+                    if (!PlayerControl.LocalPlayer.IsNeutralEvil())
+                    {
+                        __instance.TeamTitle.text = GetString("TeamNeutral");
+                        __instance.TeamTitle.color = new Color32(255, 171, 27, byte.MaxValue);
+                        __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                    }
+                    else
+                    {
+                        __instance.TeamTitle.text = GetString("TeamIndependent");
+                        __instance.TeamTitle.color = new Color32(187, 187, 187, byte.MaxValue);
+                        __instance.BackgroundBar.material.color = Utils.GetRoleColor(PlayerControl.LocalPlayer.GetCustomRole());
+                    }
+                    break;
+            }
         }
         if (PlayerControl.LocalPlayer.GetRoleClass()?.GetGameStartSound(out var newsound) ?? false)
         {
+            if (Options.SubGameMode.GetInt() == 1)
+                newsound = "GongXiFaCai";
             new LateTask(() =>
             {
                 PlayerControl.LocalPlayer.RPCPlayCustomSound(newsound);
@@ -203,7 +209,7 @@ class IntroCutscenePatch
                 PlayerControl.LocalPlayer.Data.Role.IntroSound = GetIntroSound(RoleTypes.Crewmate);
                 break;
             case CustomRoleTypes.Neutral:
-                if (PlayerControl.LocalPlayer.CanUseKillButton())
+                if (PlayerControl.LocalPlayer.IsNeutralKiller())
                 {
                     new LateTask(() =>
                     {
@@ -343,10 +349,22 @@ class IntroCutscenePatch
     public static void OnDestroy_Postfix(IntroCutscene __instance)
     {
         if (!GameStates.IsInGame) return;
+
+        Main.introDestroyed = true;
+
+        var mapId = Main.NormalOptions.MapId;
+        // エアシップではまだ湧かない
+        if ((MapNames)mapId != MapNames.Airship)
+        {
+            foreach (var state in PlayerState.AllPlayerStates.Values)
+            {
+                state.HasSpawned = true;
+            }
+        }
         Main.introDestroyed = true;
         if (AmongUsClient.Instance.AmHost)
         {
-            if (Main.NormalOptions.MapId != 4)
+            if (mapId != 4)
             {
                 Main.AllPlayerControls.Do(pc => pc.RpcResetAbilityCooldown());
                 if (Options.FixFirstKillCooldown.GetBool() && Options.CurrentGameMode != CustomGameMode.HotPotato)
@@ -372,7 +390,7 @@ class IntroCutscenePatch
             if (RandomSpawn.IsRandomSpawn())
             {
                 RandomSpawn.SpawnMap map;
-                switch (Main.NormalOptions.MapId)
+                switch (mapId)
                 {
                     case 0:
                         map = new RandomSpawn.SkeldSpawnMap();

@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
+public sealed class Follower : RoleBase, INeutralKiller, IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -72,6 +72,7 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
         BetLimit = OptionMaxBetTimes.GetInt();
         BetTarget = byte.MaxValue;
     }
+    public bool IsNE { get; private set; } = false;
     public bool IsKiller => false;
     public float CalculateKillCooldown()
     {
@@ -85,13 +86,13 @@ public sealed class Follower : RoleBase, IKiller, IAdditionalWinner
     public bool CanUseSabotageButton() => false;
     private void SendRPC()
     {
-        var sender = CreateSender(CustomRPC.SyncFollowerTargetAndTimes);
+        var sender = CreateSender();
         sender.Writer.Write(BetLimit);
         sender.Writer.Write(BetTarget);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncFollowerTargetAndTimes) return;
+        
         BetLimit = reader.ReadInt32();
         BetTarget = reader.ReadByte();
     }

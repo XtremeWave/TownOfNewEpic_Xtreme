@@ -44,12 +44,14 @@ public sealed class Sniper : RoleBase, IImpostor
     static OptionItem SniperPrecisionShooting;
     static OptionItem SniperAimAssist;
     static OptionItem SniperAimAssistOnshot;
+    static OptionItem SniperCanKill;
     enum OptionName
     {
         SniperBulletCount,
         SniperPrecisionShooting,
         SniperAimAssist,
-        SniperAimAssistOneshot
+        SniperAimAssistOneshot,
+        SniperCanKill
     }
     Vector3 SnipeBasePosition;
     Vector3 LastPosition;
@@ -73,6 +75,7 @@ public sealed class Sniper : RoleBase, IImpostor
         SniperPrecisionShooting = BooleanOptionItem.Create(RoleInfo, 11, OptionName.SniperPrecisionShooting, false, false);
         SniperAimAssist = BooleanOptionItem.Create(RoleInfo, 12, OptionName.SniperAimAssist, true, false);
         SniperAimAssistOnshot = BooleanOptionItem.Create(RoleInfo, 13, OptionName.SniperAimAssistOneshot, false, false, SniperAimAssist);
+        SniperCanKill = BooleanOptionItem.Create(RoleInfo, 14, OptionName.SniperCanKill, false, false);
     }
     public override void Add()
     {
@@ -91,7 +94,7 @@ public sealed class Sniper : RoleBase, IImpostor
     private void SendRPC()
     {
         Logger.Info($"{Player.GetNameWithRole()}:SendRPC", "Sniper");
-        using var sender = CreateSender(CustomRPC.SniperSync);
+        using var sender = CreateSender();
 
         var snList = ShotNotify;
         sender.Writer.Write(snList.Count);
@@ -101,9 +104,9 @@ public sealed class Sniper : RoleBase, IImpostor
         }
     }
 
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SniperSync) return;
+        
         ShotNotify.Clear();
         var count = reader.ReadInt32();
         while (count > 0)
@@ -115,7 +118,7 @@ public sealed class Sniper : RoleBase, IImpostor
     }
     public bool CanUseKillButton()
     {
-        return Player.IsAlive() && BulletCount <= 0;
+        return Player.IsAlive() && (BulletCount <= 0 || SniperCanKill.GetBool());
     }
     /// <summary>
     /// 狙撃の場合死因設定

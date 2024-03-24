@@ -1,12 +1,12 @@
 using AmongUs.GameOptions;
-
+using System.Linq;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
+public sealed class Opportunist : RoleBase, IAdditionalWinner, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -20,18 +20,22 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
             "op|投機者|投机",
             "#00ff00",
            true
+           
         );
     public Opportunist(PlayerControl player)
     : base(
         RoleInfo,
         player
     )
-    { }
+    {
+        
+    }
     private static OptionItem OptionKillCooldown;
-    private static OptionItem OptionCanKill;
+    public static OptionItem OptionCanKill;
     public static OptionItem OptionCanVent;
-
-
+    public bool IsNK { get; private set; } = OptionCanKill.GetBool();
+    public bool IsNE { get; private set; } = false;
+    public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Opportunist;
     private static void SetupOptionItem()
     {
         OptionCanKill = BooleanOptionItem.Create(RoleInfo, 15, GeneralOption.CanKill, true, false);
@@ -47,6 +51,12 @@ public sealed class Opportunist : RoleBase, IAdditionalWinner,IKiller
 
     public bool CheckWin(ref CustomRoles winnerRole, ref CountTypes winnerCountType)
     {
-        return Player.IsAlive();
+        var win = false;
+        foreach (var player in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.SchrodingerCat)))
+        {
+            if (CustomWinnerHolder.WinnerIds.Contains(player.PlayerId) && (player.GetRoleClass() as SchrodingerCat).Team == SchrodingerCat.TeamType.Opportunist)
+                win = true;
+        }
+        return Player.IsAlive()|| win;
     }
 }

@@ -57,12 +57,12 @@ public sealed class Prophet : RoleBase, IKiller
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.ProphetKill);
+        using var sender = CreateSender();
         sender.Writer.Write(ProphetLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.ProphetKill) return;
+        
         ProphetLimit = reader.ReadInt32();
     }
     private static void SendRPC_SyncList()

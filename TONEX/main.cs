@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using TONEX.Attributes;
 using TONEX.Roles.Core;
+using TONEX.Modules;
 using UnityEngine;
 
 [assembly: AssemblyFileVersion(TONEX.Main.PluginVersion)]
@@ -36,10 +37,10 @@ public class Main : BasePlugin
     public const string DebugKeySalt = "59687b";
     public static ConfigEntry<string> DebugKeyInput { get; private set; }
     // == 版本相关设定 / Version Config ==
-    public const string LowestSupportedVersion = "2023.10.24";
+    public const string LowestSupportedVersion = "2024.3.5";
     public static readonly bool IsPublicAvailableOnThisVersion = false;
-    public const string PluginVersion = "1.0.1";
-    public const string PluginShowVersion = "1.0_20240209";
+    public const string PluginVersion = "1.1.0";
+    public const string PluginShowVersion = "1.1_20240404";
     public const int PluginCreation = 1;
     // == 链接相关设定 / Link Config ==
     public static readonly bool ShowWebsiteButton = true;
@@ -74,6 +75,8 @@ public class Main : BasePlugin
     public static ConfigEntry<bool> ForceOwnLanguageRoleName { get; private set; }
     public static ConfigEntry<bool> EnableCustomButton { get; private set; }
     public static ConfigEntry<bool> EnableCustomSoundEffect { get; private set; }
+    public static ConfigEntry<bool> EnableMapBackGround { get; private set; }
+    public static ConfigEntry<bool> EnableRoleBackGround { get; private set; }
     public static ConfigEntry<bool> VersionCheat { get; private set; }
     public static ConfigEntry<bool> GodMode { get; private set; }
 
@@ -102,7 +105,7 @@ public class Main : BasePlugin
     public static List<PlayerControl> LoversPlayers = new();
     public static bool isLoversDead = true;
     public static Dictionary<byte, float> AllPlayerKillCooldown = new();
-    public static List<(string, PlayerControl)> SetRolesList = new List<(string, PlayerControl)>();
+    public static Dictionary<byte, List<string>> SetRolesList = new();
     public static List<byte> CantUseSkillList = new();
     public static List<byte> CantDoActList = new();
     /// <summary>
@@ -119,6 +122,7 @@ public class Main : BasePlugin
     public static float DefaultCrewmateVision;
     public static float DefaultImpostorVision;
     public static bool IsTOHEInitialRelease = DateTime.Now.Month == 1 && DateTime.Now.Day is 17;
+    public static bool IsTOHEXInitialRelease = DateTime.Now.Month == 5 && DateTime.Now.Day is 21;
     public static bool IsTONEXInitialRelease = DateTime.Now.Month == 2 && DateTime.Now.Day is 9;
     public static bool IsAprilFools = DateTime.Now.Month == 4 && DateTime.Now.Day is 1;
     public const float RoleTextSize = 2f;
@@ -167,6 +171,8 @@ public class Main : BasePlugin
         ForceOwnLanguageRoleName = Config.Bind("Client Options", "ForceOwnLanguageRoleName", false);
         EnableCustomButton = Config.Bind("Client Options", "EnableCustomButton", true);
         EnableCustomSoundEffect = Config.Bind("Client Options", "EnableCustomSoundEffect", true);
+        EnableMapBackGround = Config.Bind("Client Options", "EnableMapBackGround", true);
+        EnableRoleBackGround = Config.Bind("Client Options", "EnableRoleBackGround", true);
         VersionCheat = Config.Bind("Client Options", "VersionCheat", false);
         GodMode = Config.Bind("Client Options", "GodMode", false);
 
@@ -199,12 +205,13 @@ public class Main : BasePlugin
             TONEX.Logger.Disable("Pet");
             //TONEX.Logger.Disable("SetScanner");
             TONEX.Logger.Disable("test");
+            TONEX.Logger.Disable("ver");
             TONEX.Logger.Disable("ForNVBeKilled");
             TONEX.Logger.Disable("ForNVCAAList");
             TONEX.Logger.Disable("ForNVDFList");
             TONEX.Logger.Disable("ForNvFarAheadList");
             TONEX.Logger.Disable("ForNVMoney");
-            TONEX.Logger.Disable("Pet");
+            TONEX.Logger.Disable("RpcTeleport");
         }
         //TONEX.Logger.isDetail = true;
 
@@ -270,8 +277,11 @@ public class Main : BasePlugin
                 {CustomRoles.Wolfmate,"#00b4eb" },
                 {CustomRoles.Rambler,"#ccffff" },
                 {CustomRoles.Chameleon,"#8cffff" },
-                {CustomRoles.Mini,"ffffff" },
+                {CustomRoles.Signal,"#F39C12" },
+                {CustomRoles.Mini,"#ffebd7" },
                 {CustomRoles.Libertarian,"#33CC99" },
+                {CustomRoles.Spiders, "#ff1919"},
+                {CustomRoles.Diseased,"#c0c0c0" },
             };
             var type = typeof(RoleBase);
             var roleClassArray =
@@ -309,6 +319,8 @@ public class Main : BasePlugin
 
         ClassInjector.RegisterTypeInIl2Cpp<ErrorText>();
 
+        SystemEnvironment.SetEnvironmentVariables();
+
         Harmony.PatchAll();
 
         if (!DebugModeManager.AmDebugger) ConsoleManager.DetachConsole();
@@ -323,7 +335,7 @@ public enum CustomDeathReason
     Kill,
     Vote,
 
-    //cTOH
+    // TOH
     Suicide,
     Spell,
     FollowingSuicide,
@@ -349,9 +361,10 @@ public enum CustomDeathReason
     Dismembered,
     LossOfHead,
     Trialed,
-    Merger,
+
 
     // TONEX
+    Merger,
 
     etc = -1
 }
@@ -388,9 +401,15 @@ public enum CustomWinner
     Despair = CustomRoles.Despair,
     RewardOfficer = CustomRoles.RewardOfficer,
     ColdPotato = CustomRoles.ColdPotato,
-    FAFL = CustomRoles.Vagor_FAFL,
+    FAFL = CustomRoles.Vagator,
     Congu = CustomRoles.Non_Villain,
     Lawyer = CustomRoles.Lawyer,
+    Rebels = CustomRoles.Rebels,
+    Mini = CustomRoles.Mini,
+    Martyr = CustomRoles.Martyr,
+    NightWolf = CustomRoles.NightWolf,
+    GodOfPlagues = CustomRoles.GodOfPlagues,
+    Puppeteer = CustomRoles.Puppeteer,
 }
 public enum SuffixModes
 {

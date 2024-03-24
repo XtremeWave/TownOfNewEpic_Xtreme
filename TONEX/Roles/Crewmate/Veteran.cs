@@ -88,12 +88,12 @@ public sealed class Veteran : RoleBase
     public override bool CanUseAbilityButton() => SkillLimit >= 1;
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.VeteranKill);
+        using var sender = CreateSender();
         sender.Writer.Write(SkillLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.VeteranKill) return;
+        
         SkillLimit = reader.ReadInt32();
     }
     public override bool OnEnterVent(PlayerPhysics physics, int ventId)

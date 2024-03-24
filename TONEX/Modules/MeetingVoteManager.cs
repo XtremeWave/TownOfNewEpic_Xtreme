@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Impostor;
+using TONEX.Roles.Crewmate;
+    using TONEX.Roles.Impostor;
 using TONEX.Roles.Core;
-
 namespace TONEX.Modules;
 
 public class MeetingVoteManager
@@ -161,6 +162,8 @@ public class MeetingVoteManager
             }
             ConfirmEjections.Apply(result.Exiled, DecidedWinner, WinDescriptionText);
         }
+        else
+        ConfirmEjections.GetLatest();
         Destroy();
     }
     /// <summary>
@@ -175,6 +178,9 @@ public class MeetingVoteManager
         {
             ApplySkipAndNoVoteMode();
         }
+
+        //换票
+        ApplySwapVote();
 
         // Key: 被投票的人
         // Value: 票数
@@ -246,6 +252,44 @@ public class MeetingVoteManager
             }
         }
     }
+    private void ApplySwapVote()
+    {
+
+        foreach (var voteData in AllVotes)
+        {
+            var vote = voteData.Value;
+            foreach (var pc in Main.AllAlivePlayerControls)
+            {
+                if (pc.Is(CustomRoles.NiceSwapper))
+                {
+                    ProcessSwapperRole(pc, (pc.GetRoleClass() as NiceSwapper).SwapList, vote);
+                }
+                else if (pc.Is(CustomRoles.EvilSwapper))
+                {
+                    ProcessSwapperRole(pc, (pc.GetRoleClass() as EvilSwapper).SwapList, vote);
+                }
+
+            }
+
+        }    
+    }
+    private void ProcessSwapperRole(PlayerControl pc, List<byte> swaplist, VoteData vote)
+    {
+        if (swaplist.Count == 2)
+        {
+            var swap1 = Utils.GetPlayerById(swaplist[0]).GetNameWithRole();
+            var swap2 = Utils.GetPlayerById(swaplist[1]).GetNameWithRole();
+            var swapper = pc.GetNameWithRole();
+
+            if (vote.VotedFor == swaplist[0] || vote.VotedFor == swaplist[1])
+            {
+                var newVote = (vote.VotedFor == swaplist[0]) ? swaplist[1] : swaplist[0];
+                SetVote(vote.Voter, newVote, isIntentional: false);
+                logger.Info($"{pc}将{swap1}和{swap2}的票选交换了");
+            }
+        }
+    }
+
     public void Destroy()
     {
         _instance = null;

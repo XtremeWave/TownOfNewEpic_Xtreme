@@ -12,7 +12,7 @@ using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
+public sealed class PlagueDoctor : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -121,6 +121,11 @@ public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
         text = GetString("Infected");
         return true;
     }
+    public bool OverrideKillButtonSprite(out string buttonName)
+    {
+        buttonName = "InfectButton";
+        return true;
+    }
     public bool CanUseSabotageButton() => false;
     public override string GetProgressText(bool comms = false)
     {
@@ -138,13 +143,13 @@ public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
     }
     public void SendRPC(byte targetId, float rate)
     {
-        using var sender = CreateSender(CustomRPC.SyncPlagueDoctor);
+        using var sender = CreateSender();
         sender.Writer.Write(targetId);
         sender.Writer.Write(rate);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SyncPlagueDoctor) return;
+        
 
         var targetId = reader.ReadByte();
         var rate = reader.ReadSingle();
@@ -320,8 +325,8 @@ public sealed class PlagueDoctor : RoleBase, IKiller, IIndependent
                 state.SetDead();
             }
             CustomWinnerHolder.ResetAndSetWinner(CustomWinner.PlagueDoctor);
-            foreach (var plagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)))
-                CustomWinnerHolder.WinnerIds.Add(plagueDoctor.PlayerId);
+            foreach (var PlagueDoctor in Main.AllPlayerControls.Where(p => p.Is(CustomRoles.PlagueDoctor)))
+                CustomWinnerHolder.WinnerIds.Add(PlagueDoctor.PlayerId);
         }
     }
 }

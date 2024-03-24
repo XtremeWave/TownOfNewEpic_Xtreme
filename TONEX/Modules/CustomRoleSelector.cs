@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using TONEX.Roles.Core;
+using TONEX.Roles.Crewmate;
 
 namespace TONEX.Modules;
 
@@ -113,60 +114,6 @@ internal static class CustomRoleSelector
             }
             if (readyRoleNum >= playerCount) goto EndOfAssign;
 
-            if (sp < 50 && !rolesToAssign.Contains(CustomRoles.Non_Villain) && readyNeutralNum < optNeutralNum)
-            {
-                var shouldExecute = true;
-                if (NeutralRateList.Count > 0)
-                {
-                    var remove = NeutralRateList[rd.Next(0, NeutralOnList.Count)];
-                    NeutralRateList.Remove(remove);
-                }
-                else if (NeutralOnList.Count > 0)
-                {
-                    var remove = NeutralOnList[rd.Next(0, NeutralOnList.Count)];
-                    NeutralOnList.Remove(remove);
-                }
-                else
-                {
-                    shouldExecute = false;
-                }
-                if (shouldExecute)
-                {
-                    rolesToAssign.Add(CustomRoles.Non_Villain);
-                    readyRoleNum++;
-                    readyNeutralNum++;
-                }
-                sp = UnityEngine.Random.Range(0, 100);
-            }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-
-            if (sp < 10 && !rolesToAssign.Contains(CustomRoles.Vagor_FAFL) && readyNKNum < optNKNum && Options.UsePets.GetBool())
-            {
-                var shouldExecute = true;
-                if (NKRateList.Count > 0)
-                {
-                    var remove = NKRateList[rd.Next(0, NKRateList.Count)];
-                    NKRateList.Remove(remove);
-                }
-                else if (NKOnList.Count > 0)
-                {
-                    var remove = NKOnList[rd.Next(0, NKOnList.Count)];
-                    NKOnList.Remove(remove);
-                }
-                else
-                {
-                    shouldExecute = false;
-                }
-                if (shouldExecute)
-                {
-                    rolesToAssign.Add(CustomRoles.Vagor_FAFL);
-                    readyRoleNum++;
-                    readyNKNum++;
-                }
-                sp = UnityEngine.Random.Range(0, 100);
-            }
-            if (readyRoleNum >= playerCount) goto EndOfAssign;
-
             /*if (sp < 3 && !rolesToAssign.Contains(CustomRoles.Sunnyboy) && readyNeutralNum < optNeutralNum)
             {
                 var shouldExecute = true;
@@ -201,7 +148,14 @@ internal static class CustomRoleSelector
         {
             var select = ImpOnList[rd.Next(0, ImpOnList.Count)];
             ImpOnList.Remove(select);
+            
             rolesToAssign.Add(select);
+            if (select == CustomRoles.MimicTeam && optImpNum >=2 && readyRoleNum< optImpNum-2)
+            {
+                rolesToAssign.Remove(select);
+                rolesToAssign.Add(CustomRoles.MimicKiller);
+                rolesToAssign.Add(CustomRoles.MimicAssistant);
+            }
             readyRoleNum++;
             Logger.Info(select.ToString() + " 加入内鬼职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -215,6 +169,12 @@ internal static class CustomRoleSelector
                 var select = ImpRateList[rd.Next(0, ImpRateList.Count)];
                 ImpRateList.Remove(select);
                 rolesToAssign.Add(select);
+                if (select == CustomRoles.MimicTeam && optImpNum >= 2 && readyRoleNum < optImpNum - 2)
+                {
+                    rolesToAssign.Remove(select);
+                    rolesToAssign.Add(CustomRoles.MimicKiller);
+                    rolesToAssign.Add(CustomRoles.MimicAssistant);
+                }
                 readyRoleNum++;
                 Logger.Info(select.ToString() + " 加入内鬼职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -225,7 +185,9 @@ internal static class CustomRoleSelector
         while (NKOnList.Count > 0 && optNKNum > 0)
         {
             var select = NKOnList[rd.Next(0, NKOnList.Count)];
+            
             NKOnList.Remove(select);
+            if (select is CustomRoles.Vagator && !Options.UsePets.GetBool()) continue;
             rolesToAssign.Add(select);
             readyRoleNum++;
             readyNKNum += select.GetAssignCount();
@@ -239,6 +201,7 @@ internal static class CustomRoleSelector
             while (NKRateList.Count > 0 && optNKNum > 0)
             {
                 var select = NKRateList[rd.Next(0, NKRateList.Count)];
+                if (select is CustomRoles.Vagator && !Options.UsePets.GetBool()) continue;
                 NKRateList.Remove(select);
                 rolesToAssign.Add(select);
                 readyRoleNum++;
@@ -284,6 +247,11 @@ internal static class CustomRoleSelector
             var select = roleOnList[rd.Next(0, roleOnList.Count)];
             roleOnList.Remove(select);
             rolesToAssign.Add(select);
+            if (select == CustomRoles.Sheriff && Sheriff.HasDeputy.GetBool() && readyRoleNum < playerCount)
+            {
+                
+                rolesToAssign.Add(CustomRoles.Deputy);
+            }
             readyRoleNum++;
             Logger.Info(select.ToString() + " 加入船员职业待选列表（优先）", "CustomRoleSelector");
             if (readyRoleNum >= playerCount) goto EndOfAssign;
@@ -296,6 +264,11 @@ internal static class CustomRoleSelector
                 var select = roleRateList[rd.Next(0, roleRateList.Count)];
                 roleRateList.Remove(select);
                 rolesToAssign.Add(select);
+                if (select == CustomRoles.Sheriff && Sheriff.HasDeputy.GetBool() && readyRoleNum < playerCount)
+                {
+
+                    rolesToAssign.Add(CustomRoles.Deputy);
+                }
                 readyRoleNum++;
                 Logger.Info(select.ToString() + " 加入船员职业待选列表", "CustomRoleSelector");
                 if (readyRoleNum >= playerCount) goto EndOfAssign;

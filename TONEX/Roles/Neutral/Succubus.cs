@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Succubus : RoleBase, INeutralKilling, IKiller, IIndependent
+public sealed class Succubus : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -54,7 +54,7 @@ public sealed class Succubus : RoleBase, INeutralKilling, IKiller, IIndependent
     }
 
     private int CharmLimit;
-
+    public bool IsNK { get; private set; } = true;
     private static void SetupOptionItem()
     {
         OptionCharmCooldown = FloatOptionItem.Create(RoleInfo, 10, OptionName.SuccubusCharmCooldown, new(2.5f, 180f, 2.5f), 30f, false)
@@ -78,12 +78,12 @@ public sealed class Succubus : RoleBase, INeutralKilling, IKiller, IIndependent
     public bool CanUseSabotageButton() => false;
     private void SendRPC()
     {
-        var sender = CreateSender(CustomRPC.SetSuccubusCharmLimit);
+        var sender = CreateSender();
         sender.Writer.Write(CharmLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetSuccubusCharmLimit) return;
+        
         CharmLimit = reader.ReadInt32();
     }
     public bool CanUseKillButton() => Player.IsAlive() && CharmLimit >= 1;

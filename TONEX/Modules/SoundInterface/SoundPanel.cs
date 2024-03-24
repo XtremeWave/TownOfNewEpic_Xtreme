@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using UnityEngine;
-using static TONEX.IntSoundManager;
+using static TONEX.AudioManager;
 using static TONEX.Translator;
 using Object = UnityEngine.Object;
 using System.IO;
@@ -18,8 +18,6 @@ public static class SoundPanel
     public static GameObject Slider { get; private set; }
     public static Dictionary<string, GameObject> Items { get; private set; }
 
-    //public static int PlayMode = 0;
-    //public static int OptPlayMode = 0;
     private static int numItems = 0;
     public static void Hide()
     {
@@ -107,13 +105,13 @@ public static class SoundPanel
             {
                 Slider = Object.Instantiate(sliderTemplate, CustomBackground.transform);
                 Slider.name = "Name Tags Slider";
-                Slider.transform.localPosition = new Vector3(0f, 0.5f, -12f);
+                Slider.transform.localPosition = new Vector3(0f, 0.5f, -11f);
                 Slider.transform.localScale = new Vector3(1f, 1f, 1f);
                 Slider.GetComponent<SpriteRenderer>().size = new(5f, 4f);
                 var scroller = Slider.GetComponent<Scroller>();
                 scroller.ScrollWheelSpeed = 0.3f;
                 var mask = Slider.transform.FindChild("Mask");
-                mask.transform.localScale = new Vector3(4.9f, 3.92f, 0f);
+                mask.transform.localScale = new Vector3(4.9f, 3.92f, 1f);
             }
             Logger.Info("e", "test");
         }
@@ -136,10 +134,10 @@ public static class SoundPanel
         Items?.Values?.Do(Object.Destroy);
         Items = new();
 
-        foreach (var sound in AllMusic)
+        foreach (var soundp in AllMusic)
         {
-            try
-            {
+            
+                var sound = soundp.Key;
                 numItems++;
                 var button = Object.Instantiate(buttonPrefab, scroller.Inner);
                 button.transform.localPosition = new(-1f, 1.6f - 0.6f * numItems, -11.5f);
@@ -147,23 +145,46 @@ public static class SoundPanel
                 button.name = "Name Tag Item For " + sound;
                 Object.Destroy(button.GetComponent<UIScrollbarHelper>());
                 Object.Destroy(button.GetComponent<NumberButton>());
-                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = AllTONEX.Contains(sound) ? GetString($"{sound}") : sound;
-                if (!GameStates.IsNotJoined)
-                    button.GetComponent<SpriteRenderer>().color = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") ? (TONEXMusic.Contains(sound) ? Color.cyan : Color.green) : Palette.DisabledGrey;
-
+                button.transform.GetChild(0).GetComponent<TextMeshPro>().text = AllTONEX.ContainsKey(sound) ? GetString($"{sound}") : sound;
+                var path = @$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_Data/Sounds/{sound}.wav";
+                int i = 0;
+                while (!File.Exists(path))
+                {
+                    i++;
+                    Logger.Error($"{path} No Found", "SoundsPanel");
+                    string matchingKey = formatMap.Keys.FirstOrDefault(key => path.Contains(key));
+                    if (matchingKey != null)
+                    {
+                        string newFormat = formatMap[matchingKey];
+                        path = path.Replace(matchingKey, newFormat);
+                        Logger.Warn($"Try To Find{path} ", "SoundsPanel");
+                    }
+                    if (i == formatMap.Count)
+                    {
+                        Logger.Error($"{path} Cannot Be Finded", "SoundsPanel");
+                        break;
+                    }
+                }
                 var renderer = button.GetComponent<SpriteRenderer>();
-                renderer.color = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav") ? (TONEXMusic.Contains(sound) ? Color.cyan : Color.green) : Palette.DisabledGrey;
-
                 var rollover = button.GetComponent<ButtonRolloverHandler>();
-                rollover.OutColor = File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}/TONEX_DATA/Sounds/{sound}.wav") ? (TONEXMusic.Contains(sound) ? Color.cyan : Color.green) : Palette.DisabledGrey;
+                if  (File.Exists(path))
+                {
+                    renderer.color = rollover.OutColor = TONEXMusic.ContainsKey(sound) ? Color.cyan : Color.green;
+                }
+                else
+                {
+                    renderer.color = rollover.OutColor = Palette.DisabledGrey;
+                }
                 var passiveButton = button.GetComponent<PassiveButton>();
                 passiveButton.OnClick = new();
                 passiveButton.OnClick.AddListener(new Action(() =>
                 {
 
-                    if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+                    if (File.Exists(path))
                     {
-                        CustomSoundsManager.Play(sound, 1);
+                        Logger.Info($"Play {sound}:{path}", "SoundsPanel");
+                        CustomSoundsManager.Play(sound,1);
+                     //   CustomSoundsManager.StartPlayLoop(path);
                     }
 
                 }));
@@ -171,17 +192,22 @@ public static class SoundPanel
                 previewText.transform.SetLocalX(1.9f);
                 previewText.fontSize = 1f;
                 string preview = GetString("NoFound");
-                if (File.Exists(@$"{Environment.CurrentDirectory.Replace(@"\", "/")}./TONEX_DATA/Sounds/{sound}.wav"))
+                if (File.Exists(path))
                     preview = GetString("CanPlay");
                 previewText.text = preview;
                 Items.Add(sound, button);
-            }
-            catch (Exception ex)
-            {
-                Logger.Exception(ex, "SoundPanel");
-            }
+            
         }
         scroller.SetYBoundsMin(0f);
         scroller.SetYBoundsMax(0.6f * numItems);
     }
+    public static Dictionary<string, string> formatMap = new()
+    {
+    { ".wav", ".flac" },
+    { ".flac", ".aiff" },
+    { ".aiff", ".mp3" },
+    { ".mp3", ".aac" },
+    { ".aac", ".ogg" },
+    { ".ogg", ".m4a" }
+};
 }

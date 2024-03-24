@@ -12,7 +12,7 @@ using static TONEX.Translator;
 using static UnityEngine.ParticleSystem.PlaybackState;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Jackal : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -58,6 +58,9 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     public static OptionItem OptionSidekickCanBeJackal;
     public static OptionItem OptionSidekickCanVent;
     public static OptionItem OptionSidekickKillCoolDown;
+    public static OptionItem OptionWhoopsCanRecruit;
+    public static OptionItem OptionWhoopsTasksCount;
+    public bool IsNK { get; private set; } = true;
     enum OptionName
     {
         JackalCanWinBySabotageWhenNoImpAlive,
@@ -70,10 +73,12 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
         SidekickCanBeJackal,
         SidekickCanVent,
         SidekickKillCoolDown,
+        WhoopsCanRecruit,
+        WhoopsTasksCount,
     }
     public enum SwitchTrigger
     {
-        TriggerKill,
+        TriggerForKill,
         TriggerDouble,
     };
     private static float KillCooldown;
@@ -99,10 +104,13 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
             .SetValueFormat(OptionFormat.Times);
         OptionJackalCanSaveSidekick = BooleanOptionItem.Create(RoleInfo, 17, OptionName.CanSaveSidekick, true, false , OptionItemCanSidekick);
         OptionSidekickCanKill = BooleanOptionItem.Create(RoleInfo, 18, OptionName.SidekickCanKill, false, false, OptionJackalCanSaveSidekick);
-        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false);
+        OptionSidekickKillCoolDown = FloatOptionItem.Create(RoleInfo, 19, GeneralOption.KillCooldown, new(2.5f, 180f, 2.5f), 20f, false, OptionSidekickCanKill).SetValueFormat(OptionFormat.Seconds);
         OptionSidekickCanVent = BooleanOptionItem.Create(RoleInfo, 20, OptionName.SidekickCanVent, true, false, OptionJackalCanSaveSidekick);
         OptionSidekickCanBeJackal = BooleanOptionItem.Create(RoleInfo, 21, OptionName.SidekickCanBeJackal, true, false, OptionJackalCanSaveSidekick);
-        OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 22, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
+        
+        OptionWhoopsCanRecruit = BooleanOptionItem.Create(RoleInfo, 22, OptionName.WhoopsCanRecruit, true, false, OptionJackalCanSaveSidekick);
+        OptionWhoopsTasksCount = IntegerOptionItem.Create(RoleInfo, 23, OptionName.WhoopsTasksCount, new(1, 99, 1), 3, false, OptionWhoopsCanRecruit).SetValueFormat(OptionFormat.Pieces);
+        OptionRecruitModeSwitchAction = StringOptionItem.Create(RoleInfo, 24, OptionName.RecruitModeSwitchAction, EnumHelper.GetAllNames<SwitchTrigger>(), 1, false, OptionItemCanSidekick);
     }
     public override void Add()
     {
@@ -112,12 +120,12 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetJackalRewardLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(SidekickLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetJackalRewardLimit) return;
+        
         SidekickLimit = reader.ReadInt32();
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
@@ -157,33 +165,8 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
                  target.RpcSetCustomRole(CustomRoles.Sidekick);
              else
                  target.RpcSetCustomRole(CustomRoles.Whoops);
-             /*Player.RpcMurderPlayerV2(target);
-            target.Revive();
-            
-            target.Data.IsDead = false;
-            target.RpcSetCustomRole(CustomRoles.Sidekick);
-            target.RpcSetRole(RoleTypes.Impostor);
-            target.SetRole(RoleTypes.Impostor);
-            target.isKilling = true;
-            target.Data.Role.TeamType = RoleTeamTypes.Impostor;
-            target.Data.Role.DefaultGhostRole = RoleTypes.Impostor;
-            target.spawn
-            MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(target.NetId, (byte)RpcCalls.SetRole, SendOption.None, -1);
-            writer.Write(target.isKilling = true);
-            writer.Write((ushort)RoleTypes.Impostor);
-            AmongUsClient.Instance.FinishRpcImmediately(writer);
-            var sender = new CustomRpcSender("SetSidekick", SendOption.None, true);
-            sender.StartRpc(target.NetId, RpcCalls.SetRole)
-                .Write((ushort)RoleTypes.Impostor)
-                .EndRpc();
-            target.Data.Role.Role = RoleTypes.Impostor;
-            target.Data.RoleType = RoleTypes.Impostor;
-            target.Data.RoleWhenAlive = new(RoleTypes.Impostor);
-            target.Data.Role.CanUseKillButton = true;
-            target.Data.Role.CanVent = true;
-            target.Data.Role.CanBeKilled = true;
-            AntiBlackout.SendGameData("SetSidekick");*/
         }
+       
 
         Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("GangsterSuccessfullyRecruited")));
         target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("BeRecruitedByJackal")));
@@ -192,11 +175,23 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     public bool OnCheckMurderAsKiller(MurderInfo info)
     {
         var (killer, target) = info.AttemptTuple;
-        if ((SidekickLimit < 1 || (NowSwitchTrigger == SwitchTrigger.TriggerDouble && !killer.CheckDoubleTrigger(target, () => { Recruit(target); }))) && target.GetCountTypes() != CountTypes.Jackal
-           || (OptionItemCanSidekick.GetBool() && !CanBeSidekick(target))) return true;
-        if (NowSwitchTrigger != SwitchTrigger.TriggerDouble)
+        if (SidekickLimit < 1 || (OptionItemCanSidekick.GetBool() && !CanBeSidekick(target))) return true;
+        if (target.GetCountTypes() == CountTypes.Jackal)
+        {
+            Player.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("SmartYou")));
+            target.Notify(Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), GetString("SmartJackal")));
+            return true;
+        }
+        if (NowSwitchTrigger == SwitchTrigger.TriggerForKill && SidekickLimit >= 1)
+        {
             Recruit(target);
-        return false;
+            return false;
+        }
+        else if (NowSwitchTrigger == SwitchTrigger.TriggerDouble && SidekickLimit >= 1)
+        {
+            info.DoKill = killer.CheckDoubleTrigger(target, () => { Recruit(target); });
+        }
+        return info.DoKill;
     }
     public override void OverrideDisplayRoleNameAsSeer(PlayerControl seen, ref bool enabled, ref Color roleColor, ref string roleText)
     {
@@ -206,14 +201,14 @@ public sealed class Jackal : RoleBase, INeutralKilling, IKiller, ISchrodingerCat
     {
         if (seer.Is(CustomRoles.Jackal) || seer.Is(CustomRoles.Wolfmate) || seer.Is(CustomRoles.Sidekick) || seer.Is(CustomRoles.Wolfmate)) enabled = true;
     }
-    public static bool CanBeSidekick(PlayerControl pc) => pc != null && OptionJackalCanSaveSidekick.GetBool()? !pc.Is(CountTypes.Jackal) : (!pc.GetCustomRole().IsNeutral()) && !pc.Is(CountTypes.Jackal);
+    public static bool CanBeSidekick(PlayerControl pc) => pc != null && (!OptionJackalCanSaveSidekick.GetBool() && !pc.GetCustomRole().IsNeutral() || OptionJackalCanSaveSidekick.GetBool());
     public override string GetMark(PlayerControl seer, PlayerControl seen, bool _ = false)
     {
         //seenが省略の場合seer
         seen ??= seer;
-        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
-        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
-        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "🔻");
+        if (seen.Is(CustomRoles.Sidekick)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
+        else if (seen.Is(CustomRoles.Whoops)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
+        else if (seen.Is(CustomRoles.Wolfmate)) return Utils.ColorString(Utils.GetRoleColor(CustomRoles.Jackal), "△");
         else
         return "";
     }

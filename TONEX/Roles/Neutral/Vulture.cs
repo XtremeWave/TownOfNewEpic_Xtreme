@@ -5,10 +5,11 @@ using TONEX.Roles.Core;
 using static TONEX.Translator;
 using UnityEngine;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
 
-public sealed class Vulture : RoleBase, IIndependent
+public sealed class Vulture : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
                SimpleRoleInfo.Create(
@@ -35,7 +36,7 @@ public sealed class Vulture : RoleBase, IIndependent
     enum OptionName
     {
         VultureNeedEatLimit,
-            VultureEatTime,
+        VultureEatTime,
     }
 
     private static int EatLimit;
@@ -82,7 +83,7 @@ public sealed class Vulture : RoleBase, IIndependent
     }
     private void SendRPC(bool add, Vector3 loc = new())
     {
-        using var sender = CreateSender(CustomRPC.SetVultureArrow);
+        using var sender = CreateSender();
         sender.Writer.Write(add);
         if (add)
         {
@@ -91,9 +92,9 @@ public sealed class Vulture : RoleBase, IIndependent
             sender.Writer.Write(loc.z);
         }
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetVultureArrow) return;
+        
         if (reader.ReadBoolean())
             LocateArrow.Add(Player.PlayerId, new Vector3(reader.ReadSingle(), reader.ReadSingle(), reader.ReadSingle()));
         else LocateArrow.RemoveAllTarget(Player.PlayerId);
@@ -125,31 +126,35 @@ public sealed class Vulture : RoleBase, IIndependent
     }
     public override bool OnCheckReportDeadBody(PlayerControl reporter, GameData.PlayerInfo target)
     {
-        if (ForVulture.Contains(target.PlayerId))
+        Logger.Info("1", "test");
+        if (target != null && ForVulture.Contains(target.PlayerId))
         {
             reporter.Notify(Utils.ColorString(RoleInfo.RoleColor, Translator.GetString("ReportEatBodies")));
             Logger.Info($"{target.Object.GetNameWithRole()} 的尸体已被吞噬，无法被报告", "Cleaner.OnCheckReportDeadBody");
             return false;
         }
+        Logger.Info("2", "test");
         if (!Is(reporter) || target == null) return true;
-        if( reporter.PlayerId ==  Player.PlayerId )
+        
+        if (EatTime != -1)
         {
-            if (EatTime != -1)
-            {
-                var cooldown = EatTime + (long)OptionEatTime.GetFloat() - Utils.GetTimeStamp();
-               Player.Notify(string.Format(GetString("ShowEatCooldown"), cooldown, 1f));
-                return false;
-            }
+            var cooldown = EatTime + (long)OptionEatTime.GetFloat() - Utils.GetTimeStamp();
+            Player.Notify(string.Format(GetString("ShowEatCooldown"), cooldown, 1f));
+            return false;
+        }
+        Logger.Info("3", "test");
         ReportDeadBodyPatch.CanReport[target.PlayerId] = false;
         ForVulture.Add(target.PlayerId);
         EatLimit -= 1;
+        Logger.Info("4", "test");
         EatTime = Utils.GetTimeStamp();
-       Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
+        Player.Notify(string.Format(GetString("EatTimeCooldown"), EatLimit));
+        Logger.Info("5", "test");
         SendRPCLimit();
-        if (EatLimit >= OptionEatLimitPerMeeting.GetInt()) Win();
-        }
+        if (EatLimit <=0) Win();
 
-            return false;
+
+        return false;
     }
     public void Win()
     {

@@ -31,6 +31,12 @@ internal class ChangeRoleSettings
                 Main.NormalOptions.roleOptions.SetRoleRate(RoleTypes.Shapeshifter, 0, 0);
             }
             Main.SetRolesList = new();
+            foreach (var pc in Main.AllPlayerControls)
+            {
+                List<string> values = new();
+                values.Add(null);
+                Main.SetRolesList.Add(pc.PlayerId, values);
+            }
             Main.OverrideWelcomeMsg = "";
             Main.AllPlayerKillCooldown = new();
             Main.AllPlayerSpeed = new();
@@ -68,7 +74,9 @@ internal class ChangeRoleSettings
             Main.CantDoActList = new();
             //名前の記録
             RPC.SyncAllPlayerNames();
-
+            HudSpritePatch.IsEnd = false ;
+            RPC.SyncEndRPC(false);
+            ConfirmEjections.LatestEjec = null;
             //var invalidColor = Main.AllPlayerControls.Where(p => p.Data.DefaultOutfit.ColorId < 0 || Palette.PlayerColors.Length <= p.Data.DefaultOutfit.ColorId);
             //if (invalidColor.Any())
             //{
@@ -126,22 +134,23 @@ internal class ChangeRoleSettings
             MeetingStates.MeetingCalled = false;
             MeetingStates.FirstMeeting = true;
             GameStates.AlreadyDied = false;
-            if (Options.UsePets.GetBool())
-            {
                 foreach (var pc in Main.AllAlivePlayerControls)
                 {
                     if (!pc.Is(CustomRoles.GM))
                     {
                         var sender = CustomRpcSender.Create(name: $"PetsPatch.RpcSetPet)");
+                    if (pc.Data.DefaultOutfit.PetId == null)
+                    {
                         pc.SetPet("pet_Crewmate");
                         sender.AutoStartRpc(pc.NetId, (byte)RpcCalls.SetPetStr)
                         .Write("pet_Crewmate")
                         .EndRpc();
-                        pc.CanPet();
                         sender.SendMessage();
                     }
+                        pc.CanPet();
+                        
+                    }
                 }
-            }
         }
         catch (Exception ex)
         {

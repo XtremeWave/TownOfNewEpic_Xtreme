@@ -19,6 +19,8 @@ public static class OptionsMenuBehaviourStartPatch
     private static ClientOptionItem ForceOwnLanguageRoleName;
     private static ClientOptionItem EnableCustomButton;
     private static ClientOptionItem EnableCustomSoundEffect;
+    private static ClientOptionItem EnableMapBackGround;
+    private static ClientOptionItem EnableRoleBackGround;
     private static ClientActionItem UnloadMod;
     private static ClientActionItem DumpLog;
     private static ClientOptionItem VersionCheat;
@@ -92,6 +94,14 @@ public static class OptionsMenuBehaviourStartPatch
         {
             EnableCustomSoundEffect = ClientOptionItem.Create("EnableCustomSoundEffect", Main.EnableCustomSoundEffect, __instance);
         }
+        if (EnableRoleBackGround == null || EnableRoleBackGround.ToggleButton == null)
+        {
+            EnableRoleBackGround = ClientOptionItem.Create("EnableRoleBackGround", Main.EnableRoleBackGround, __instance);
+        }
+        if (EnableMapBackGround == null || EnableMapBackGround.ToggleButton == null)
+        {
+            EnableMapBackGround = ClientOptionItem.Create("EnableMapBackGround", Main.EnableMapBackGround, __instance);
+        }
         if (UnloadMod == null || UnloadMod.ToggleButton == null)
         {
             UnloadMod = ClientActionItem.Create("UnloadMod", ModUnloaderScreen.Show, __instance);
@@ -121,15 +131,10 @@ public static class OptionsMenuBehaviourStartPatch
         {
             Sound = MoreActionItem.Create("SoundOption", () =>
             {
-                if (SoundPanel.CustomBackground == null)
-                    Logger.Info("1_1", "test");
-                if (SoundPanel.CustomBackground.gameObject == null)
-                    Logger.Info("1_2", "test");
                 try
                 {
                     SoundPanel.CustomBackground.gameObject.SetActive(true);
                 }
-
                 catch (System.Exception ex)
                 {
                     Logger.Exception(ex, "Sounds");
@@ -150,16 +155,10 @@ public static class OptionsMenuBehaviourStartPatch
         }
         if (!GameStates.IsNotJoined)
         {
-            NameTag.ToggleButton.Text.text = Translator.GetString("OnlyAvailableInMainMenu");
+            NameTag.ToggleButton.Text.text = Translator.GetString("NameTagOptions") + "|" +Translator.GetString("OnlyAvailableInMainMenu");
             NameTag.ToggleButton.GetComponent<PassiveButton>().enabled = false;
-            NameTag.ToggleButton.Background.color = Palette.DisabledGrey;//*/
-            /*NameTag.ToggleButton.Text.text = Translator.GetString("NameTagOptions");
-            NameTag.ToggleButton.GetComponent<PassiveButton>().enabled = true;
-            NameTag.ToggleButton.Background.color = Main.ModColor32;//*/
-            Sound.ToggleButton.Text.text = Translator.GetString("SoundOptions");
-            Sound.ToggleButton.GetComponent<PassiveButton>().enabled = true;
-            Sound.ToggleButton.Background.color = Main.ModColor32;
-            SoundManager.ToggleButton.Text.text = Translator.GetString("OnlyAvailableInMainMenu");
+            NameTag.ToggleButton.Background.color = Palette.DisabledGrey;
+            SoundManager.ToggleButton.Text.text = Translator.GetString("SoundManagerOptions") + "|" + Translator.GetString("OnlyAvailableInMainMenu");
             SoundManager.ToggleButton.GetComponent<PassiveButton>().enabled = false;
             SoundManager.ToggleButton.Background.color = Palette.DisabledGrey;
         }
@@ -168,13 +167,14 @@ public static class OptionsMenuBehaviourStartPatch
             NameTag.ToggleButton.Text.text = Translator.GetString("NameTagOptions");
             NameTag.ToggleButton.GetComponent<PassiveButton>().enabled = true;
             NameTag.ToggleButton.Background.color = Main.ModColor32;
-            Sound.ToggleButton.Text.text = Translator.GetString("SoundOptions");
-            Sound.ToggleButton.GetComponent<PassiveButton>().enabled = true;
-            Sound.ToggleButton.Background.color = Main.ModColor32;
             SoundManager.ToggleButton.Text.text = Translator.GetString("SoundManagerOptions");
             SoundManager.ToggleButton.GetComponent<PassiveButton>().enabled = true;
             SoundManager.ToggleButton.Background.color = Main.ModColor32;
         }
+        Sound.ToggleButton.Text.text = Translator.GetString("SoundOptions");
+        Sound.ToggleButton.GetComponent<PassiveButton>().enabled = true;
+        Sound.ToggleButton.Background.color = Main.ModColor32;
+        
         NameTagPanel.Init(__instance);
         SoundPanel.Init(__instance);
         SoundManagerPanel.Init(__instance);

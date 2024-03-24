@@ -2,10 +2,11 @@
 using Hazel;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Despair : RoleBase, IIndependent
+public sealed class Despair : RoleBase, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -49,12 +50,12 @@ public sealed class Despair : RoleBase, IIndependent
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.DespairBeKill);
+        using var sender = CreateSender();
         sender.Writer.Write(KillCooldown);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.DespairBeKill) return;
+        
         KillCooldown = reader.ReadInt32();
     }
     public override bool OnCompleteTask(out bool cancel)

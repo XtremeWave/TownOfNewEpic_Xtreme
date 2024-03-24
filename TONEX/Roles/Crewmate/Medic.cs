@@ -7,6 +7,7 @@ using TONEX.Modules;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX.Roles.Crewmate;
 public sealed class Medic : RoleBase, IKiller
@@ -21,7 +22,7 @@ public sealed class Medic : RoleBase, IKiller
             22100,
             SetupOptionItem,
             "me|醫生",
-            "#00a4ff",
+            "#80ffdd",
             true
         );
     public Medic(PlayerControl player)
@@ -39,16 +40,29 @@ public sealed class Medic : RoleBase, IKiller
 
     static OptionItem OptionProtectNums;
     static OptionItem OptionProtectCooldown;
-    static OptionItem OptionTargetCanSeeProtect;
+    static OptionItem OptionSeenShieldMode;
     static OptionItem OptionKnowTargetShieldBroken;
+    static OptionItem OptionMedicShieldMode;
     enum OptionName
     {
         MedicCooldown,
         MedicSkillLimit,
-        MedicTargetCanSeeProtect,
+        MedicSeenShieldMode,
         MedicKnowTargetShieldBroken,
+        MedicShieldMode,
     }
-
+    public enum SwitchShieldMode
+    {
+        ForOnce,
+        ForMedicAlive,
+        Forever,
+    };
+    public enum SwitchSeenShieldMode
+    {
+        ForMedic,
+        ForTargetAndMedic,
+        ForEveryOne,
+    };
     private int ProtectLimit;
     private static List<byte> ProtectList;
     public bool IsKiller { get; private set; } = false;
@@ -58,8 +72,9 @@ public sealed class Medic : RoleBase, IKiller
             .SetValueFormat(OptionFormat.Seconds);
         OptionProtectNums = IntegerOptionItem.Create(RoleInfo, 11, OptionName.MedicSkillLimit, new(1, 99, 1), 3, false)
             .SetValueFormat(OptionFormat.Times);
-        OptionTargetCanSeeProtect = BooleanOptionItem.Create(RoleInfo, 12, OptionName.MedicTargetCanSeeProtect, true, false);
+        OptionSeenShieldMode = StringOptionItem.Create(RoleInfo, 12, OptionName.MedicSeenShieldMode, EnumHelper.GetAllNames<SwitchSeenShieldMode>(), 2, false);
         OptionKnowTargetShieldBroken = BooleanOptionItem.Create(RoleInfo, 13, OptionName.MedicKnowTargetShieldBroken, true, false);
+        OptionMedicShieldMode = StringOptionItem.Create(RoleInfo, 14, OptionName.MedicShieldMode, EnumHelper.GetAllNames<SwitchShieldMode>(), 1, false);
     }
     public override void Add()
     {
@@ -67,12 +82,12 @@ public sealed class Medic : RoleBase, IKiller
     }
     private void SendRPC_SyncLimit()
     {
-        using var sender = CreateSender(CustomRPC.SetMedicProtectLimit);
+        using var sender = CreateSender();
         sender.Writer.Write(ProtectLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetMedicProtectLimit) return;
+        
         ProtectLimit = reader.ReadInt32();
     }
     private static void SendRPC_SyncList()
@@ -141,27 +156,22 @@ public sealed class Medic : RoleBase, IKiller
         if (info.IsSuicide) return true;
         var (killer, target) = info.AttemptTuple;
         if (!ProtectList.Contains(target.PlayerId)) return true;
-
-        ProtectList.Remove(target.PlayerId);
-        SendRPC_SyncList();
-
+        if (OptionMedicShieldMode.GetInt() == 0)
+        {
+            ProtectList.Remove(target.PlayerId);
+            SendRPC_SyncList();
+            Logger.Info($"{target.GetNameWithRole()} : 来自医生的盾破碎", "Medic.OnCheckMurderPlayerOthers_Before");
+        }
         killer.SetKillCooldownV2(target: target, forceAnime: true);
         killer.RpcProtectedMurderPlayer(target);
-
-        if (OptionTargetCanSeeProtect.GetBool())
+        info.CanKill = false;
+        if (OptionSeenShieldMode.GetInt() == 1 || OptionSeenShieldMode.GetInt() == 2)
             target.RpcProtectedMurderPlayer(target);
-
-        Utils.NotifyRoles(target);
-
         if (OptionKnowTargetShieldBroken.GetBool())
             Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Medic) && x.PlayerId != target.PlayerId).Do(x => x.Notify(Translator.GetString("MedicTargetShieldBroken")));
         else
             Main.AllPlayerControls.Where(x => x.Is(CustomRoles.Medic)).Do(x => Utils.NotifyRoles(x));
-
-        Logger.Info($"{target.GetNameWithRole()} : 来自医生的盾破碎", "Medic.OnCheckMurderPlayerOthers_Before");
-
-        info.CanKill = false;
-
+        Utils.NotifyRoles(target);
         return false;
     }
     public static string GetMarkOthers(PlayerControl seer, PlayerControl seen, bool isForMeeting = false)
@@ -169,7 +179,19 @@ public sealed class Medic : RoleBase, IKiller
         seen ??= seer;
         if (!InProtect(seen.PlayerId)) return "";
         return (seer.Is(CustomRoles.Medic)
-            || (seer == seen && OptionTargetCanSeeProtect.GetBool())
+            || (seer == seen && OptionSeenShieldMode.GetInt() == 1) || OptionSeenShieldMode.GetInt() == 2
             ) ? Utils.ColorString(RoleInfo.RoleColor, "●") : "";
+    }
+    public override void OnFixedUpdate(PlayerControl player)
+    {
+        if (!Player.IsAlive() && OptionMedicShieldMode.GetInt()==1)
+        {
+            foreach (var pc in ProtectList)
+            {
+                ProtectList.Remove(pc);
+                SendRPC_SyncList();
+                Logger.Info($"{Utils.GetPlayerById(pc).GetNameWithRole()} : 来自医生的盾破碎", "Medic.OnCheckMurderPlayerOthers_Before");
+            }
+        }
     }
 }

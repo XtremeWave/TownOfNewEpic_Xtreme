@@ -31,11 +31,21 @@ public class ModUpdater
         "file:///D:/Desktop/info.json",
 #else
         "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/TONEX/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.1/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.2/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.3/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.4/info.json",
+        "https://raw.githubusercontent.com/XtremeWave/TownOfNewEpic_Xtreme/_develop_v1.5/info.json",
         "https://cdn.jsdelivr.net/gh/XtremeWave/TownOfNewEpic_Xtreme/info.json",
          //"https://tonx-1301425958.cos.ap-shanghai.myqcloud.com/info.json",
         "https://tohex.club/Resource/info.json",
         "https://tonex.cc/Resource/info.json",
         "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/TONEX/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.1/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.2/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.3/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.4/info.json",
+        "https://gitee.com/TEAM_TONEX/TownOfNewEpic_Xtreme/raw/_develop_v1.5/info.json",
          
 
 #endif
@@ -53,11 +63,13 @@ public class ModUpdater
     public static bool forceUpdate = false;
     public static bool isBroken = false;
     public static bool isChecked = false;
-
+    public static bool DebugUnused = false;
     public static string versionInfoRaw = "";
 
     public static Version latestVersion = null;
     public static string showVer = "";
+    public static Version DebugVer = null;
+    public static bool CanUpdate = false;
     public static string verHead = "";
     public static string verDate = "";
     public static string verTestName = "";
@@ -67,6 +79,7 @@ public class ModUpdater
     public static string md5 = "";
     public static int visit => isChecked ? 216822 : 0;
 
+    public static string announcement_pre = "";
     public static string announcement_zh = "";
     public static string announcement_en = "";
     public static string downloadUrl_github = "";
@@ -92,7 +105,7 @@ public class ModUpdater
         MainMenuManagerPatch.PlayButton.SetActive(!MainMenuManagerPatch.UpdateButton.activeSelf);
         var buttonText = MainMenuManagerPatch.UpdateButton.transform.FindChild("FontPlacer").GetChild(0).GetComponent<TextMeshPro>();
         Logger.Info(showVer, "ver");
-        buttonText.text = $"{GetString("updateButton")}\nv{showVer?.ToString() ?? "???"}";
+        buttonText.text = $"{(CanUpdate? GetString("updateButton"): GetString("updateNotice"))}\nv{showVer?.ToString() ?? " ???"}";
         Logger.Info(showVer.ToString(), "ver");
     }
     public static void Retry()
@@ -192,24 +205,45 @@ public class ModUpdater
             }
 
             JObject data = JObject.Parse(result);
+
             verHead = new(data["verHead"]?.ToString());
-            verDate = new(data["verDate"]?.ToString());
             verTestName = new(data["verTestName"]?.ToString());
             verTestNum = new(data["verTestNum"]?.ToString());
-            latestVersion = new(data["version"]?.ToString());
+
+            DebugVer = new(data["DebugVer"]?.ToString());
+
+            
+            CanUpdate = bool.Parse(new(data["CanUpdate"]?.ToString()));
+
+            if (verTestName == "Preview")
+            {
+                verDate = new(data["verDatePre"]?.ToString());
+                md5 = data["md5Pre"]?.ToString();
+                latestVersion = new(data["versionPre"]?.ToString());
+            }
+            else
+            {
+                verDate = new(data["verDate"]?.ToString());
+                md5 = data["md5"]?.ToString();
+                latestVersion = new(data["version"]?.ToString());
+            }
+
             var vertestname = (verTestName == "") ? "" : $"_{verTestName}";
             var vertesttext = (verTestNum == "") ? "" : $"{vertestname}_{verTestNum}";
             showVer = $"{verHead}_{verDate}{vertesttext}";
-            Logger.Info(showVer, "ver");
+
             var minVer = data["minVer"]?.ToString();
             minimumVersion = minVer.ToLower() == "latest" ? latestVersion : new(minVer);
             creation = int.Parse(data["creation"]?.ToString());
             isBroken = data["allowStart"]?.ToString().ToLower() != "true";
-            md5 = data["md5"]?.ToString();
 
             JObject announcement = data["announcement"].Cast<JObject>();
             announcement_en = announcement["English"]?.ToString();
             announcement_zh = announcement["SChinese"]?.ToString();
+            if (verTestName == "Preview")
+            {
+                announcement_en = announcement_zh = announcement["Preview"]?.ToString();
+            }
 
             JObject downloadUrl = data["url"].Cast<JObject>();
             downloadUrl_github = downloadUrl["github"]?.ToString();
@@ -224,6 +258,10 @@ public class ModUpdater
 
             hasUpdate = Main.version < latestVersion;
             forceUpdate = Main.version < minimumVersion || creation > Main.PluginCreation;
+#if DEBUG
+            DebugUnused = Main.version < DebugVer;
+            hasUpdate = forceUpdate = DebugUnused;
+#endif
 
             return true;
         }
@@ -291,7 +329,6 @@ public class ModUpdater
 
         Logger.Msg("Start Downlaod From: " + url, "DownloadDLL");
         Logger.Msg("Save To: " + DownloadFileTempPath, "DownloadDLL");
-        var succeed = false;
         try
         {
             using var client = new HttpClientDownloadWithProgress(url, DownloadFileTempPath);
@@ -315,7 +352,6 @@ public class ModUpdater
                 var fileName = Assembly.GetExecutingAssembly().Location;
                 File.Move(fileName, fileName + ".bak");
                 File.Move("BepInEx/plugins/TONEX.dll.temp", fileName);
-                succeed = true;
                 return (true, null);
             }
         }

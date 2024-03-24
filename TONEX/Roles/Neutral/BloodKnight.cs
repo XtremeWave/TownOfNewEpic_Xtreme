@@ -6,7 +6,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using static TONEX.Translator;
 
 namespace TONEX.Roles.Neutral;
-public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class BloodKnight : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
        SimpleRoleInfo.Create(
@@ -15,7 +15,7 @@ public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchroding
            CustomRoles.BloodKnight,
            () => RoleTypes.Impostor,
            CustomRoleTypes.Neutral,
-           50923,
+           509230,
            SetupOptionItem,
            "bn|ÊÈÑªòTÊ¿|ÑªÆï|ÆïÊ¿",
            "#630000",
@@ -44,7 +44,7 @@ public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchroding
     public static bool CanVent;
 
     private long ProtectStartTime;
-
+    public bool IsNK { get; private set; } = true;
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.BloodKnight;
 
     private static void SetupOptionItem()
@@ -59,12 +59,12 @@ public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchroding
     public override void Add() => ProtectStartTime = 0;
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.SetBKTimer);
+        using var sender = CreateSender();
         sender.Writer.Write(ProtectStartTime.ToString());
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetBKTimer) return;
+        
         ProtectStartTime = long.Parse(reader.ReadString());
     }
     public float CalculateKillCooldown() => OptionKillCooldown.GetFloat();
@@ -81,7 +81,7 @@ public sealed class BloodKnight : RoleBase, INeutralKilling, IKiller, ISchroding
     }
     public override void OnFixedUpdate(PlayerControl player)
     {
-        if (ProtectStartTime != 0 && ProtectStartTime + OptionProtectDuration.GetFloat() < Utils.GetTimeStamp())
+        if (ProtectStartTime != 0 && ProtectStartTime + (long)OptionProtectDuration.GetFloat() < Utils.GetTimeStamp())
         {
             ProtectStartTime = 0;
             player.Notify(GetString("BKProtectOut"));

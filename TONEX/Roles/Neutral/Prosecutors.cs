@@ -9,7 +9,7 @@ using System.Collections.Generic;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
+public sealed class Prosecutors : RoleBase, INeutralKiller,IAdditionalWinner
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -18,7 +18,7 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
             CustomRoles.Prosecutors,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_6_1_0,
+            94_1_0_0300,
             null,
             "pro",
             "#788514",
@@ -36,6 +36,7 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
         ForProsecutors = new();
     }
     public bool IsKiller { get; private set; } = false;
+    public bool IsNE { get; private set; } = false;
     private int ProsecutorsLimit;
     public static List<byte> ForProsecutors;
     public override void Add()
@@ -44,12 +45,12 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
     }
     private void SendRPC()
     {
-        using var sender = CreateSender(CustomRPC.ProphetKill);
+        using var sender = CreateSender();
         sender.Writer.Write(ProsecutorsLimit);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.ProphetKill) return;
+        
         ProsecutorsLimit = reader.ReadInt32();
     }
     public bool CheckWin(ref CustomRoles winnerRole , ref CountTypes winnerCountType)
@@ -71,6 +72,8 @@ public sealed class Prosecutors : RoleBase, IKiller,IAdditionalWinner
             ForProsecutors.Add(target.PlayerId);
         }
         info.CanKill = false;
+        killer.RpcProtectedMurderPlayer(target);
+        killer.SetKillCooldownV2();
         return false;
     }
     public static bool OnCheckMurderPlayerOthers_After(MurderInfo info)

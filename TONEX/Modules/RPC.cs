@@ -24,24 +24,10 @@ public enum CustomRPC
     EndGame,
     PlaySound,
     SetCustomRole,
-    SetBountyTarget,
-    WitchSync,
-    SetSheriffShotLimit,
-    SetDousedPlayer,
     SetNameColorData,
-    SniperSync,
     SetLoversPlayers,
-    SetExecutionerTarget,
-    SetCurrentDousingTarget,
-    SetEvilTrackerTarget,
     SetRealKiller,
-    SyncPuppet,
-    SetSchrodingerCatTeam,
-    StealthDarken,
-    MessengerCreateMurderNotify,
-    PenguinSync,
-    MareSync,
-    SyncPlagueDoctor,
+    CustomRoleSync,
 
     //TONX
     AntiBlackout,
@@ -59,6 +45,8 @@ public enum CustomRPC
     //TONEX
     ColorFlash,
     CantDoAnyActPlayer,
+    IsEnd,
+
     //GameMode
     SyncHpNameNotify,
 
@@ -89,13 +77,13 @@ public enum CustomRPC
     SetMorticianArrow,
     Judge,
     Guess,
-    SetSwooperTimer,
+    SetEvilInvisiblerTimer,
     SetBKTimer,
     SyncFollowerTargetAndTimes,
-    //魅魔
+    //魅惑者
     SetSuccubusCharmLimit,
     //傀儡
-    SyncPuppeteerList,
+    SyncControlFreakList,
     //术士
     SyncWarlock,
     //逃逸
@@ -132,7 +120,7 @@ public enum CustomRPC
     //冒险家
     AdventurerSabotage,
     //异世闲游
-    SetVagor,
+    SetVagator,
     AddFeeble,
     RemoveFeeble,
     //'不演反派'
@@ -144,7 +132,30 @@ public enum CustomRPC
     ForNVCAAList,
     ForNVOvercomeList,
     ForNVFarAheadList,
-    ForNVDFList,    
+    ForNVDFList,
+    //换票
+    NiceSwapperSync,
+    EvilSwapperSync,
+    //先烈
+    SetMartyrTarget,
+    //瘟疫
+    SyncPlaguePlayers,
+    //傀儡
+    SetBeKillLimit,
+    //捕快
+    SetDeputyLimit,
+    //起诉
+    SetProsectorsLimit,
+    //借魂
+    SpecterSlayerKill,
+    //猎人
+    HunterKill,
+    SetHunterList,
+    //患者,
+    ForDiseased,
+    //判官&戮者
+    SetMeteorArbiter,
+    SetMeteorMurder
 }
 public enum Sounds
 {
@@ -297,6 +308,9 @@ internal class RPCHandlerPatch
             case CustomRPC.SetDeathReason:
                 RPC.GetDeathReason(reader);
                 break;
+            case CustomRPC.IsEnd:
+                HudSpritePatch.IsEnd = reader.ReadBoolean();
+                break;
             case CustomRPC.EndGame:
                 RPC.EndGame(reader);
                 break;
@@ -416,8 +430,11 @@ internal class RPCHandlerPatch
             case CustomRPC.ViciousSeekerKill:
                 ViciousSeeker.ReceiveRPC_Limit(reader,rpcType);
                 break;
-            default:
-                CustomRoleManager.DispatchRpc(reader, rpcType);
+            case CustomRPC.SetHunterList:
+                Hunter.ReceiveRPC_SyncList(reader);
+                break;
+            case CustomRPC.CustomRoleSync:
+                CustomRoleManager.DispatchRpc(reader);
                 break;
         }
     }
@@ -453,6 +470,12 @@ internal static class RPC
         int divideBy = amount / 10;
         for (var i = 0; i <= 10; i++)
             SyncOptionsBetween(i * divideBy, (i + 1) * divideBy, targetId);
+    }
+    public static void SyncEndRPC(bool isend)
+    {
+        MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)CustomRPC.IsEnd, SendOption.Reliable, -1);
+        writer.Write(isend);
+        AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
     public static void SyncCustomSettingsRPCforOneOption(OptionItem option)
     {

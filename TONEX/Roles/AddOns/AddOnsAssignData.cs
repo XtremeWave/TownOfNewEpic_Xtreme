@@ -34,7 +34,7 @@ public class AddOnsAssignData
         if (role is CustomRoles.Bewilder && (pc.GetCustomRole().IsImpostor() || pc.Is(CustomRoles.Lighter))) return false;
         if (role is CustomRoles.Neptune && (pc.Is(CustomRoles.Lovers) || pc.Is(CustomRoles.Hater))) return false;
         if (role is CustomRoles.Madmate && !Utils.CanBeMadmate(pc)) return false;
-        if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.Doctor) || pc.Is(CustomRoles.Cleaner) || pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
+        if (role is CustomRoles.Oblivious && (pc.Is(CustomRoles.MedicalExaminer) || pc.Is(CustomRoles.Cleaner) || pc.Is(CustomRoles.Mortician) || pc.Is(CustomRoles.Medium))) return false;
         if (role is CustomRoles.Fool && pc.Is(CustomRoles.Repairman)) return false;
         if (role is CustomRoles.Tiebreaker && pc.Is(CustomRoles.Dictator)) return false;
         if (role is CustomRoles.YouTuber && (!pc.GetCustomRole().IsCrewmate() || pc.Is(CustomRoles.Madmate) || pc.Is(CustomRoles.Sheriff))) return false;
@@ -45,7 +45,8 @@ public class AddOnsAssignData
         if (role is CustomRoles.Schizophrenic && ((!pc.GetCustomRole().IsImpostor() && !pc.GetCustomRole().IsCrewmate()) || pc.Is(CustomRoles.Madmate))) return false;
         if (role is CustomRoles.Seer && pc.Is(CustomRoles.Mortician)) return false;
         if (role is CustomRoles.Reach && !pc.CanUseKillButton()) return false;
-        if (role is CustomRoles.Flashman && pc.Is(CustomRoles.Swooper)) return false;
+        if (role is CustomRoles.Flashman && pc.Is(CustomRoles.EvilInvisibler)) return false;
+        if (role is CustomRoles.Spiders && (pc.Is(CustomRoles.Bomber) || pc.Is(CustomRoles.BoobyTrap) || pc.Is(CustomRoles.Capitalist))) return false;
         return true;
     }
     static readonly IEnumerable<CustomRoles> ValidRoles = CustomRolesHelper.AllRoles.Where(role => !InvalidRoles.Contains(role));

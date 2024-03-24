@@ -135,7 +135,16 @@ public class MainMenuManagerPatch
                 PlayButton.SetActive(true);
                 UpdateButton.SetActive(false);
                 if (!DebugModeManager.AmDebugger || !Input.GetKey(KeyCode.LeftShift))
-                    ModUpdater.StartUpdate();
+                {
+                    if (ModUpdater.CanUpdate)
+                    {
+                        ModUpdater.StartUpdate();
+                    }
+                    else
+                    {
+                        CustomPopup.Show(GetString("UpdateBySelfTitle"), GetString("UpdateBySelfText"), new() { (GetString(StringNames.Okay), null) });
+                    }
+                }
             }));
             UpdateButton.transform.transform.FindChild("FontPlacer").GetChild(0).gameObject.DestroyTranslator();
         }

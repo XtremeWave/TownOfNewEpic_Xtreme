@@ -16,11 +16,13 @@ public interface IKiller
     /// </summary>
     public bool IsKiller => CanKill;
 
+
     /// <summary>
     /// 是否可以使用击杀按键
     /// 默认：返回 <see cref="CanKill"/> 的值
     /// </summary>
     /// <returns>true：可以使用击杀按键</returns>
+
     public bool CanUseKillButton() => CanKill;
     /// <summary>
     /// 计算击杀冷却时间<br/>

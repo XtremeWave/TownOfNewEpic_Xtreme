@@ -12,11 +12,11 @@ Thank you for using TOHE!
 
 ## Fix
 - Fixed bug that Greedy would cause the meeting to crash
-- Fixed bug that The Swooper will die after the skill ends
+- Fixed bug that The EvilInvisibler will die after the skill ends
 - Fixed bug that Fortuneteller was performing an unnecessary reset camera operation
 - Fixed bug that Sheriff was performing an unnecessary reset camera operation on non-host clients
 - Fixed bug that ejection confirmation still shows Executioner victory after Executioner has exited the game
-- Fixed bug that Swooper's kill ignores any status of the victim and kills directly
+- Fixed bug that EvilInvisibler's kill ignores any status of the victim and kills directly
 
 ## Changing
 - Optimize part of the code during the meeting to reduce lag

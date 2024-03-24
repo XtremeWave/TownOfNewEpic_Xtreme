@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TONEX.Modules;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.AddOns.Crewmate;
+using TONEX.Roles.AddOns.Impostor;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using TONEX.Roles.Impostor;
@@ -217,6 +218,80 @@ class UsePatch
         else return true;
     }
 }
+[HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.CheckShapeshift))]
+public static class PlayerControlCheckShapeshiftPatch
+{
+    private static readonly LogHandler logger = Logger.Handler(nameof(PlayerControl.CheckShapeshift));
+
+    public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] PlayerControl target, [HarmonyArgument(1)] bool shouldAnimate)
+    {
+        if (AmongUsClient.Instance.IsGameOver || !AmongUsClient.Instance.AmHost)
+        {
+            return false;
+        }
+
+        // 無効な変身を弾く．これより前に役職等の処理をしてはいけない
+        if (!CheckInvalidShapeshifting(__instance, target, shouldAnimate))
+        {
+            __instance.RpcRejectShapeshift();
+            return false;
+        }
+        // 役職の処理
+        var role = __instance.GetRoleClass();
+        if (role?.OnCheckShapeshift(target, ref shouldAnimate) == false)
+        {
+            if (role.CanDesyncShapeshift)
+            {
+                __instance.RpcSpecificRejectShapeshift(target, shouldAnimate);
+            }
+            else
+            {
+                __instance.RpcRejectShapeshift();
+            }
+            return false;
+        }
+
+        __instance.RpcShapeshift(target, shouldAnimate);
+        return false;
+    }
+    private static bool CheckInvalidShapeshifting(PlayerControl instance, PlayerControl target, bool animate)
+    {
+        logger.Info($"Checking shapeshift {instance.GetNameWithRole()} -> {(target == null || target.Data == null ? "(null)" : target.GetNameWithRole())}");
+
+        if (!target || target.Data == null)
+        {
+            logger.Info("targetがnullのため変身をキャンセルします");
+            return false;
+        }
+        if (!instance.IsAlive())
+        {
+            logger.Info("変身者が死亡しているため変身をキャンセルします");
+            return false;
+        }
+        // RoleInfoによるdesyncシェイプシフター用の判定を追加
+        if (instance.Data.Role.Role != RoleTypes.Shapeshifter && instance.GetCustomRole().GetRoleInfo()?.BaseRoleType?.Invoke() != RoleTypes.Shapeshifter)
+        {
+            logger.Info("変身者がシェイプシフターではないため変身をキャンセルします");
+            return false;
+        }
+        if (instance.Data.Disconnected)
+        {
+            logger.Info("変身者が切断済のため変身をキャンセルします");
+            return false;
+        }
+        if (target.IsMushroomMixupActive() && animate)
+        {
+            logger.Info("キノコカオス中のため変身をキャンセルします");
+            return false;
+        }
+        if (MeetingHud.Instance && animate)
+        {
+            logger.Info("会議中のため変身をキャンセルします");
+            return false;
+        }
+        return true;
+    }
+}
 [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.Shapeshift))]
 class ShapeshiftPatch
 {
@@ -262,9 +337,10 @@ class ReportDeadBodyPatch
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] GameData.PlayerInfo target)
     {
         if (GameStates.IsMeeting) return false;
+        Logger.Info("1", "test");
         if (Options.DisableMeeting.GetBool()) return false;
         if (Options.CurrentGameMode == CustomGameMode.HotPotato) return false;
-        if (!CanReport[__instance.PlayerId] || __instance.CantDoAnyAct())
+        if (__instance.CantDoAnyAct())
         {
             WaitReport[__instance.PlayerId].Add(target);
             Logger.Warn($"{__instance.GetNameWithRole()}:通報禁止中のため可能になるまで待機します", "ReportDeadBody");
@@ -285,8 +361,16 @@ class ReportDeadBodyPatch
                 return false;
             }
         }
-
-        if (__instance.Is(CustomRoles.Oblivious) && target != null) return false;
+        //对于仅仅是报告尸体的处理
+        if (target != null)
+        {
+            if (__instance.Is(CustomRoles.Oblivious)) return false;
+            if (target.Object.GetRealKiller().Is(CustomRoles.Spiders))
+            {
+                Main.AllPlayerSpeed[__instance.PlayerId] = Spiders.OptionSpeed.GetFloat();
+                __instance.MarkDirtySettings();
+            }
+        }
 
         foreach (var role in CustomRoleManager.AllActiveRoles.Values)
         {
@@ -527,7 +611,7 @@ class FixedUpdatePatch
                 if ((Utils.IsActive(SystemTypes.Comms) && Options.CommsCamouflage.GetBool()) || Concealer.IsHidding)
                     RealName = $"<size=0>{RealName}</size> ";
 
-                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})" : "";
+                string DeathReason = seer.Data.IsDead && seer.KnowDeathReason(target) ? $"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.MedicalExaminer), Utils.GetVitalText(target.PlayerId))})" : "";
                 //Mark・Suffixの適用
                 target.cosmetics.nameText.text = $"{RealName}{DeathReason}{Mark}";
 
@@ -554,7 +638,7 @@ class FixedUpdatePatch
     //FIXME: 役職クラス化のタイミングで、このメソッドは移動予定
     public static void LoversSuicide(byte deathId = 0x7f, bool isExiled = false, bool now = false)
     {
-        if (Options.LoverSuicide.GetBool() && CustomRoles.Lovers.IsExist(true) && !Main.isLoversDead)
+        if (Options.LoverSuicide.GetBool() && CustomRoles.Lovers.IsExistCountDeath() && !Main.isLoversDead)
         {
             foreach (var loversPlayer in Main.LoversPlayers)
             {
@@ -636,7 +720,7 @@ class CoEnterVentPatch
         Logger.Info($"{__instance.myPlayer.GetNameWithRole()} CoEnterVent: {id}", "CoEnterVent");
 
         var user = __instance.myPlayer;
-        if (user.CantDoAnyAct() || !user.CanUseSkill() && user.GetCustomRole() is CustomRoles.Swooper or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.TimeStops or CustomRoles.TimeMaster or CustomRoles.RubePeople or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
+        if (user.CantDoAnyAct() || !user.CanUseSkill() && user.GetCustomRole() is CustomRoles.EvilInvisibler or CustomRoles.Arsonist or CustomRoles.Veteran or CustomRoles.NiceTimeStops or CustomRoles.TimeMaster or CustomRoles.Instigator or CustomRoles.Paranoia or CustomRoles.Mayor or CustomRoles.DoveOfPeace or CustomRoles.Grenadier)
         {
             MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(__instance.NetId, (byte)RpcCalls.BootFromVent, SendOption.Reliable, -1);
             writer.WritePacked(127);

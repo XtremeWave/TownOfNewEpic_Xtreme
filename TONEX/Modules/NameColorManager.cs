@@ -40,7 +40,7 @@ public static class NameColorManager
         if (seer.Is(CustomRoles.Madmate) && target.Is(CustomRoles.Madmate) && Options.MadmateKnowWhosMadmate.GetBool()) color = Main.roleColors[CustomRoles.Madmate];
         if (seer.Is(CustomRoles.Gangster) && target.Is(CustomRoles.Madmate)) color = Main.roleColors[CustomRoles.Madmate];
 
-        //魅魔小弟互认
+        //魅惑者小弟互认
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Succubus)) color = Main.roleColors[CustomRoles.Succubus];
         if (seer.Is(CustomRoles.Succubus) && target.Is(CustomRoles.Charmed)) color = Main.roleColors[CustomRoles.Charmed];
         if (seer.Is(CustomRoles.Charmed) && target.Is(CustomRoles.Charmed) && Succubus.OptionTargetKnowOtherTarget.GetBool()) color = Main.roleColors[CustomRoles.Charmed];

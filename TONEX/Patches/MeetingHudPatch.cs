@@ -5,9 +5,11 @@ using System.Text;
 using TONEX.Modules;
 using TONEX.Roles.AddOns.Common;
 using TONEX.Roles.Core;
+using TONEX.Roles.Crewmate;
 using UnityEngine;
 using YamlDotNet.Core;
 using static TONEX.Translator;
+using static UnityEngine.GraphicsBuffer;
 
 namespace TONEX;
 
@@ -64,7 +66,8 @@ public static class MeetingHudPatch
             }
 
             MeetingVoteManager.Instance?.SetVote(srcPlayerId, suspectPlayerId);
-            return true;
+
+           return true;
         }
     }
     [HarmonyPatch(typeof(MeetingHud), nameof(MeetingHud.Start))]
@@ -181,7 +184,7 @@ public static class MeetingHudPatch
                 //とりあえずSnitchは会議中にもインポスターを確認することができる仕様にしていますが、変更する可能性があります。
 
                 if (seer.KnowDeathReason(target))
-                    sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.Doctor), Utils.GetVitalText(target.PlayerId))})");
+                    sb.Append($"({Utils.ColorString(Utils.GetRoleColor(CustomRoles.MedicalExaminer), Utils.GetVitalText(target.PlayerId))})");
 
                 sb.Append(seerRole?.GetMark(seer, target, true));
                 sb.Append(CustomRoleManager.GetMarkOthers(seer, target, true));
@@ -270,7 +273,7 @@ public static class MeetingHudPatch
         foreach (var playerId in playerIds)
         {
             //Loversの後追い
-            if (CustomRoles.Lovers.IsExist(true) && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
+            if (CustomRoles.Lovers.IsExistCountDeath() && !Main.isLoversDead && Main.LoversPlayers.Find(lp => lp.PlayerId == playerId) != null)
                 FixedUpdatePatch.LoversSuicide(playerId, true);
         }
     }

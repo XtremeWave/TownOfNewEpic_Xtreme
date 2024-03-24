@@ -19,8 +19,8 @@ There may be some improvement in performance
 ## Fix
 - Fixed bug that The vanilla cannot see the text of other players' remaining tasks, remaining skill counts, etc.
 - Fixed bug that Blood Knight's kill cooldown resets to half of the set cooldown when the skill expires
-- Fixed bug that Remnant data of Swooper and Pelican not being cleared in meeting
-- Fixed bug that Swooper cooldown not resetting after meeting
+- Fixed bug that Remnant data of EvilInvisibler and Pelican not being cleared in meeting
+- Fixed bug that EvilInvisibler cooldown not resetting after meeting
 - Fixed bug that Sometimes the meeting on mod would crash after the player left
 - Fixed bug that the option that the CrowPostor can kill teammates is opposite to the actual situation
 - Fixed bug that Cursed targets still die after the witch dies or is ejected
@@ -29,7 +29,7 @@ There may be some improvement in performance
 - Fixed bug that the skill buttons of Guesser, Judge, and Mafia can still be used after the voting ends
 - Fixed bug that Local game doesn't show the number of players but a useless countdown
 - Fixed bug that Deceiver has tasks
-- Fixed bug that Doctor option missing translation
+- Fixed bug that MedicalExaminer option missing translation
 
 
 ## Changing

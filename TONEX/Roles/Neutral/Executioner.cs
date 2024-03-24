@@ -5,9 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces;
+using TONEX.Roles.Core.Interfaces.GroupAndRole;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Executioner : RoleBase, IAdditionalWinner, IIndependent
+public sealed class Executioner : RoleBase, IAdditionalWinner, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -104,10 +105,10 @@ public sealed class Executioner : RoleBase, IAdditionalWinner, IIndependent
     {
         if (!AmongUsClient.Instance.AmHost) return;
 
-        using var sender = CreateSender(CustomRPC.SetExecutionerTarget);
+        using var sender = CreateSender();
         sender.Writer.Write(TargetId);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
         byte targetId = reader.ReadByte();
         TargetId = targetId;

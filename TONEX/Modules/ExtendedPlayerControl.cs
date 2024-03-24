@@ -26,7 +26,14 @@ static class ExtendedPlayerControl
     {
         if (!AmongUsClient.Instance.AmHost) return;
         if (player.Is(role)) return;
-        Main.SetRolesList.Add((Utils.GetTrueRoleName(player.PlayerId, false), player));
+        if (!Main.SetRolesList.ContainsKey(player.PlayerId))
+        {
+            List<string> values = new();
+            values.Add(null);
+            Main.SetRolesList.Add(player.PlayerId, values);
+        }
+        Main.SetRolesList[player.PlayerId].Add(player.GetTrueRoleName());
+
         if (role < CustomRoles.NotAssigned)
         {
             player.GetRoleClass()?.Dispose();
@@ -301,6 +308,35 @@ static class ExtendedPlayerControl
             この変更により、役職としての守護天使が無効化されます。
             ホストのクールダウンは直接リセットします。
         */
+    }
+    public static void RpcSpecificShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        if (player.PlayerId == 0)
+        {
+            player.Shapeshift(target, shouldAnimate);
+            return;
+        }
+        MessageWriter messageWriter = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.Shapeshift, SendOption.Reliable, player.GetClientId());
+        messageWriter.WriteNetObject(target);
+        messageWriter.Write(shouldAnimate);
+        AmongUsClient.Instance.FinishRpcImmediately(messageWriter);
+    }
+    public static void RpcSpecificRejectShapeshift(this PlayerControl player, PlayerControl target, bool shouldAnimate)
+    {
+        if (!AmongUsClient.Instance.AmHost) return;
+        foreach (var seer in Main.AllPlayerControls)
+        {
+            if (seer != player)
+            {
+                MessageWriter msg = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.RejectShapeshift, SendOption.Reliable, seer.GetClientId());
+                AmongUsClient.Instance.FinishRpcImmediately(msg);
+            }
+            else
+            {
+                player.RpcSpecificShapeshift(target, shouldAnimate);
+            }
+        }
     }
     public static void RpcDesyncUpdateSystem(this PlayerControl target, SystemTypes systemType, int amount)
     {
@@ -639,14 +675,19 @@ static class ExtendedPlayerControl
         return rangePlayers;
     }
     public static bool IsImp(this PlayerControl player) => player.Is(CustomRoleTypes.Impostor);
+
     public static bool IsCrew(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate);
-    public static bool IsCrewKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
-    public static bool IsCrewNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Crewmate) && !player.IsCrewKiller();
+    public static bool IsCrewKiller(this PlayerControl player) => player.IsCrew() && ((CustomRoleManager.GetByPlayerId(player.PlayerId) as IKiller)?.IsKiller ?? false);
+    public static bool IsCrewNonKiller(this PlayerControl player) => !player.IsCrewKiller();
+
     public static bool IsNeutral(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral);
-    public static bool IsNeutralKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is INeutralKilling;
-    public static bool IsNeutralNonKiller(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && !player.IsNeutralKiller();
-    public static bool IsNeutralEvil(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is IIndependent;
-    public static bool IsNeutralBenign(this PlayerControl player) => player.Is(CustomRoleTypes.Neutral) && player is not IIndependent;
+
+    public static bool IsNeutralKiller(this PlayerControl player) => player.IsNeutral() && ((player.GetRoleClass() as INeutralKiller)?.IsNK ?? false);
+    public static bool IsNeutralNonKiller(this PlayerControl player) => !player.IsNeutralKiller();
+
+    public static bool IsNeutralEvil(this PlayerControl player) => player.IsNeutral() && ((player.GetRoleClass() as INeutral)?.IsNE ?? false);
+    public static bool IsNeutralBenign(this PlayerControl player) => !player.IsNeutralEvil();
+
     public static bool IsShapeshifting(this PlayerControl player) => Main.CheckShapeshift.TryGetValue(player.PlayerId, out bool ss) && ss;
     public static bool KnowDeathReason(this PlayerControl seer, PlayerControl seen)
     {

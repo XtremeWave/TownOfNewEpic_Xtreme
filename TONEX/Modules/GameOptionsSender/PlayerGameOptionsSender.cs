@@ -3,6 +3,7 @@ using Hazel;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using Il2CppSystem.Linq;
 using InnerNet;
+using MS.Internal.Xml.XPath;
 using System.Linq;
 using TONEX.Attributes;
 using TONEX.Roles.AddOns.Common;
@@ -101,13 +102,13 @@ public class PlayerGameOptionsSender : GameOptionsSender
                     break;
                 case CustomRoles.Lighter:
                     opt.SetVision(true);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Lighter.OptionVistion.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Lighter.OptionVistion.GetFloat());
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, (Main.DefaultCrewmateVision + Lighter.OptionVistion.GetFloat()) > 5f?5f : Main.DefaultCrewmateVision + Lighter.OptionVistion.GetFloat());
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, (Main.DefaultImpostorVision + Lighter.OptionVistion.GetFloat()) > 5f ? 5f : Main.DefaultImpostorVision + Lighter.OptionVistion.GetFloat());
                     break;
                 case CustomRoles.Bewilder:
                     opt.SetVision(false);
-                    opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
-                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
+                    opt.SetFloat(FloatOptionNames.CrewLightMod, (Main.DefaultCrewmateVision - Bewilder.OptionVision.GetFloat()) <0f? 0f: Main.DefaultCrewmateVision - Bewilder.OptionVision.GetFloat());
+                    opt.SetFloat(FloatOptionNames.ImpostorLightMod, (Main.DefaultCrewmateVision - Bewilder.OptionVision.GetFloat()) < 0f ? 0f : Main.DefaultCrewmateVision - Bewilder.OptionVision.GetFloat());
                     break;
                 case CustomRoles.Reach:
                     opt.SetInt(Int32OptionNames.KillDistance, 2);
@@ -115,7 +116,7 @@ public class PlayerGameOptionsSender : GameOptionsSender
                 case CustomRoles.Mini:
                     if ((player.GetRoleClass() as IKiller)?.IsKiller ?? false)
                     {
-                        if (Mini.Age < 18)
+                        if (Mini.Age[player.PlayerId] < 18)
                             opt.SetFloat(FloatOptionNames.KillCooldown, Mini.OptionKidKillCoolDown.GetFloat());
                         else
                             opt.SetFloat(FloatOptionNames.KillCooldown, Mini.OptionAdultKillCoolDown.GetFloat());
@@ -128,13 +129,24 @@ public class PlayerGameOptionsSender : GameOptionsSender
             }
         }
 
-        // 为迷惑者的凶手
+        // 为迷幻者的凶手
         if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Bewilder) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, Bewilder.OptionVision.GetFloat());
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, Bewilder.OptionVision.GetFloat());
             player.RpcSetCustomRole(CustomRoles.Bewilder);
+            Utils.NotifyRoles(player);
+        }
+
+        // 为患者的凶手
+        if (Main.AllPlayerControls.Any(x => x.Is(CustomRoles.Diseased) && !x.IsAlive() && x.GetRealKiller()?.PlayerId == player.PlayerId && !x.Is(CustomRoles.Hangman)))
+        {
+            opt.SetVision(false);
+            float KILL = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown;
+            opt.SetFloat(FloatOptionNames.KillCooldown, KILL * Diseased.OptionVistion.GetFloat());
+            player.ResetKillCooldown();
+            player.SyncSettings();
             Utils.NotifyRoles(player);
         }
 
@@ -147,14 +159,14 @@ public class PlayerGameOptionsSender : GameOptionsSender
         }
 
         //最好的请过来
-        if (Non_Villain.ComeAndAwayList != null)
+        /*if (Non_Villain.ComeAndAwayList != null)
         if (Non_Villain.ComeAndAwayList.Contains(player.PlayerId))
         {
             opt.SetVision(false);
             opt.SetFloat(FloatOptionNames.CrewLightMod, 5f);
             opt.SetFloat(FloatOptionNames.ImpostorLightMod, 5f);
             Utils.NotifyRoles(player);
-        }
+        }*/
         // 投掷傻瓜蛋啦！！！！！
         if (Grenadier.IsBlinding(player))
         {

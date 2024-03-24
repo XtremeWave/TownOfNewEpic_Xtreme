@@ -30,6 +30,20 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         InitRoleCommands();
         AllCommands = new()
         {
+            new(["sr"], CommandAccess.Debugger, mc =>
+            {
+                
+                SetRoles(mc.Args, mc.Player.PlayerId);
+                return (MsgRecallMode.Block, null);
+            }),
+            new(["revive"], CommandAccess.Debugger, mc =>
+            {
+                var id = Convert.ToByte(mc.Args);
+                var player = Utils.GetPlayerById(id);
+                player.RpcSetRole(RoleTypes.Impostor);
+                
+                return (MsgRecallMode.Block, null);
+            }),
             new(["dump"], CommandAccess.LocalMod, mc =>
             {
                 Utils.DumpLog();
@@ -40,6 +54,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 StringBuilder sb = new();
                 foreach (var kvp in Main.playerVersion.OrderBy(pair => pair.Key))
                     sb.Append($"{kvp.Key}:{Main.AllPlayerNames[kvp.Key]}:{kvp.Value.forkId}/{kvp.Value.version}({kvp.Value.tag})\n");
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, sb.ToString());
             }),
             new(["win", "winner"], CommandAccess.All, mc =>
@@ -47,6 +62,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 string text = GetString("NoInfoExists");
                 if (Main.winnerNameList.Any())
                     text = "Winner: " + string.Join(",", Main.winnerNameList);
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["level"], CommandAccess.Host, mc =>
@@ -55,6 +71,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 if (int.TryParse(mc.Args, out int level) && level is >= 1 and <= 999)
                 {
                     text = string.Format(GetString("Message.SetLevel"), level);
+                    mc.SendToList.Add(mc.Player.PlayerId);
                     mc.Player.RpcSetLevel(Convert.ToUInt32(level) - 1);
                 }
                 return (MsgRecallMode.Block, text);
@@ -69,6 +86,8 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
             {
                 string text = mc.Args.Length is > 10 or < 1 ? GetString("Message.AllowNameLength") : null;
                 if (text == null) Main.HostNickName = mc.Args;
+                mc.SendToList.Add(mc.Player.PlayerId);
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["hn", "hidename"], CommandAccess.Host, mc =>
@@ -138,6 +157,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 MessageWriter writer = AmongUsClient.Instance.StartRpcImmediately(player.NetId, (byte)RpcCalls.SetScanner, SendOption.Reliable, -1);
                 writer.Write(true);
                 AmongUsClient.Instance.FinishRpcImmediately(writer);
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["m", "myrole"], CommandAccess.All, mc =>
@@ -150,6 +170,20 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         // roleInfoがない役職
                         GetString(role.ToString()) + mc.Player.GetRoleInfo(true);
                 }
+                mc.SendToList.Add(mc.Player.PlayerId);
+                return (MsgRecallMode.Block, text);
+            }),
+            new(["eje", "ejection","ejections"], CommandAccess.All, mc =>
+            {
+                string text = GetString("Message.CanNotUseInLobby");
+                if (GameStates.IsInGame)
+                {
+                    if(ConfirmEjections.LatestEjec==null)
+                        text = GetString("Message.NonLatestEje");
+                    else
+                    text = ConfirmEjections.LatestEjec;
+                }
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["t", "template"], CommandAccess.LocalMod, mc =>
@@ -166,6 +200,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                     Main.MessageWait.Value = sec;
                     text = string.Format(GetString("Message.SetToSeconds"), sec);
                 }
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["exe", "execute"], CommandAccess.Host, mc =>
@@ -185,6 +220,10 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         text = target.AmOwner
                             ? Utils.ColorString(Color.red, GetString("HostKillSelfByCommand"))
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
+                    }
+                    foreach (var pc in Main.AllPlayerControls)
+                    {
+                        mc.SendToList.Add(pc.PlayerId);
                     }
                 }
                 return (MsgRecallMode.Block, text);
@@ -206,6 +245,10 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                             : string.Format(GetString("Message.Executed"), target.Data.PlayerName);
                     }
                 }
+                 foreach (var pc in Main.AllPlayerControls)
+                    {
+                        mc.SendToList.Add(pc.PlayerId);
+                    }
                 return (MsgRecallMode.Block, text);
             }),
             new(["color", "colour"], Options.PlayerCanSetColor.GetBool()?CommandAccess.All:CommandAccess.Host, mc =>
@@ -221,11 +264,13 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         text = string.Format(GetString("Message.SetColor"), mc.Args);
                     }
                 }
+                mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["qt", "quit"], CommandAccess.All, mc =>
             {
                 string text = GetString("Message.CanNotUseByHost");
+                mc.SendToList.Add(mc.Player.PlayerId);
                 if (!mc.IsFromSelf)
                 {
                     var cid = mc.Player.PlayerId.ToString();
@@ -235,10 +280,15 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                         string name = mc.Player.GetRealName();
                         text = string.Format(GetString("Message.PlayerQuitForever"), name);
                         Utils.KickPlayer(mc.Player.GetClientId(), true, "VoluntarilyQuit");
+                        foreach (var pc in Main.AllPlayerControls)
+                    {
+                        mc.SendToList.Add(pc.PlayerId);
+                    }
                     }
                     else
                     {
                         text = string.Format(GetString("SureUse.quit"), cid);
+                        mc.SendToList.Add(mc.Player.PlayerId);
                     }
                 }
                 return (MsgRecallMode.Block, text);
@@ -248,6 +298,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
                 string text = GetString("PlayerIdList");
                 foreach (var pc in Main.AllPlayerControls)
                     text += "\n" + pc.PlayerId.ToString() + " → " + Main.AllPlayerNames[pc.PlayerId];
+                 mc.SendToList.Add(mc.Player.PlayerId);
                 return (MsgRecallMode.Block, text);
             }),
             new(["end", "endgame"], CommandAccess.Host, mc =>
@@ -315,8 +366,37 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         RoleCommands.Add(CustomRoles.Chameleon, new() { "ch", "变色龙","变色" });
         RoleCommands.Add(CustomRoles.Mini, new() { "mini", "迷你" });
         RoleCommands.Add(CustomRoles.Libertarian, new() { "li", "广播", "自主主义者" });
+        RoleCommands.Add(CustomRoles.Spiders, new() { "sd", "蜘蛛"});
+        RoleCommands.Add(CustomRoles.Diseased, new() { "dis", "患者", "病人" });
     }
     public static void SendRolesInfo(string input, byte playerId)
+    {
+        if (Options.CurrentGameMode == CustomGameMode.HotPotato)
+        {
+            Utils.SendMessage(GetString("ModeDescribe.HotPotato"), playerId);
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(input))
+        {
+            Utils.ShowActiveRoles(playerId);
+            return;
+        }
+        else if (!GetRoleByInputName(input, out var role) || role is CustomRoles.Non_Villain or CustomRoles.HotPotato or CustomRoles.ColdPotato)
+        {
+            Utils.SendMessage(GetString("Message.CanNotFindRoleThePlayerEnter"), playerId);
+            return;
+        }
+        else
+        {
+            if (!role.IsAddon())
+            Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp, playerId);
+            else if (role.IsAddon())
+                Utils.SendMessage(AddonDescription.FullFormatHelpByRole(role) ??
+                        // roleInfoがない役職
+                        $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{role.GetRoleInfoWithRole()}", playerId);
+        }
+    }
+    public static void SetRoles(string input, byte playerId)
     {
         if (Options.CurrentGameMode == CustomGameMode.HotPotato)
         {
@@ -335,12 +415,7 @@ public class ChatCommand(List<string> keywords, CommandAccess access, Func<Messa
         }
         else
         {
-            if (!role.IsAddon())
-            Utils.SendMessage(role.GetRoleInfo().Description.FullFormatHelp, playerId);
-            else if (role.IsAddon())
-                Utils.SendMessage(AddonDescription.FullFormatHelpByRole(role) ??
-                        // roleInfoがない役職
-                        $"<size=130%><color={Utils.GetRoleColor(role)}>{GetString(role.ToString())}</color></size>:\n\n{role.GetRoleInfoWithRole()}", playerId);
+            Utils.GetPlayerById(playerId).RpcSetCustomRole(role);
         }
     }
     public static void SpecifyRole(string input, byte playerId)

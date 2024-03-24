@@ -9,7 +9,7 @@ using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 
 namespace TONEX.Roles.Neutral;
-public sealed class Demon : RoleBase, INeutralKilling, IKiller, ISchrodingerCatOwner, IIndependent
+public sealed class Demon : RoleBase, INeutralKiller
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -55,7 +55,7 @@ public sealed class Demon : RoleBase, INeutralKilling, IKiller, ISchrodingerCatO
     public static bool CanVent;
     private static Dictionary<byte, int> PlayerHP;
     private int DemonHP;
-
+    public bool IsNK { get; private set; } = true;
     public SchrodingerCat.TeamType SchrodingerCatChangeTo => SchrodingerCat.TeamType.Demon;
 
     private static void SetupOptionItem()
@@ -91,9 +91,9 @@ public sealed class Demon : RoleBase, INeutralKilling, IKiller, ISchrodingerCatO
         writer.Write(Player.PlayerId == id ? DemonHP : PlayerHP[id]);
         AmongUsClient.Instance.FinishRpcImmediately(writer);
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetDemonHealth) return;
+        
         byte id = reader.ReadByte();
         int hp = reader.ReadInt32();
         if (Player.PlayerId == id)

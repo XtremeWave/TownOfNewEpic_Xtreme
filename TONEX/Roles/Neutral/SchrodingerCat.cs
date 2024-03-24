@@ -11,7 +11,7 @@ using UnityEngine;
 namespace TONEX.Roles.Neutral;
 
 // マッドが属性化したらマッド状態時の特別扱いを削除する
-public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSeeable, IKillFlashSeeable, IIndependent
+public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSeeable, IKillFlashSeeable, INeutral
 {
     public static readonly SimpleRoleInfo RoleInfo =
         SimpleRoleInfo.Create(
@@ -35,6 +35,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         CanWinTheCrewmateBeforeChange = OptionCanWinTheCrewmateBeforeChange.GetBool();
         ChangeTeamWhenExile = OptionChangeTeamWhenExile.GetBool();
         CanSeeKillableTeammate = OptionCanSeeKillableTeammate.GetBool();
+        PL = (Player);
     }
     static OptionItem OptionCanWinTheCrewmateBeforeChange;
     static OptionItem OptionChangeTeamWhenExile;
@@ -50,6 +51,7 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
     static bool ChangeTeamWhenExile;
     static bool CanSeeKillableTeammate;
 
+    private static PlayerControl PL;
     /// <summary>
     /// 自分をキルしてきた人のロール
     /// </summary>
@@ -67,6 +69,10 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             logger.Info($"{Player.GetRealName()}の陣営を{value}に変更");
             _team = value;
         }
+    }
+    public static TeamType TeamStatic
+    {
+        get => (PL.GetRoleClass() as SchrodingerCat).Team;
     }
     public bool AmMadmate => Team == TeamType.Mad;
     public Color DisplayRoleColor => GetCatColor(Team);
@@ -184,6 +190,26 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         {
             candidates.Add(TeamType.Demon);
         }
+        if (CustomRoles.Hater.IsExist())
+        {
+            candidates.Add(TeamType.Hater);
+        }
+        if (CustomRoles.GodOfPlagues.IsExist())
+        {
+            candidates.Add(TeamType.GodOfPlagues);
+        }
+        if (CustomRoles.Opportunist.IsExist())
+        {
+            candidates.Add(TeamType.Opportunist);
+        }
+        if (CustomRoles.NightWolf.IsExist())
+        {
+            candidates.Add(TeamType.NightWolf);
+        }
+        if (CustomRoles.RewardOfficer.IsExist())
+        {
+            candidates.Add(TeamType.RewardOfficer);
+        }
         var team = candidates[rand.Next(candidates.Count)];
         RpcSetTeam(team);
     }
@@ -198,6 +224,11 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             TeamType.Pelican => CustomWinnerHolder.WinnerTeam == CustomWinner.Pelican,
             TeamType.BloodKnight => CustomWinnerHolder.WinnerTeam == CustomWinner.BloodKnight,
             TeamType.Demon => CustomWinnerHolder.WinnerTeam == CustomWinner.Demon,
+            TeamType.Hater => CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.Hater),
+            TeamType.GodOfPlagues => CustomWinnerHolder.WinnerTeam == (CustomWinner.GodOfPlagues),
+            TeamType.Opportunist => PL.IsAlive() || CustomWinnerHolder.AdditionalWinnerRoles.Contains(CustomRoles.Opportunist),
+            TeamType.NightWolf => CustomWinnerHolder.WinnerTeam == (CustomWinner.NightWolf),
+            TeamType.RewardOfficer => CustomWinnerHolder.WinnerTeam == (CustomWinner.RewardOfficer),
             _ => null,
         };
         if (!won.HasValue)
@@ -212,16 +243,13 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         Team = team;
         if (AmongUsClient.Instance.AmHost)
         {
-            using var sender = CreateSender(CustomRPC.SetSchrodingerCatTeam);
+            using var sender = CreateSender();
             sender.Writer.Write((byte)team);
         }
     }
-    public override void ReceiveRPC(MessageReader reader, CustomRPC rpcType)
+    public override void ReceiveRPC(MessageReader reader)
     {
-        if (rpcType != CustomRPC.SetSchrodingerCatTeam)
-        {
-            return;
-        }
+
         Team = (TeamType)reader.ReadByte();
     }
 
@@ -242,6 +270,10 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
         BloodKnight,
         Demon,
         Hater,
+        GodOfPlagues,
+        Opportunist,
+        NightWolf,
+        RewardOfficer,
 
     }
     public static Color GetCatColor(TeamType catType)
@@ -255,6 +287,11 @@ public sealed class SchrodingerCat : RoleBase, IAdditionalWinner, IDeathReasonSe
             TeamType.Pelican => Utils.GetRoleColor(CustomRoles.Pelican),
             TeamType.BloodKnight => Utils.GetRoleColor(CustomRoles.BloodKnight),
             TeamType.Demon => Utils.GetRoleColor(CustomRoles.Demon),
+            TeamType.Hater => Utils.GetRoleColor(CustomRoles.Hater),
+            TeamType.GodOfPlagues => Utils.GetRoleColor(CustomRoles.GodOfPlagues),
+            TeamType.Opportunist => Utils.GetRoleColor(CustomRoles.Opportunist),
+            TeamType.NightWolf => Utils.GetRoleColor(CustomRoles.NightWolf),
+            TeamType.RewardOfficer => Utils.GetRoleColor(CustomRoles.RewardOfficer),
             _ => null,
         };
         if (!color.HasValue)

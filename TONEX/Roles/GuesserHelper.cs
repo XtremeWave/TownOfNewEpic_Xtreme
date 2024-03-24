@@ -11,6 +11,7 @@ using TONEX.Roles.Crewmate;
 using TONEX.Roles.Impostor;
 using UnityEngine;
 using static TONEX.Translator;
+using TONEX.Roles.AddOns.Common;
 
 namespace TONEX;
 public static class GuesserHelper
@@ -133,6 +134,18 @@ public static class GuesserHelper
         if (role == CustomRoles.GM || target.Is(CustomRoles.GM))
         {
             reason = GetString("GuessGM");
+            return false;
+        }
+        if (role == CustomRoles.Mini )
+        {
+            reason = GetString("GuessMini");
+            return false;
+        }
+        if (CustomRoles.Medic.IsExistCountDeath())
+        if (Medic.InProtect(target.PlayerId))
+        {
+            if (guesser.GetRoleClass() is NiceGuesser ngClass2 && !NiceGuesser.OptionIgnoreMedicShield.GetBool() || guesser.GetRoleClass() is EvilGuesser egClass2 && !EvilGuesser.OptionIgnoreMedicShield.GetBool())
+            reason = GetString("GuessShield");
             return false;
         }
         if (target.Is(CustomRoles.Snitch) && target.AllTasksCompleted() && guesser.Is(CustomRoles.EvilGuesser) && !EvilGuesser.OptionCanGuessTaskDoneSnitch.GetBool())
@@ -345,7 +358,10 @@ public static class GuesserHelper
 
             List<Transform> buttons = new();
             Transform selectedButton = null;
-
+            List<CustomRoles> Imp = new();
+            List<CustomRoles> Crew = new();
+            List<CustomRoles> Neu = new();
+            List<CustomRoles> Add = new();
             int tabCount = 0;
             for (int index = 0; index < 4; index++)
             {
@@ -353,11 +369,70 @@ public static class GuesserHelper
                 {
                     if (!EvilGuesser.OptionCanGuessImp.GetBool() && index == 1) continue;
                     if (!EvilGuesser.OptionCanGuessAddons.GetBool() && index == 3) continue;
+                    if (EvilGuesser.OptionJustShowExist.GetBool())
+                    {
+                        foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
+                        {
+                            if (role.IsExistCountDeath())
+                            switch (role.GetCustomRoleTypes())
+                            {
+                                case CustomRoleTypes.Crewmate:
+                                    Crew.Add(role);
+                                    break;
+                                case CustomRoleTypes.Impostor:
+                                    Imp.Add(role);
+                                    break;
+                                case CustomRoleTypes.Neutral:
+                                    Neu.Add(role);
+                                    break;
+                                case CustomRoleTypes.Addon:
+                                    Add.Add(role);
+                                    break;
+                            }
+                            
+                            
+
+                        }
+                        if (Crew.Count <= 0 && index == 0) continue;
+                        if (Imp.Count <= 0 && index == 1) continue;
+                        if (Neu.Count <= 0 && index == 2) continue;
+                        if (Add.Count <= 0 && index == 3) continue;
+                    }
+
                 }
                 else
                 {
                     if (!NiceGuesser.OptionCanGuessCrew.GetBool() && !PlayerControl.LocalPlayer.Is(CustomRoles.Madmate) && index == 0) continue;
                     if (!NiceGuesser.OptionCanGuessAddons.GetBool() && index == 3) continue;
+                    if (NiceGuesser.OptionJustShowExist.GetBool())
+                    {
+                        foreach (CustomRoles role in Enum.GetValues(typeof(CustomRoles)))
+                        {
+                            if (role.IsExistCountDeath())
+                                switch (role.GetCustomRoleTypes())
+                                {
+                                    case CustomRoleTypes.Crewmate:
+                                        Crew.Add(role);
+                                        break;
+                                    case CustomRoleTypes.Impostor:
+                                        Imp.Add(role);
+                                        break;
+                                    case CustomRoleTypes.Neutral:
+                                        Neu.Add(role);
+                                        break;
+                                    case CustomRoleTypes.Addon:
+                                        Add.Add(role);
+                                        break;
+                                }
+
+
+
+                        }
+                        if (Crew.Count <= 0 && index == 0) continue;
+                        if (Imp.Count <= 0 && index == 1) continue;
+                        if (Neu.Count <= 0 && index == 2) continue;
+                        if (Add.Count <= 0 && index == 3) continue;
+                    }
                 }
                 Transform TeambuttonParent = new GameObject().transform;
                 TeambuttonParent.SetParent(container);
@@ -449,8 +524,11 @@ public static class GuesserHelper
             {
                 if (!EvilGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && role.IsVanilla()) continue;
                 if (!NiceGuesser.OptionCanGuessVanilla.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && role.IsVanilla()) continue;
+                if (NiceGuesser.OptionJustShowExist.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.NiceGuesser) && !role.IsExistCountDeath()) continue;
+                if (EvilGuesser.OptionJustShowExist.GetBool() && PlayerControl.LocalPlayer.Is(CustomRoles.EvilGuesser) && !role.IsExistCountDeath()) continue;
                 if (role.IsTODO()) continue;
                 if (role is CustomRoles.GM or CustomRoles.NotAssigned or CustomRoles.SuperStar or CustomRoles.GuardianAngel or CustomRoles.HotPotato or CustomRoles.ColdPotato) continue;
+                if (role ==  CustomRoles.Mini) continue;
                 CreateRole(role);
             }
             void CreateRole(CustomRoles role)

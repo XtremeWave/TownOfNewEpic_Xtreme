@@ -17,7 +17,8 @@ public enum CustomGameMode
 {
     Standard = 0x01,
     HotPotato = 0x02,
-    All = int.MaxValue
+    AllCrewMod = 0x03,
+    All = int.MaxValue,
 }
 
 [HarmonyPatch]
@@ -91,6 +92,14 @@ public static class Options
         "ConfirmEjections.Team",
         "ConfirmEjections.Role"
     };
+    public static readonly string[] SubGameModes =
+    {
+        "SubGameModes.None",
+        "SubGameModes.Blessing",//赐福，2.0
+        "SubGameModes.CreepyRules",//规则怪谈，1.5
+        "SubGameModes.Guesser",
+
+    };
 
     #region 创建选项
 
@@ -126,11 +135,16 @@ public static class Options
     public static OptionItem NGuesserCanBeMadmate;
     public static OptionItem SnitchCanBeMadmate;
     public static OptionItem JudgeCanBeMadmate;
+    public static OptionItem NSwapperCanBeMadmate;
     public static OptionItem MadSnitchTasks;
 
     //// 游戏设置 ////
 
     public static OptionItem EnableGM;
+
+    //游戏模式
+    public static OptionItem SubGameMode;
+
 
     // 驱逐相关设定
     public static OptionItem CEMode;
@@ -534,6 +548,7 @@ public static class Options
 
         AddonsNumLimit = IntegerOptionItem.Create(1_003_005, "AddonsNumLimit", new(0, 99, 1), 1, TabGroup.Addons, false)
             .SetGameMode(CustomGameMode.Standard)
+            .SetValueFormat(OptionFormat.Pieces)
             .SetHeader(true);
 
         // GM
@@ -632,9 +647,11 @@ public static class Options
         Bait.SetupCustomOption();
         Beartrap.SetupCustomOption();
         Rambler.SetupCustomOption() ;
-        Chameleon.SetupCustomOption();
+        //Chameleon.SetupCustomOption();
         Mini.SetupCustomOption();
+        Signal.SetupCustomOption();
         Libertarian.SetupCustomOption();
+        Diseased.SetupCustomOption();
 
         // 船员专属附加
         TextOptionItem.Create(5_100_002, "MenuTitle.Addon.Crew", TabGroup.Addons)
@@ -653,6 +670,7 @@ public static class Options
         LastImpostor.SetupCustomOption();
         TicketsStealer.SetupCustomOption();
         Mimic.SetupCustomOption();
+        Spiders.SetupCustomOption();
 
         #endregion
 
@@ -778,6 +796,22 @@ public static class Options
         #region 游戏设置
         HotPotatoManager.SetupCustomOption();
 
+        // 更多游戏模式
+        TextOptionItem.Create(3_020_000, "MenuTitle.GameMode", TabGroup.GameSettings)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue))
+            #if RELEASE
+        .SetHidden(true)
+#endif
+            ;
+        SubGameMode = StringOptionItem.Create(3_090_001, "SubGameMode", SubGameModes, 0, TabGroup.GameSettings, false)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue))
+        #if RELEASE
+        .SetHidden(true)
+#endif
+            ;
+
         // 驱逐相关设定
         TextOptionItem.Create(3_100_001, "MenuTitle.Ejections", TabGroup.GameSettings)
             .SetGameMode(CustomGameMode.Standard)
@@ -806,7 +840,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
-        DisableHiddenRoles = BooleanOptionItem.Create(3_001_002, "DisableHiddenRoles", true, TabGroup.GameSettings, false)
+        DisableHiddenRoles = BooleanOptionItem.Create(3_001_002, "DisableHiddenRoles", false, TabGroup.GameSettings, false)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(255, 153, 153, byte.MaxValue));
         DisableTaskWin = BooleanOptionItem.Create(3_001_003, "DisableTaskWin", false, TabGroup.GameSettings, false)
@@ -1075,7 +1109,7 @@ public static class Options
             .SetGameMode(CustomGameMode.Standard)
            .SetColor(new Color32(217, 218, 255, byte.MaxValue));
 
-        #endregion 
+#endregion
 
         OptionSaver.Load();
 
@@ -1140,7 +1174,7 @@ public static class Options
         MadSnitchTasks = IntegerOptionItem.Create(id + 16, "MadSnitchTasks", new(1, 99, 1), 3, TabGroup.Addons, false).SetParent(SnitchCanBeMadmate)
             .SetValueFormat(OptionFormat.Pieces);
         JudgeCanBeMadmate = BooleanOptionItem.Create(id + 17, "JudgeCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
-
+        NSwapperCanBeMadmate = BooleanOptionItem.Create(id + 18, "NSwapperCanBeMadmate", false, TabGroup.Addons, false).SetParent(spawnOption);
         CustomRoleSpawnChances.Add(role, spawnOption);
         CustomRoleCounts.Add(role, countOption);
     }
