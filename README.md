@@ -16,6 +16,17 @@
 
 </div>
 
+> [!IMPORTANT]
+> Over the past year since the establishment of XtremeWave, all members have grown significantly. Initially named 「TEAM_TONEX」, this organization was founded to carry on the unfulfilled goals and dreams of TOHEX.\
+> Throughout this year, we welcomed new members, reunited with old friends, experienced disputes, and endured farewells... We strived to maintain a positive gaming experience for players, dedicated efforts to our passion, made amends for mistakes made during TOHEX's development, and endeavored to bring joy to more people through our mod...\
+> We achieved the objectives outlined in our initial trailer. However, most of our efforts went unrewarded - the mod never gained popularity...\
+> Now that TONEX has fulfilled its purpose as a playerless mod, we no longer possess the energy and resources to continue its maintenance.
+>Therefore, with confirmation from the project lead Xi, we will cease all maintenance and support for the TONEX mod after releasing the discontinued version 1.4.
+
+> [!NOTE]
+> This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC.\
+> Portions of the materials contained herein are property of Innersloth LLC.\
+> © Innersloth LLC.
 ## About Us
 Since May 20, 2023, Town Of Host Edited (TOHE) has ceased development. <br>
 To keep the "flame" of TOHE alive, we developed a branch project called Town Of Host Edited-Xi (TOHEX).<br>
@@ -29,10 +40,6 @@ Let us continue the creation of mods in the name of "INHERITANCE" once more!
 <div align="right">
 ——XtremeWave
 </div>
-
-## Regarding
-This mod is not affiliated with Among Us or Innersloth LLC, and the content contained therein is not endorsed or otherwise sponsored by Innersloth LLC.<br>
-Portions of the materials contained herein are property of Innersloth LLC. © Innersloth LLC.
 
 # Source of ideas & Supports
  - [Town Of Host](https://github.com/tukasa0001/TownOfHost)
