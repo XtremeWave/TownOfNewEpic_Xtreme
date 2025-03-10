@@ -42,7 +42,7 @@ public class Main : BasePlugin
     public const string LowestSupportedVersion = "2024.10.29";
     public static readonly bool IsPublicAvailableOnThisVersion = true;
     public const string PluginVersion = "1.4";
-    public const string ShowVersion_Head = "1.4_20250131";
+    public const string ShowVersion_Head = "1.4_20250310";
     public const string ShowVersion_TestText = "_Scrapter";
     public const string ShowVersion = ShowVersion_Head + ShowVersion_TestText;
     public const int PluginCreation = 1;

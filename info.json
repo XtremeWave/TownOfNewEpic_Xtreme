@@ -1,7 +1,7 @@
 {
-  "version": "1.3.5",
-  "verHead": "1.3",
-  "verDate": "20240726",
+  "version": "1.4.0",
+  "verHead": "1.4",
+  "verDate": "20250310",
 
   "versionPre": "",
   "verDatePre": "",
@@ -16,12 +16,12 @@
   "CanUpdate": "true",
   "DebugVer": "0.0.0",
 
-  "md5Pre": "5c26e1c71f25a4120084370bf8ca429a",
-  "md5": "5c26e1c71f25a4120084370bf8ca429a",
+  "md5Pre": "",
+  "md5": "a192f560a5b0b46841b7979c4f61b296",
   "announcement": {
     "Preview": "Welcome",
-    "SChinese": "感谢所有玩家对我们的支持！",
-    "English": "Thank you to all players for your support!"
+    "SChinese": "再见，TONEX！",
+    "English": "Bye, TONEX!"
   },
 
   "url": {
