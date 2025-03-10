@@ -90,5 +90,5 @@ public sealed class SplitPersonality : RoleBase, IAdditionalWinner
         else if (InNeu) return true ;
         else return false ;
     }
-    public override string GetProgressText(bool comms = false) => GetString(InCrew ? " TeamCrewmate" : InImp ? "TeamImpostor" : "TeamNeutral");
+    public override string GetProgressText(bool comms = false) => GetString(InCrew ? "TeamCrewmate" : InImp ? "TeamImpostor" : "TeamNeutral");
 }

@@ -27,13 +27,8 @@ public static class ServerAddManager
         if (Translator.IsChineseUser)
         {
             regionInfos.Add(CreateHttp("aucn.233466.xyz", "Nikocat233(CN)", 443, true));
-
-            regionInfos.Add(CreateHttp("au-sh.pafyx.top", "梦服上海 (新)", 22000, false));
-            regionInfos.Add(CreateHttp("124.222.148.195", "小猫私服", 22000, false));
-            regionInfos.Add(CreateHttp("au.3q.fan", "小猫354[北京]", 22020, false));
-            regionInfos.Add(CreateHttp("45yun.cn", "小猫服[北京]", 22000, false));
-            regionInfos.Add(CreateHttp("player.fangkuai.fun", "方块服[北京]", 22024, true));
-            
+            regionInfos.Add(CreateHttp("au-as.niko233.me", "Nikocat233(AS)", 443, true));
+            regionInfos.Add(CreateHttp("au-as2.niko233.me", "Nikocat233(AS2)", 443, true)); 
         }
         regionInfos.Add(CreateHttp("au-as.duikbo.at", "Modded Asia (MAS)", 443, true));
         regionInfos.Add(CreateHttp("www.aumods.xyz", "Modded NA (MNA)", 443, true));
@@ -57,13 +52,9 @@ public static class ServerAddManager
             "Modded NA (MNA)" => "MNA",
             "Modded EU (MEU)" => "MEU",
             "North America" => "NA",
-            "梦服上海 (新)" => "梦服",
-            "小猫私服" => "小猫",
-            "小猫354[北京]" => "小猫354",
-            "小猫服[北京]" => "小猫[北京]",
-            "方块服[北京]" => "方块[北京]",
-            "Nikocat233(CN)" => "Niko(CN)",
             "Nikocat233(US)" => "Niko(US)",
+            "Nikocat233(AS)" => "Niko(AS)",
+            "Nikocat233(AS2)" => "Niko(AS2)",
             "XtremeWave[HongKong]" =>  "XW[HK]",
 
             _ => serverName,
@@ -90,13 +81,9 @@ public static class ServerAddManager
             "Modded Asia (MAS)" => new(255, 132, 0, 255),
             "Modded NA (MNA)" => new(255, 132, 0, 255),
             "Modded EU (MEU)" => new(255, 132, 0, 255),
-            "梦服上海 (新)" => new(1, 182, 253, 255),
-            "小猫私服" => new(181, 158, 204, 255),
-            "小猫354[北京]" => new(181, 158, 204, 255),
-            "小猫服[北京]" => new(181, 158, 204, 255),
-            "方块服[北京]" => new(105, 105, 193, 255),
-            "Nikocat233(CN)" => new(255, 255, 0, 255),
             "Nikocat233(US)" => new(255, 255, 0, 255),
+            "Nikocat233(AS)" => new(255, 255, 0, 255),
+            "Nikocat233(AS2)" => new(255, 255, 0, 255),
             "XtremeWave[HongKong]" => Main.ModColor32,
 
             _ => new(255, 255, 255, 255),

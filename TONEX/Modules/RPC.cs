@@ -14,6 +14,7 @@ using TONEX.Roles.Impostor;
 using TONEX.Roles.Neutral;
 using TONEX.Modules.SoundInterface;
 using TONEX.MoreGameModes;
+using InnerNet;
 namespace TONEX;
 
 public enum CustomRPC
@@ -108,6 +109,17 @@ public enum CustomRPC
     SetSubstituteLimit,
     //基因学家
     SetGeneticistDNA2,
+    //游侠
+    SetRangerList,
+    //国王
+    SetKingList,
+    //咒术师
+    SetSorcererList,
+    //十字军
+    SetCrusaderList,
+
+    //特效专用RPC
+    FixModdedClientCNO,
 
     //游戏模式
     SyncFFAPlayer,
@@ -126,7 +138,16 @@ public enum Sounds
 internal class RPCHandlerPatch
 {
     public static bool TrustedRpc(byte id)
- => (CustomRPC)id is CustomRPC.VersionCheck or CustomRPC.RequestRetryVersionCheck or CustomRPC.AntiBlackout or CustomRPC.Judge or CustomRPC.Swap or CustomRPC.Guess or CustomRPC.OnClickMeetingButton or CustomRPC.PlaySound or CustomRPC.IsDisabledAction or CustomRPC.SetAction ;
+ => (CustomRPC)id is CustomRPC.VersionCheck 
+     or CustomRPC.RequestRetryVersionCheck 
+     or CustomRPC.AntiBlackout 
+     or CustomRPC.Judge 
+     or CustomRPC.Swap 
+     or CustomRPC.Guess 
+     or CustomRPC.OnClickMeetingButton 
+     or CustomRPC.PlaySound 
+     or CustomRPC.IsDisabledAction 
+     or CustomRPC.SetAction ;
 
     public static bool Prefix(PlayerControl __instance, [HarmonyArgument(0)] byte callId, [HarmonyArgument(1)] MessageReader reader)
     {
@@ -134,7 +155,7 @@ internal class RPCHandlerPatch
         if (Main.AssistivePluginMode.Value) return true;
         var rpcType = (RpcCalls)callId;
         MessageReader subReader = MessageReader.Get(reader);
-        if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
+        //if (EAC.ReceiveRpc(__instance, callId, reader)) return false;
         Logger.Info($"{__instance?.Data?.PlayerId}({(__instance?.Data?.OwnerId == AmongUsClient.Instance.HostId ? "Host" : __instance?.Data?.PlayerName)}):{callId}({RPC.GetRpcName(callId)})", "ReceiveRPC");
 
         switch (rpcType)
@@ -438,6 +459,24 @@ internal class RPCHandlerPatch
                 break;
             case CustomRPC.SetGeneticistDNA2:
                 Geneticist.ReceiveRPC_DNA2(reader);
+                break;
+            case CustomRPC.SetRangerList:
+                Ranger.ReceiveRPC_SyncList(reader);
+                break;
+            case CustomRPC.SetKingList:
+                King.ReceiveRPC_SyncList(reader);
+                break;
+            case CustomRPC.SetSorcererList:
+                Sorcerer.ReceiveRPC_SyncList(reader);
+                break;
+            case CustomRPC.SetCrusaderList:
+                Crusader.ReceiveRPC_SyncList(reader);
+                break;
+            case CustomRPC.FixModdedClientCNO:
+                var CNO = reader.ReadNetObject<PlayerControl>();
+                bool active = reader.ReadBoolean();
+                CNO.transform.FindChild("Names").FindChild("NameText_TMP").gameObject.SetActive(active);
+
                 break;
             case CustomRPC.SyncFFAPlayer:
                 FFAManager.ReceiveRPCSyncFFAPlayer(reader);

@@ -10,7 +10,7 @@ public sealed class Oblivious : AddonBase
     CustomRoles.Oblivious,
      81100,
     null,
-    "pb|Ä‘Ð¡¹í|µ¨Ð¡",
+    "pb|Ä‘Ð¡ï¿½ï¿½|ï¿½ï¿½Ð¡",
     "#424242"
     );
     public Oblivious(PlayerControl player)
@@ -22,7 +22,8 @@ public sealed class Oblivious : AddonBase
 
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        return Utils.GetPlayerById(target.PlayerId).Is(CustomRoles.Bait);
+        if (!Is(reporter) || target == null) return true;
+        return Utils.GetPlayerById(target.PlayerId).Is(CustomRoles.Bait) || Utils.GetPlayerById(reporter.PlayerId).Is(CustomRoles.Mayor);
     }
 
 

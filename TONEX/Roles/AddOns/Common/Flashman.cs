@@ -34,6 +34,6 @@ public sealed class Flashman : AddonBase
     static void SetupOptionItem()
     {
         OptionSpeed = FloatOptionItem.Create(RoleInfo, 20, OptionName.FlashmanSpeed, new(0.25f, 5f, 0.25f), 2.5f, false)
-.SetValueFormat(OptionFormat.Seconds);
+.SetValueFormat(OptionFormat.Multiplier);
     }
 }

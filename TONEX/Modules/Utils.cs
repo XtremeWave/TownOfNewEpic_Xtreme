@@ -32,6 +32,7 @@ using TONEX.MoreGameModes;
 using UnityEngine.TextCore.LowLevel;
 using UnityEngine.TextCore;
 using HarmonyLib;
+using System.Runtime.CompilerServices;
 
 namespace TONEX;
 
@@ -1547,6 +1548,105 @@ public static class Utils
         Logger.Info($"无", "RoleName");
         return null;
     }
+    // From EHR by Gurge44
+    public static void ThrowException(Exception ex, [CallerFilePath] string fileName = "", [CallerLineNumber] int lineNumber = 0, [CallerMemberName] string callerMemberName = "")
+    {
+        try
+        {
+            StackTrace st = new(0, true);
+            StackFrame[] stFrames = st.GetFrames();
+
+            StackFrame firstFrame = stFrames.FirstOrDefault();
+
+            var sb = new StringBuilder();
+            sb.Append($" Exception: {ex.Message}\n      thrown by {ex.Source}\n      at {ex.TargetSite}\n      in {fileName}\n      at line {lineNumber}\n      in method \"{callerMemberName}\"\n------ Method Stack Trace ------");
+
+            bool skip = true;
+            foreach (StackFrame sf in stFrames)
+            {
+                if (skip)
+                {
+                    skip = false;
+                    continue;
+                }
+
+                var callerMethod = sf.GetMethod();
+
+                string callerMethodName = callerMethod?.Name;
+                string callerClassName = callerMethod?.DeclaringType?.FullName;
+
+                var line = $"line {sf.GetFileLineNumber()} ({sf.GetFileColumnNumber()}) in {sf.GetFileName()}";
+
+                sb.Append($"\n      at {callerClassName}.{callerMethodName} ({line})");
+            }
+
+            sb.Append("\n------ End of Method Stack Trace ------");
+            sb.Append("\n------ Exception Stack Trace ------");
+
+            sb.Append(ex.StackTrace?.Replace("\r\n", "\n").Replace("\\n", "\n").Replace("\n", "\n      "));
+
+            sb.Append("\n------ End of Exception Stack Trace ------");
+
+            Logger.Error(sb.ToString(), firstFrame?.GetMethod()?.ToString());
+        }
+        catch
+        {
+        }
+    }
+    public static void SendRPC(CustomRPC rpc, params object[] data)
+    {
+        var w = AmongUsClient.Instance.StartRpcImmediately(PlayerControl.LocalPlayer.NetId, (byte)rpc, SendOption.Reliable);
+        foreach (var o in data)
+        {
+            switch (o)
+            {
+                case byte b:
+                    w.Write(b);
+                    break;
+                case int i:
+                    w.WritePacked(i);
+                    break;
+                case float f:
+                    w.Write(f);
+                    break;
+                case string s:
+                    w.Write(s);
+                    break;
+                case bool b:
+                    w.Write(b);
+                    break;
+                case long l:
+                    w.Write(l.ToString());
+                    break;
+                case char c:
+                    w.Write(c.ToString());
+                    break;
+                case Vector2 v:
+                    w.Write(v);
+                    break;
+                case Vector3 v:
+                    w.Write(v);
+                    break;
+                case PlayerControl pc:
+                    w.WriteNetObject(pc);
+                    break;
+                default:
+                    try
+                    {
+                        if (o != null && Enum.TryParse(o.GetType(), o.ToString(), out var e) && e != null)
+                            w.WritePacked((int)e);
+                    }
+                    catch (InvalidCastException e)
+                    {
+                        ThrowException(e);
+                    }
+                    break;
+            }
+        }
+
+        AmongUsClient.Instance.FinishRpcImmediately(w);
+    }
+
     public static string RemoveHtmlTags(this string str) => Regex.Replace(str, "<[^>]*?>", string.Empty);
     public static string RemoveHtmlTagsExcept(this string str, string exceptionLabel) => Regex.Replace(str, "<(?!/*" + exceptionLabel + ")[^>]*?>", string.Empty);
     public static string RemoveColorTags(this string str) => Regex.Replace(str, "</?color(=#[0-9a-fA-F]*)?>", "");

@@ -14,7 +14,7 @@ public sealed class Reach : AddonBase
     CustomRoles.Reach,
      81600,
     null,
-    "re|³Ö˜Œ|ÊÖ³¤|³¤±ÛÔ³|¹ØÁË°ÉÃ»ÒâË¼|¿ªreach|reach¿ªµÄÕæ³¤",
+    "re|æŒæ§|æ‰‹é•¿|é•¿è‡‚çŒ¿|å…³äº†å§æ²¡æ„æ€|å¼€reach|reachå¼€çš„çœŸé•¿",
     "#74ba43"
     );
     public Reach(PlayerControl player)

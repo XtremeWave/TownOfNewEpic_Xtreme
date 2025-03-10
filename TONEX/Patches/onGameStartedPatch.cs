@@ -184,6 +184,7 @@ internal class ChangeRoleSettings
 
                 }
             }
+            CustomNetObject.Reset();
         }
         catch (Exception ex)
         {

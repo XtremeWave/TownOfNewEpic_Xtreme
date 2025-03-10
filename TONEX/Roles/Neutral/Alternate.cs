@@ -25,7 +25,7 @@ public sealed class Alternate : RoleBase, IAdditionalWinner, INeutralKiller
             CustomRoles.Alternate,
             () => RoleTypes.Impostor,
             CustomRoleTypes.Neutral,
-            94_1_4_0200,
+            94_1_5_0100,
             SetupOptionItem,
             "alt|伪人",
             "#663366",

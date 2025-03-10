@@ -75,33 +75,33 @@ internal class Cloud
     }
 
     private static bool connecting = false;
-    public static void StartConnect()
-    {
-        if (connecting || EacClientSocket != null && EacClientSocket.Connected) return;
-        connecting = true;
-        _ = new LateTask(() =>
-        {
-            if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame)
-            {
-                connecting = false;
-                return;
-            }
-            try
-            {
-                if (IP == null || EAC_PORT == 0) throw new("Has no ip or port");
-                LastRepotTimeStamp = Utils.GetTimeStamp();
-                EacClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                EacClientSocket.Connect(IP, EAC_PORT);
-                Logger.Warn("已连接至TONEX服务器", "EAC Cloud");
-            }
-            catch (Exception ex)
-            {
-                connecting = false;
-                Logger.Error($"Connect To EAC Failed:\n{ex.Message}", "EAC Cloud", false);
-            }
-            connecting = false;
-        }, 3.5f, "EAC Cloud Connect");
-    }
+    //public static void StartConnect()
+    //{
+    //    if (connecting || EacClientSocket != null && EacClientSocket.Connected) return;
+    //    connecting = true;
+    //    _ = new LateTask(() =>
+    //    {
+    //        if (!AmongUsClient.Instance.AmHost || !GameData.Instance || AmongUsClient.Instance.NetworkMode == NetworkModes.LocalGame)
+    //        {
+    //            connecting = false;
+    //            return;
+    //        }
+    //        try
+    //        {
+    //            if (IP == null || EAC_PORT == 0) throw new("Has no ip or port");
+    //            LastRepotTimeStamp = Utils.GetTimeStamp();
+    //            EacClientSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+    //            EacClientSocket.Connect(IP, EAC_PORT);
+    //            Logger.Warn("已连接至TONEX服务器", "EAC Cloud");
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            connecting = false;
+    //            Logger.Error($"Connect To EAC Failed:\n{ex.Message}", "EAC Cloud", false);
+    //        }
+    //        connecting = false;
+    //    }, 3.5f, "EAC Cloud Connect");
+    //}
     public static void StopConnect()
     {
         if (EacClientSocket != null && EacClientSocket.Connected)
@@ -109,13 +109,13 @@ internal class Cloud
     }
     public static void SendData(string msg)
     {
-        StartConnect();
+        ///StartConnect();
         if (EacClientSocket == null || !EacClientSocket.Connected)
         {
             Logger.Warn("未连接至TONEX服务器，报告被取消", "EAC Cloud");
             return;
         }
-        EacClientSocket.Send(Encoding.Default.GetBytes(msg));
+       // EacClientSocket.Send(Encoding.Default.GetBytes(msg));
     }
     [HarmonyPatch(typeof(PlayerControl), nameof(PlayerControl.FixedUpdate))]
     class EACConnectTimeOut

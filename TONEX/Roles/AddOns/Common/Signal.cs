@@ -29,7 +29,6 @@ public sealed class Signal : AddonBase
     public Vector2 Signalbacktrack = new();
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
-        
         Signalbacktrack= Player.GetTruePosition();
         SendRPC();
         return true;

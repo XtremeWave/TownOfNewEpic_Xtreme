@@ -41,7 +41,7 @@ class EndGamePatch
         foreach (var id in PlayerState.AllPlayerStates.Keys)
             SummaryText[id] = Utils.SummaryTexts(id, false);
 
-       
+        CustomNetObject.Reset();
 
         var sb = new StringBuilder(GetString("KillLog"));
         sb.Append("<size=70%>");

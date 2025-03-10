@@ -169,6 +169,10 @@ class OnPlayerLeftPatch
                     messageWriter.EndMessage();
                 }
             }, 2.5f, "Repeat Despawn");
+            if (GameStates.IsInGame)
+            {
+                if (data.Character != null) CustomNetObject.DespawnOnQuit(data.Character.PlayerId);
+            }
         }
     }
     public static List<int> ClientsProcessed = new();

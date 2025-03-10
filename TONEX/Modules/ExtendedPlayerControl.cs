@@ -20,6 +20,8 @@ using Rewired.Utils.Platforms.Windows;
 using TONEX.Attributes;
 using TONEX.Roles.AddOns.Common;
 using BepInEx.Unity.IL2CPP.Utils.Collections;
+using UnityEngine.Purchasing;
+using TONEX.Patches;
 
 namespace TONEX;
 
@@ -581,8 +583,11 @@ static class ExtendedPlayerControl
     }
     public static void ResetKillCooldown(this PlayerControl player)
     {
-        Main.AllPlayerKillCooldown[player.PlayerId] = (player.GetRoleClass() as IKiller)?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
-        Main.AllPlayerKillCooldown[player.PlayerId] = (player.As_Addons<IKiller>())?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
+        var killerRole = player.GetRoleClass() as IKiller;
+        var cooldown = killerRole != null ? killerRole.CalculateKillCooldown() : Options.DefaultKillCooldown;
+        Main.AllPlayerKillCooldown[player.PlayerId] = cooldown;
+        //Main.AllPlayerKillCooldown[player.PlayerId] = (player.As_Addons<IKiller>())?.CalculateKillCooldown() ?? Options.DefaultKillCooldown; //キルクールをデフォルトキルクールに変更
+        player.SyncSettings();
         if (player.PlayerId == LastImpostor.currentId)
             LastImpostor.SetKillCooldown();
         var IsKiller = ((player.GetRoleClass() as IKiller)?.IsKiller ?? false) || (player.As_Addons<IKiller>()?.IsKiller ?? false);

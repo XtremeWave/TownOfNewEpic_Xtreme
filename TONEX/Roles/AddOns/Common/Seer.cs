@@ -14,14 +14,16 @@ public sealed class Seer : AddonBase
     CustomRoles.Seer,
    80900,
     null,
-    "se|�`ý",
+    "se|�`ý",
     "#61b26c"
     );
+
     public Seer(PlayerControl player)
-    : base(
-        RoleInfo,
-        player
-    )
-    { }
+        : base(
+            RoleInfo,
+            player
+        )
+    {
+    }
 
 }

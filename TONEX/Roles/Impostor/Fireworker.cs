@@ -6,6 +6,8 @@ using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
 using UnityEngine;
 using static TONEX.Translator;
+using TONEX.Modules;
+using Hazel;
 
 namespace TONEX.Roles.Impostor;
 public sealed class Fireworker : RoleBase, IImpostor
@@ -56,7 +58,6 @@ public sealed class Fireworker : RoleBase, IImpostor
     int NowFireworkerCount;
     List<Vector3> FireworkerPosition = new();
     FireworkerState State = FireworkerState.Initial;
-
     public static void SetupCustomOption()
     {
         OptionFireworkerCount = IntegerOptionItem.Create(RoleInfo, 10, OptionName.FireworkerMaxCount, new(1, 99, 1), 3, false)
@@ -153,7 +154,7 @@ public sealed class Fireworker : RoleBase, IImpostor
     public override string GetLowerText(PlayerControl seer, PlayerControl seen = null, bool isForMeeting = false, bool isForHud = false)
     {
         string retText = "";
-
+        
         if (State == FireworkerState.WaitTime && Main.AliveImpostorCount <= 1)
         {
             Logger.Info("爆破準備OK", "Fireworker");

@@ -61,13 +61,14 @@ public sealed class Gamblers : RoleBase, IImpostor
         {                  
             KillCooldown = MinKillCooldown.GetFloat();      
 
-            killer.ResetKillCooldown();
+           
             killer.SyncSettings();
+            killer.SetKillCooldownV2(MinKillCooldown.GetFloat());
         }
         else
         {
             KillCooldown = MaxKillCooldown.GetFloat();
-            killer.ResetKillCooldown();
+            killer.SetKillCooldownV2(MaxKillCooldown.GetFloat());
             killer.SyncSettings();
         }
     }

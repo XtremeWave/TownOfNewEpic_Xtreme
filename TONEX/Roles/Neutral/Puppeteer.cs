@@ -140,14 +140,20 @@ public sealed class Puppeteer : RoleBase, INeutralKiller
     public override bool OnCheckReportDeadBody(PlayerControl reporter, NetworkedPlayerInfo target)
     {
 
-        CanKill = true;
-        Timer = -1;
-        Player.RpcTeleport(MyLastPos);
-        Player.MarkDirtySettings();
-        Main.AllPlayerNames[Player.PlayerId] = Name;
-        var outfit = Skins;
-        Player.SetOutFit(outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId);
-        Player.MarkDirtySettings();
+        try
+        {
+            CanKill = true;
+            Timer = -1;
+            Player.RpcTeleport(MyLastPos);
+            Player.MarkDirtySettings();
+            Main.AllPlayerNames[Player.PlayerId] = Name;
+            var outfit = Skins;
+            Player.SetOutFit(outfit.ColorId, outfit.HatId, outfit.SkinId, outfit.VisorId, outfit.PetId);
+            Player.MarkDirtySettings();
+        }
+        catch 
+        {
+        }
         return true;
 
     }

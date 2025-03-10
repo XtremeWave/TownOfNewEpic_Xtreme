@@ -286,6 +286,12 @@ public abstract class RoleBase : IDisposable
 
     public virtual bool OnCheckShapeshiftWithUsePet(ref bool animate, PlayerControl target = null) => true;
 
+    /// <summary>
+    /// 在变身检查时被调用
+    /// 仅在自己变身时被调用
+    /// 不会触发面板，立即执行技术操作（我吃柠檬这个玩意完全就是和隐身技术持平的东西）
+    /// </summary>
+    public virtual void UnShapeShiftButton(PlayerControl shapeshifter) { }
 
     /// <summary>
     /// 变形时调用的函数

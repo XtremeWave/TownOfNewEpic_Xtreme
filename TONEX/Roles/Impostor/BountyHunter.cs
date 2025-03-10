@@ -16,7 +16,7 @@ public sealed class BountyHunter : RoleBase, IImpostor
             typeof(BountyHunter),
             player => new BountyHunter(player),
             CustomRoles.BountyHunter,
-            () => RoleTypes.Shapeshifter,
+            () => RoleTypes.Phantom,
             CustomRoleTypes.Impostor,
             1100,
             SetupOptionItem,

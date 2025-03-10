@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TONEX.Modules;
 using TONEX.Modules.SoundInterface;
-using TONEX.Roles.AddOns.Common;
+using TONEX.Roles.AddOns.Common; 
 using TONEX.Roles.AddOns.Crewmate;
 using TONEX.Roles.Core;
 using TONEX.Roles.Core.Interfaces.GroupAndRole;
@@ -523,6 +523,7 @@ class FixedUpdatePatch
     public static void Postfix(PlayerControl __instance)
     {
         var player = __instance;
+        if (__instance == null || __instance.PlayerId == 255) return;
         if (Main.AssistivePluginMode.Value && __instance != null)
         {
 
@@ -596,6 +597,9 @@ class FixedUpdatePatch
         }
 
         if (!GameStates.IsModHost) return;
+        bool localplayer = __instance.PlayerId == PlayerControl.LocalPlayer.PlayerId;
+        if (!GameStates.IsLobby && localplayer)
+            CustomNetObject.FixedUpdate();
 
         Zoom.OnFixedUpdate();
         NameNotifyManager.OnFixedUpdate(player);
@@ -977,10 +981,17 @@ class PlayerControlCompleteTaskPatch
         taskState.Update(pc);
 
         var roleClass = pc.GetRoleClass();
+        var addonClasses = pc.GetAddonClasses();
         bool ret = true;
         if (roleClass != null && roleClass.OnCompleteTask(out bool cancel))
         {
             ret = cancel;
+        }
+
+        bool cancel2 = true;
+        if (addonClasses != null && addonClasses.Any(x=>x.OnCompleteTask(out cancel2)))
+        {
+            ret = cancel2;
         }
         //属性クラスの扱いを決定するまで仮置き
         ret &= Workhorse.OnCompleteTask(pc);
@@ -1315,7 +1326,7 @@ class CheckVanishPatch
             messageWriter1.WriteNetObject(__instance);
             AmongUsClient.Instance.FinishRpcImmediately(messageWriter1);
 
-
+           
             __instance.RpcResetAbilityCooldown();
 
 

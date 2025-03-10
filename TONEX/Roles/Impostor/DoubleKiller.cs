@@ -82,12 +82,14 @@ public sealed class DoubleKiller : RoleBase, IImpostor
             ShCooldown = TwoKillCooldown.GetFloat();
             Player.RpcResetAbilityCooldown();
             killer.SyncSettings();
+            Player.SetKillCooldownV2(1f);
         }
         else
         {
             KillCooldown = DoubleKillerDefaultKillCooldown.GetFloat();
             killer.ResetKillCooldown();
             killer.SyncSettings();
+            Player.SetKillCooldownV2(DoubleKillerDefaultKillCooldown.GetFloat());
         }
     }
     public override bool CanUseAbilityButton()

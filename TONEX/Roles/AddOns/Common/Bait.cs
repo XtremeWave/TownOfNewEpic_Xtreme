@@ -14,7 +14,7 @@ public sealed class Bait : AddonBase
     CustomRoles.Bait,
     81700,
     SetupOptionItem,
-    "ba|´ó½±|Í·½±|ÕTðD",
+    "ba|å¤§å¥–|å¤´å¥–|èª˜é¤Œ",
     "#00f7ff"
     );
     public Bait(PlayerControl player)

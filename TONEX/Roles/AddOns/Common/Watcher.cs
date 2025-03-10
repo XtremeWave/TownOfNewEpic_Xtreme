@@ -13,7 +13,7 @@ public sealed class Watcher : AddonBase
     CustomRoles.Watcher,
    80300,
     null,
-    "wat|¸QÒ•Õß|¿úÊÓ",
+    "wat|çªºè¦–è€…|çª¥è§†",
     "#800080"
     );
     public Watcher(PlayerControl player)
