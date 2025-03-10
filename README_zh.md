@@ -16,6 +16,21 @@
 
 </div>
 
+> [!IMPORTANT]
+> 极致狂澜成立一周年以来，所有成员都成长了许多。\
+> 成立之初，这个组织被命名为「TEAM_TONEX」以接续TOHEX未实现的目标与梦想。\
+> 一年中，我们结识了新的成员、再次与旧的朋友合作，也发生了争执、经历了分别……\
+> 一年中，我们尽力维护了玩家的良好游戏体验，为我们的热爱付诸了努力，对TOHEX开发中的过错作出了弥补，试着让更多人因模组而快乐……\
+> 我们做到了先导预告中的目标。\
+> 一年中，我们的努力大多没有回报，模组没有热度……\
+> 至今，TONEX完成了它的使命，一个没有玩家的模组，我们没有心力继续维护了。\
+> 因此，经本项目负责人——喜的确认，我们将在发布废弃的1.4版本后终止对TONEX模组的一切维护。
+
+> [!NOTE]
+> 本模组不隶属于 Among Us 或 Innersloth LLC，其包含的内容也未得到 Innersloth LLC 的认可或以其他方式赞助。\
+> 此处包含的部分材料是Innersloth LLC的财产。\
+> © Innersloth LLC.
+
 ## 关于我们
 自2023年5月20日起，Town Of Host Edited(TOHE)停止了开发。<br>
 为了延续TOHE的“火种”，我们开发了一个名为Town Of Host Edited-Xi(TOHEX)的分支项目<br>
@@ -29,10 +44,6 @@
 <div align="right">
 ——XtremeWave
 </div>
-
-## 须知
-本模组不隶属于 Among Us 或 Innersloth LLC，其包含的内容也未得到 Innersloth LLC 的认可或以其他方式赞助。<br>
-此处包含的部分材料是Innersloth LLC的财产。
 
 ## 部分想法来源与支持
  - [Town Of Host](https://github.com/tukasa0001/TownOfHost)
