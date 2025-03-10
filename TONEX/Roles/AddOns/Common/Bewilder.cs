@@ -13,7 +13,7 @@ public sealed class Bewilder : AddonBase
     CustomRoles.Bewilder,
     81200,
     SetupOptionItem,
-    "bwd|ÃÔ»óÕß",
+    "bwd|è¿·æƒ‘è€…",
     "#c894f5"
     );
     public Bewilder(PlayerControl player)
